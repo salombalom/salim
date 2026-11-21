@@ -15,6 +15,7 @@ import { Input } from './input.js';
 import { Obstacles } from './obstacles.js';
 import { Coins } from './coins.js';
 import { UI } from './ui.js';
+import { Sound } from './sound.js';
 
 const container = document.getElementById('game');
 
@@ -24,6 +25,7 @@ const coins = new Coins(world.scene);
 // كل ما يطلع صف عقبات، نبلّغ العملات عشان تنحط بالأماكن الفاضية
 const obstacles = new Obstacles(world.scene, (z, length, laneTypes) => coins.onRow(z, length, laneTypes));
 const ui = new UI(startGame);
+const sound = new Sound();
 
 let state = 'menu';
 let speed = 0;
@@ -34,6 +36,7 @@ let deadTimer = 0;
 // نبدأ (أو نعيد) اللعبة من الصفر
 function startGame() {
   if (state === 'running' || state === 'dead') return;
+  sound.unlock(); // أول ضغطة تفتح الصوت (مهم للآيفون)
   state = 'running';
   speed = CONFIG.startSpeed;
   distance = 0;
@@ -86,6 +89,7 @@ function loop(now) {
       deadTimer = 0;
       player.crash();
       world.shake(0.35);
+      sound.playCrash(); // وا أبوي!
     }
   } else {
     // في القائمة أو بعد الاصطدام: العالم واقف، والشخصية والعملات تتحرك بمكانها
@@ -125,6 +129,7 @@ if (import.meta.env.DEV) {
     obstacles,
     coins,
     world,
+    sound,
     get coinCount() { return coinCount; },
     get distance() { return distance; },
     get speed() { return speed; },
