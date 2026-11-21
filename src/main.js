@@ -1,6 +1,12 @@
 // main.js
-// نقطة البداية: ننشئ العالم والشخصية والتحكم، ونشغّل "حلقة اللعبة"
+// نقطة البداية: ننشئ كل أجزاء اللعبة ونربطها ببعض، ونشغّل "حلقة اللعبة"
 // اللي تتكرر كل إطار (حوالي 60 مرة بالثانية): تحديث ← رسم ← تحديث ← رسم...
+//
+// حالات اللعبة:
+//   'menu'    شاشة البداية (الشخصية واقفة)
+//   'running' اللعب
+//   'dead'    صدم للتو (نعرض حركة الطيحة ثانية)
+//   'over'    شاشة "انتهت اللعبة"
 
 import { CONFIG } from './config.js';
 import { World } from './world.js';
@@ -8,6 +14,7 @@ import { Player } from './player.js';
 import { Input } from './input.js';
 import { Obstacles } from './obstacles.js';
 import { Coins } from './coins.js';
+import { UI } from './ui.js';
 
 const container = document.getElementById('game');
 
@@ -16,26 +23,28 @@ const player = new Player(world.scene);
 const coins = new Coins(world.scene);
 // كل ما يطلع صف عقبات، نبلّغ العملات عشان تنحط بالأماكن الفاضية
 const obstacles = new Obstacles(world.scene, (z, length, laneTypes) => coins.onRow(z, length, laneTypes));
+const ui = new UI(startGame);
 
-const coinCountEl = document.getElementById('coin-count');
-
-// حالة اللعبة: 'running' (شغالة) أو 'dead' (صدم)
-let state = 'running';
-let speed = CONFIG.startSpeed;
-let deadTimer = 0;
+let state = 'menu';
+let speed = 0;
+let distance = 0; // المسافة المقطوعة بالمتر
 let coinCount = 0;
+let deadTimer = 0;
 
-function restart() {
+// نبدأ (أو نعيد) اللعبة من الصفر
+function startGame() {
+  if (state === 'running' || state === 'dead') return;
   state = 'running';
   speed = CONFIG.startSpeed;
+  distance = 0;
   coinCount = 0;
-  coinCountEl.textContent = '0';
   player.reset();
   coins.reset(); // لازم قبل العقبات، لأن العقبات تضيف عملات وهي تبدأ
   obstacles.reset();
+  ui.showHUD();
 }
 
-// كل أمر من التحكم يروح للشخصية
+// كل أمر من التحكم يروح للشخصية (بس وقت اللعب)
 new Input(container, (action) => {
   if (state !== 'running') return;
   if (action === 'left') player.moveLeft();
@@ -64,17 +73,13 @@ function loop(now) {
   if (state === 'running') {
     // السرعة تزيد شوي شوي لين توصل الحد الأقصى
     speed = Math.min(CONFIG.maxSpeed, speed + CONFIG.speedIncrease * dt);
+    distance += speed * dt;
 
     player.update(dt, speed);
     obstacles.update(dt, speed);
     world.update(dt, speed, player.x);
-
-    // جمع العملات
-    const got = coins.update(dt, speed, player.box);
-    if (got > 0) {
-      coinCount += got;
-      coinCountEl.textContent = coinCount;
-    }
+    coinCount += coins.update(dt, speed, player.box);
+    ui.updateHUD(distance, coinCount);
 
     if (obstacles.checkCollision(player.box)) {
       state = 'dead';
@@ -83,13 +88,19 @@ function loop(now) {
       world.shake(0.35);
     }
   } else {
-    // بعد الاصطدام: العالم يوقف والشخصية تطيح
+    // في القائمة أو بعد الاصطدام: العالم واقف، والشخصية والعملات تتحرك بمكانها
     player.update(dt, 0);
     world.update(dt, 0, player.x);
-    coins.update(dt, 0, player.box); // العملات تكمل دوران بس ما تتحرك
-    deadTimer += dt;
-    // مؤقتاً: نعيد اللعبة تلقائياً بعد ثانيتين (بالمرحلة 4 تصير شاشة "انتهت اللعبة")
-    if (deadTimer > 2) restart();
+    coins.update(dt, 0, player.box);
+
+    // بعد ثانية من الطيحة نعرض شاشة "انتهت اللعبة"
+    if (state === 'dead') {
+      deadTimer += dt;
+      if (deadTimer > 1) {
+        state = 'over';
+        ui.showGameOver(distance, coinCount);
+      }
+    }
   }
 
   world.render();
@@ -109,5 +120,14 @@ requestAnimationFrame(loop);
 
 // للتجربة أثناء التطوير فقط: نقدر نوصل للعبة من أدوات المطوّر بالمتصفح
 if (import.meta.env.DEV) {
-  window.__game = { player, obstacles, coins, world, get coinCount() { return coinCount; }, get speed() { return speed; }, get state() { return state; } };
+  window.__game = {
+    player,
+    obstacles,
+    coins,
+    world,
+    get coinCount() { return coinCount; },
+    get distance() { return distance; },
+    get speed() { return speed; },
+    get state() { return state; },
+  };
 }

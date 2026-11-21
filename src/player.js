@@ -275,6 +275,9 @@ export class Player {
       // الجسم مايل لورا، فنمد الرجلين لقدام على الأرض
       legL = legR = 1.4;
       armL = armR = 1.0;
+    } else if (speed === 0) {
+      // واقف (في شاشة البداية)
+      legL = legR = armL = armR = 0;
     } else {
       // الجري: كل رجل عكس اليد اللي بنفس الجهة
       legL = swing * 0.9;
@@ -292,7 +295,7 @@ export class Player {
     this.body.rotation.x = smooth(this.body.rotation.x, lean, 18);
 
     // نطّة خفيفة مع كل خطوة وقت الجري
-    const bob = this.isGrounded && !this.isSliding ? Math.abs(swing) * 0.08 : 0;
+    const bob = this.isGrounded && !this.isSliding && speed > 0 ? Math.abs(swing) * 0.08 : 0;
     this.body.position.y = smooth(this.body.position.y, bob, 25);
 
     // ميلان بسيط باتجاه الحركة وقت تغيير الحارة
