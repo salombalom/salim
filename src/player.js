@@ -1,5 +1,6 @@
 // player.js
-// الشخصية: مبنية من مكعبات بسيطة (جسم، راس، يدين، رجلين، شنطة).
+// الشخصية: رجّال لابس لبس عماني (دشداشة بيضاء، كمّة مطرّزة، فراخة، نعال)
+// مبنية من مكعبات وأسطوانة بسيطة.
 // مسؤولة عن: التنقل بين الحارات، القفز، الانزلاق، وحركة الجري.
 
 import * as THREE from 'three';
@@ -36,13 +37,13 @@ export class Player {
   _build() {
     const root = new THREE.Group();
 
-    const mat = (color) => new THREE.MeshStandardMaterial({ color, roughness: 0.7 });
-    const skin = mat(0xf1c27d);
-    const shirt = mat(0xe63946);
-    const pants = mat(0x1d3557);
-    const shoes = mat(0xffffff);
-    const cap = mat(0x2a9d8f);
-    const bag = mat(0xffb703);
+    const mat = (color, extra = {}) =>
+      new THREE.MeshStandardMaterial({ color, roughness: 0.75, ...extra });
+    const skin = mat(0xd9a066);
+    const dishdasha = mat(0xf3f1ea); // الدشداشة البيضاء
+    const sandals = mat(0x6b3e1f); // نعال جلد بني
+    const hair = mat(0x1a1a1a);
+    const tassel = mat(0xc9a96e); // الفراخة (الكشكوشة)
 
     const box = (w, h, d, material) => {
       const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
@@ -54,49 +55,111 @@ export class Player {
     const body = new THREE.Group();
     root.add(body);
 
-    const torso = box(0.62, 0.7, 0.36, shirt);
-    torso.position.y = 1.08;
+    // ---- الدشداشة: الجزء العلوي ----
+    const torso = box(0.62, 0.72, 0.36, dishdasha);
+    torso.position.y = 1.07;
     body.add(torso);
 
+    // ---- الدشداشة: الجزء السفلي (أعرض شوي عشان يبين إنها ثوب طويل) ----
+    const skirt = box(0.68, 0.42, 0.42, dishdasha);
+    skirt.position.y = 0.56;
+    body.add(skirt);
+
+    // ---- الفراخة: الحبل اللي ينزل من رقبة الدشداشة (قدّام) ----
+    const rope = box(0.03, 0.32, 0.03, tassel);
+    rope.position.set(0, 1.26, -0.2);
+    const tasselEnd = box(0.07, 0.1, 0.07, tassel);
+    tasselEnd.position.set(0, 1.07, -0.2);
+    body.add(rope, tasselEnd);
+
+    // ---- الراس ----
     const head = box(0.44, 0.44, 0.42, skin);
     head.position.y = 1.68;
     body.add(head);
 
-    // كاب: الجزء الأمامي (البروز) يطلع لقدام باتجاه -z
-    const capTop = box(0.48, 0.14, 0.46, cap);
-    capTop.position.y = 1.93;
-    const capBrim = box(0.46, 0.05, 0.25, cap);
-    capBrim.position.set(0, 1.87, -0.32);
-    body.add(capTop, capBrim);
+    // شعر أسود يبين من ورا تحت الكمّة
+    const hairBack = box(0.45, 0.14, 0.06, hair);
+    hairBack.position.set(0, 1.8, 0.2);
+    body.add(hairBack);
 
-    // شنطة على الظهر (الظهر باتجاه الكاميرا +z)
-    const backpack = box(0.46, 0.5, 0.2, bag);
-    backpack.position.set(0, 1.1, 0.28);
-    body.add(backpack);
+    // ---- الكمّة العمانية: أسطوانة بيضاء عليها تطريز ملوّن ----
+    const kummaSide = mat(0xffffff, { map: this._makeKummaTexture() });
+    const kummaTop = mat(0xf7f5ef);
+    // الأسطوانة لها 3 أوجه مواد: الجانب، الغطا فوق، الغطا تحت
+    const kumma = new THREE.Mesh(new THREE.CylinderGeometry(0.27, 0.26, 0.2, 20), [
+      kummaSide,
+      kummaTop,
+      kummaTop,
+    ]);
+    kumma.position.y = 1.97;
+    kumma.castShadow = true;
+    body.add(kumma);
 
-    // نسوي طرف (يد أو رجل) معلّق من نقطة دوران عشان يتأرجح بشكل طبيعي
-    const limb = (x, y, w, h, material, footMat) => {
+    // نسوي طرف (يد أو رجل) معلّق من نقطة دوران عشان يتأرجح بشكل طبيعي.
+    // tipMat/tipH: قطعة في آخر الطرف (الكف أو النعال)
+    const limb = (x, y, w, h, material, tipMat, tipH, isFoot) => {
       const pivot = new THREE.Group();
       pivot.position.set(x, y, 0);
       const part = box(w, h, w, material);
       part.position.y = -h / 2;
       pivot.add(part);
-      if (footMat) {
-        const foot = box(w + 0.04, 0.12, w + 0.16, footMat);
-        foot.position.set(0, -h + 0.02, -0.06);
+      if (isFoot) {
+        const foot = box(w + 0.02, tipH, w + 0.14, tipMat);
+        foot.position.set(0, -h - tipH / 2 + 0.02, -0.06);
         pivot.add(foot);
+      } else {
+        const hand = box(w * 0.85, tipH, w * 0.85, tipMat);
+        hand.position.y = -h - tipH / 2;
+        pivot.add(hand);
       }
       body.add(pivot);
       return pivot;
     };
 
-    this.leftArm = limb(-0.42, 1.38, 0.18, 0.62, skin);
-    this.rightArm = limb(0.42, 1.38, 0.18, 0.62, skin);
-    this.leftLeg = limb(-0.16, 0.73, 0.24, 0.66, pants, shoes);
-    this.rightLeg = limb(0.16, 0.73, 0.24, 0.66, pants, shoes);
+    // اليدين: كم أبيض طويل + كف
+    this.leftArm = limb(-0.42, 1.38, 0.19, 0.52, dishdasha, skin, 0.13);
+    this.rightArm = limb(0.42, 1.38, 0.19, 0.52, dishdasha, skin, 0.13);
+    // الرجلين: الدشداشة نازلة لين الكعب + نعال
+    this.leftLeg = limb(-0.16, 0.73, 0.25, 0.64, dishdasha, sandals, 0.07, true);
+    this.rightLeg = limb(0.16, 0.73, 0.25, 0.64, dishdasha, sandals, 0.07, true);
 
     this.body = body;
     return root;
+  }
+
+  // نرسم نقشة تطريز الكمّة على صورة صغيرة ونلفّها حول الأسطوانة
+  _makeKummaTexture() {
+    const w = 256;
+    const h = 32;
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, w, h);
+
+    const colors = ['#c0392b', '#1f6f8b', '#2e8b57', '#d4a017'];
+    // خطين رفيعين فوق وتحت
+    ctx.fillStyle = '#c0392b';
+    ctx.fillRect(0, 2, w, 3);
+    ctx.fillRect(0, h - 5, w, 3);
+    // معيّنات (أشكال ماسية) ملونة بالوسط
+    for (let i = 0; i < 16; i++) {
+      const cx = i * 16 + 8;
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.beginPath();
+      ctx.moveTo(cx, 8);
+      ctx.lineTo(cx + 6, h / 2);
+      ctx.lineTo(cx, h - 8);
+      ctx.lineTo(cx - 6, h / 2);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
   }
 
   // ---------- الأوامر (تجي من التحكم) ----------
