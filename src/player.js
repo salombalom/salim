@@ -30,6 +30,9 @@ export class Player {
     this.slideTimer = 0; // > 0 يعني الشخصية تنزلق الحين
     this.slideQueued = false; // لو ضغط تحت وهو بالهوا، ينزلق أول ما يلمس الأرض
     this.runPhase = 0; // لتحريك اليدين والرجلين
+    this.isDead = false;
+    this.body.rotation.set(0, 0, 0);
+    this.mesh.rotation.set(0, 0, 0);
     this.mesh.position.set(this.x, 0, 0);
   }
 
@@ -190,6 +193,12 @@ export class Player {
     }
   }
 
+  // لما يصطدم: يطيح على ظهره
+  crash() {
+    this.isDead = true;
+    this.slideTimer = 0;
+  }
+
   get isSliding() {
     return this.slideTimer > 0;
   }
@@ -197,6 +206,11 @@ export class Player {
   // ---------- التحديث كل إطار ----------
 
   update(dt, speed) {
+    if (this.isDead) {
+      this._animateCrash(dt);
+      return;
+    }
+
     // 1) التنقل بين الحارات: نقرّب x من مكان الحارة المطلوبة بنعومة
     const targetX = laneToX(this.lane);
     const dx = targetX - this.x;
@@ -229,6 +243,18 @@ export class Player {
     const h = this.isSliding ? SLIDE_HEIGHT : STAND_HEIGHT;
     this.box.min.set(this.x - HALF_WIDTH, this.y, -HALF_DEPTH);
     this.box.max.set(this.x + HALF_WIDTH, this.y + h, HALF_DEPTH);
+  }
+
+  _animateCrash(dt) {
+    const smooth = (current, target) => current + (target - current) * Math.min(1, dt * 10);
+    // يطيح لورا، وينزل للأرض لو كان بالهوا
+    this.body.rotation.x = smooth(this.body.rotation.x, 1.45);
+    this.y = Math.max(0, this.y - 8 * dt);
+    this.mesh.position.y = this.y;
+    this.leftArm.rotation.x = smooth(this.leftArm.rotation.x, 2.8);
+    this.rightArm.rotation.x = smooth(this.rightArm.rotation.x, 2.2);
+    this.leftLeg.rotation.x = smooth(this.leftLeg.rotation.x, 1.6);
+    this.rightLeg.rotation.x = smooth(this.rightLeg.rotation.x, 1.2);
   }
 
   _animate(dt, speed, dx) {

@@ -290,7 +290,18 @@ export class World {
     // الكاميرا تتبع الشخصية يمين ويسار بنعومة (مو بالكامل عشان ما يدوخ)
     const targetX = playerX * 0.6;
     this.camera.position.x += (targetX - this.camera.position.x) * Math.min(1, dt * 6);
-    this.camera.lookAt(this.camera.position.x * 0.5, 1.2, this.lookAheadZ);
+    // اهتزاز الكاميرا (وقت الاصطدام): يخف تدريجياً
+    this.shakeAmount = Math.max(0, (this.shakeAmount || 0) - dt * 0.8);
+    const s = this.shakeAmount;
+    this.camera.position.y = this.cameraBase.y + (Math.random() - 0.5) * s;
+    const shakeX = (Math.random() - 0.5) * s;
+
+    this.camera.lookAt(this.camera.position.x * 0.5 + shakeX, 1.2, this.lookAheadZ);
+  }
+
+  // نهز الكاميرا (strength: قوة الهزة)
+  shake(strength) {
+    this.shakeAmount = strength;
   }
 
   render() {
