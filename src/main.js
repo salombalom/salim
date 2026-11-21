@@ -7,22 +7,31 @@ import { World } from './world.js';
 import { Player } from './player.js';
 import { Input } from './input.js';
 import { Obstacles } from './obstacles.js';
+import { Coins } from './coins.js';
 
 const container = document.getElementById('game');
 
 const world = new World(container);
 const player = new Player(world.scene);
-const obstacles = new Obstacles(world.scene);
+const coins = new Coins(world.scene);
+// كل ما يطلع صف عقبات، نبلّغ العملات عشان تنحط بالأماكن الفاضية
+const obstacles = new Obstacles(world.scene, (z, length, laneTypes) => coins.onRow(z, length, laneTypes));
+
+const coinCountEl = document.getElementById('coin-count');
 
 // حالة اللعبة: 'running' (شغالة) أو 'dead' (صدم)
 let state = 'running';
 let speed = CONFIG.startSpeed;
 let deadTimer = 0;
+let coinCount = 0;
 
 function restart() {
   state = 'running';
   speed = CONFIG.startSpeed;
+  coinCount = 0;
+  coinCountEl.textContent = '0';
   player.reset();
+  coins.reset(); // لازم قبل العقبات، لأن العقبات تضيف عملات وهي تبدأ
   obstacles.reset();
 }
 
@@ -60,6 +69,13 @@ function loop(now) {
     obstacles.update(dt, speed);
     world.update(dt, speed, player.x);
 
+    // جمع العملات
+    const got = coins.update(dt, speed, player.box);
+    if (got > 0) {
+      coinCount += got;
+      coinCountEl.textContent = coinCount;
+    }
+
     if (obstacles.checkCollision(player.box)) {
       state = 'dead';
       deadTimer = 0;
@@ -70,6 +86,7 @@ function loop(now) {
     // بعد الاصطدام: العالم يوقف والشخصية تطيح
     player.update(dt, 0);
     world.update(dt, 0, player.x);
+    coins.update(dt, 0, player.box); // العملات تكمل دوران بس ما تتحرك
     deadTimer += dt;
     // مؤقتاً: نعيد اللعبة تلقائياً بعد ثانيتين (بالمرحلة 4 تصير شاشة "انتهت اللعبة")
     if (deadTimer > 2) restart();
@@ -92,5 +109,5 @@ requestAnimationFrame(loop);
 
 // للتجربة أثناء التطوير فقط: نقدر نوصل للعبة من أدوات المطوّر بالمتصفح
 if (import.meta.env.DEV) {
-  window.__game = { player, obstacles, world, get speed() { return speed; }, get state() { return state; } };
+  window.__game = { player, obstacles, coins, world, get coinCount() { return coinCount; }, get speed() { return speed; }, get state() { return state; } };
 }

@@ -144,7 +144,9 @@ function shapeBlock(S, ob, length) {
 // ---------- مدير العقبات ----------
 
 export class Obstacles {
-  constructor(scene) {
+  // onRow: دالة اختيارية تنادى مع كل صف جديد (العملات تستخدمها عشان تعرف وين الأماكن الفاضية)
+  constructor(scene, onRow = null) {
+    this.onRow = onRow;
     this.S = makeShared();
     this.pools = { low: [], high: [], block: [] };
     const builders = { low: buildLow, high: buildHigh, block: buildBlock };
@@ -211,6 +213,7 @@ export class Obstacles {
     const count = Math.random() < 0.45 ? 1 : 2; // كم حارة فيها عقبة
     let longest = 0;
     let blocks = 0;
+    const laneTypes = [null, null, null]; // نوع العقبة بكل حارة
 
     for (let i = 0; i < count; i++) {
       const r = Math.random();
@@ -220,7 +223,9 @@ export class Obstacles {
       if (type === 'block' && blocks >= 1 && count === 2 && Math.random() < 0.5) type = 'low';
       if (type === 'block') blocks++;
       longest = Math.max(longest, this._place(type, lanes[i], z));
+      laneTypes[lanes[i]] = type;
     }
+    if (this.onRow) this.onRow(z, longest, laneTypes);
     return longest;
   }
 
