@@ -1,27 +1,38 @@
 // sound.js
-// الأصوات: لما يخسر اللاعب يقول "وا أبوي!"
+// الأصوات:
+//   - لما يقفز اللاعب يقول "هووب!"
+//   - لما يخسر يقول "وا أبوي!"
 //
-// طريقتين:
-//   1) لو حطيت ملف صوت مسجّل في: public/sounds/wa-aboy.mp3  ← نشغّله (أحلى، بصوتك أنت!)
+// كل صوت له طريقتين:
+//   1) لو حطيت ملف صوت مسجّل في public/sounds/ ← نشغّله (أحلى، بصوتك أنت!)
+//        hoop.mp3     صوت القفز
+//        wa-aboy.mp3  صوت الخسارة
 //   2) لو ما فيه ملف، المتصفح ينطق الجملة بصوت عربي جاهز (speechSynthesis)
 //
 // ملاحظة الآيفون: Safari ما يسمح بالأصوات إلا بعد ما يلمس اللاعب الشاشة،
 // عشان كذا ننادي unlock() لما يضغط زر "ابدأ".
 
-const CRASH_TEXT = 'وا أبوي!';
-const CRASH_FILE = './sounds/wa-aboy.mp3';
+// تعريف الأصوات: الملف، والجملة البديلة، وسرعة ونبرة النطق
+const CLIPS = {
+  jump: { file: './sounds/hoop.mp3', text: 'هووب!', rate: 1.3, pitch: 1.4 },
+  crash: { file: './sounds/wa-aboy.mp3', text: 'وا أبوي!', rate: 0.85, pitch: 1.2 },
+};
 
 export class Sound {
   constructor() {
     this.unlocked = false;
 
-    // نجرب نحمّل الملف المسجّل. لو ما لقيناه، نستخدم النطق الآلي
-    this.fileReady = false;
-    this.audio = new Audio();
-    this.audio.preload = 'auto';
-    this.audio.addEventListener('canplaythrough', () => (this.fileReady = true), { once: true });
-    this.audio.addEventListener('error', () => (this.fileReady = false), { once: true });
-    this.audio.src = CRASH_FILE;
+    // نجرب نحمّل كل ملف. اللي ما نلقاه نستخدم بداله النطق الآلي
+    this.clips = {};
+    for (const [name, def] of Object.entries(CLIPS)) {
+      const audio = new Audio();
+      audio.preload = 'auto';
+      const clip = { ...def, audio, ready: false };
+      audio.addEventListener('canplaythrough', () => (clip.ready = true), { once: true });
+      audio.addEventListener('error', () => (clip.ready = false), { once: true });
+      audio.src = def.file;
+      this.clips[name] = clip;
+    }
 
     this.speech = 'speechSynthesis' in window ? window.speechSynthesis : null;
     this.voice = null;
@@ -46,18 +57,18 @@ export class Sound {
     if (this.unlocked) return;
     this.unlocked = true;
 
-    // نشغّل الملف بدون صوت ونوقفه فوراً = "نفتح" الصوت
-    this.audio.muted = true;
-    this.audio
-      .play()
-      .then(() => {
-        this.audio.pause();
-        this.audio.currentTime = 0;
-        this.audio.muted = false;
-      })
-      .catch(() => {
-        this.audio.muted = false;
-      });
+    // نشغّل كل ملف بدون صوت ونوقفه فوراً = "نفتح" الصوت
+    for (const clip of Object.values(this.clips)) {
+      const a = clip.audio;
+      a.muted = true;
+      a.play()
+        .then(() => {
+          a.pause();
+          a.currentTime = 0;
+          a.muted = false;
+        })
+        .catch(() => (a.muted = false));
+    }
 
     // نفس الشي للنطق: جملة فاضية
     if (this.speech) {
@@ -67,24 +78,32 @@ export class Sound {
     }
   }
 
-  // صوت الخسارة
+  playJump() {
+    this._play('jump');
+  }
+
   playCrash() {
-    if (this.fileReady) {
-      this.audio.currentTime = 0;
-      this.audio.play().catch(() => this._speak(CRASH_TEXT));
+    this._play('crash');
+  }
+
+  _play(name) {
+    const clip = this.clips[name];
+    if (clip.ready) {
+      clip.audio.currentTime = 0;
+      clip.audio.play().catch(() => this._speak(clip));
     } else {
-      this._speak(CRASH_TEXT);
+      this._speak(clip);
     }
   }
 
-  _speak(text) {
+  _speak(clip) {
     if (!this.speech) return;
-    this.speech.cancel(); // نوقف أي كلام قبله
-    const u = new SpeechSynthesisUtterance(text);
+    this.speech.cancel(); // نوقف أي كلام قبله (عشان القفزات المتتالية ما تتراكم)
+    const u = new SpeechSynthesisUtterance(clip.text);
     u.lang = 'ar-SA';
     if (this.voice) u.voice = this.voice;
-    u.rate = 0.85; // أبطأ شوي عشان تطلع "وااا أبوي" بحسرة 😄
-    u.pitch = 1.2;
+    u.rate = clip.rate;
+    u.pitch = clip.pitch;
     u.volume = 1;
     this.speech.speak(u);
   }

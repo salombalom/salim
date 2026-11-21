@@ -25,6 +25,7 @@ export class UI {
       finalDistance: $('final-distance'),
       finalCoins: $('final-coins'),
       overBest: $('over-best'),
+      toast: $('toast'),
     };
 
     this.onStart = onStart;
@@ -99,6 +100,18 @@ export class UI {
     }
   }
 
+  // رسالة قصيرة وسط الشاشة (مثل "المستوى 3") تختفي لحالها
+  showToast(text) {
+    const t = this.el.toast;
+    t.textContent = text;
+    t.hidden = false;
+    t.classList.remove('show');
+    void t.offsetWidth; // نعيد الحركة من البداية
+    t.classList.add('show');
+    clearTimeout(this.toastTimer);
+    this.toastTimer = setTimeout(() => (t.hidden = true), 1600);
+  }
+
   // النتيجة = المسافة + كل عملة بـ 10 نقاط
   static score(distance, coins) {
     return Math.floor(distance) + coins * 10;
@@ -117,6 +130,7 @@ export class UI {
     this.el.newRecord.hidden = !isRecord;
 
     this.el.hud.hidden = true;
+    this.el.toast.hidden = true;
     this.el.over.hidden = false;
   }
 }

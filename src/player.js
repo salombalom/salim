@@ -175,12 +175,13 @@ export class Player {
     if (this.lane < CONFIG.laneCount - 1) this.lane++;
   }
 
+  // يرجع true لو قفز فعلاً (عشان نشغّل صوت "هووب" بس وقت القفزة الحقيقية)
   jump() {
-    if (this.isGrounded) {
-      this.slideTimer = 0; // القفز يلغي الانزلاق
-      this.velocityY = CONFIG.jumpVelocity;
-      this.isGrounded = false;
-    }
+    if (!this.isGrounded) return false;
+    this.slideTimer = 0; // القفز يلغي الانزلاق
+    this.velocityY = CONFIG.jumpVelocity;
+    this.isGrounded = false;
+    return true;
   }
 
   slide() {

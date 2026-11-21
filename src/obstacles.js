@@ -183,9 +183,12 @@ export class Obstacles {
     this.distanceToNextRow = SPAWN_Z - z;
   }
 
-  // المسافة الفاضية بين صف والثاني: تكبر مع السرعة عشان يلحق اللاعب يتصرف
-  _gap(speed) {
-    return 12 + speed * 0.55 + Math.random() * 8;
+  // المسافة الفاضية بين صف والثاني: تكبر مع السرعة عشان يلحق اللاعب يتصرف،
+  // بس مع الصعوبة (difficulty من 0 لين 1) تقصر = وقت أقل للتفكير
+  _gap(speed, difficulty = 0) {
+    const base = 12 - 4 * difficulty;
+    const reaction = 0.55 - 0.13 * difficulty; // تقريباً "كم ثانية" عندك قبل الصف الجاي
+    return base + speed * reaction + Math.random() * (8 - 4 * difficulty);
   }
 
   // ناخذ عقبة غير مستخدمة من المخزن
@@ -207,20 +210,29 @@ export class Obstacles {
     return ob.length;
   }
 
-  // نطلع "صف" عقبات جديد. نتأكد دايماً إن فيه حارة وحدة على الأقل ما فيها باص
-  _spawnRow(z) {
+  // نطلع "صف" عقبات جديد. difficulty من 0 (سهل) لين 1 (صعب).
+  // القاعدة الذهبية: دايماً فيه طريق للنجاة (حارة فاضية، أو حاجز تقدر تقفزه/تنزلق تحته)
+  _spawnRow(z, difficulty = 0) {
     const lanes = [0, 1, 2].sort(() => Math.random() - 0.5); // نخلط الحارات
-    const count = Math.random() < 0.45 ? 1 : 2; // كم حارة فيها عقبة
+
+    // كم حارة فيها عقبة: مع الصعوبة تكثر الصفوف اللي فيها عقبتين وثلاث
+    const r = Math.random();
+    const p1 = 0.45 - 0.3 * difficulty; // احتمال عقبة وحدة
+    const p3 = 0.3 * difficulty; // احتمال ثلاث عقبات
+    const count = r < p1 ? 1 : r < p1 + p3 ? 3 : 2;
+
+    const blockChance = 0.35 + 0.15 * difficulty; // الباصات تكثر مع الصعوبة
+    const maxBlocks = count === 3 ? 1 : 2; // لو الثلاث حارات فيها عقبات، باص واحد بس
     let longest = 0;
     let blocks = 0;
     const laneTypes = [null, null, null]; // نوع العقبة بكل حارة
 
     for (let i = 0; i < count; i++) {
-      const r = Math.random();
-      let type = r < 0.35 ? 'low' : r < 0.65 ? 'high' : 'block';
-      // بحد أقصى حارتين فيها عقبات = دايماً فيه حارة مفتوحة.
-      // ونقلل احتمال باصين جنب بعض عشان ما تصير صعبة مرة
-      if (type === 'block' && blocks >= 1 && count === 2 && Math.random() < 0.5) type = 'low';
+      let type;
+      if (Math.random() < blockChance && blocks < maxBlocks) type = 'block';
+      else type = Math.random() < 0.5 ? 'low' : 'high';
+      // باصين جنب بعض نخليهم أقل (بس مع الصعوبة يصيرون أكثر)
+      if (type === 'block' && blocks === 1 && Math.random() > 0.3 + 0.4 * difficulty) type = 'low';
       if (type === 'block') blocks++;
       longest = Math.max(longest, this._place(type, lanes[i], z));
       laneTypes[lanes[i]] = type;
@@ -229,8 +241,8 @@ export class Obstacles {
     return longest;
   }
 
-  // speed: سرعة اللعبة الحالية
-  update(dt, speed) {
+  // speed: سرعة اللعبة الحالية، difficulty: الصعوبة من 0 لين 1
+  update(dt, speed, difficulty = 0) {
     const distance = speed * dt;
 
     // 1) نحرك كل العقبات باتجاه اللاعب
@@ -248,8 +260,8 @@ export class Obstacles {
     // 2) وقت صف جديد؟
     this.distanceToNextRow -= distance;
     if (this.distanceToNextRow <= 0) {
-      const rowLength = this._spawnRow(SPAWN_Z);
-      this.distanceToNextRow = rowLength + this._gap(speed);
+      const rowLength = this._spawnRow(SPAWN_Z, difficulty);
+      this.distanceToNextRow = rowLength + this._gap(speed, difficulty);
     }
   }
 

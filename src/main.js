@@ -32,6 +32,12 @@ let speed = 0;
 let distance = 0; // المسافة المقطوعة بالمتر
 let coinCount = 0;
 let deadTimer = 0;
+let level = 1;
+
+// الصعوبة من 0 (البداية) لين 1 (أقصى سرعة): كل ما زادت السرعة زادت الصعوبة
+function difficulty() {
+  return (speed - CONFIG.startSpeed) / (CONFIG.maxSpeed - CONFIG.startSpeed);
+}
 
 // نبدأ (أو نعيد) اللعبة من الصفر
 function startGame() {
@@ -41,6 +47,7 @@ function startGame() {
   speed = CONFIG.startSpeed;
   distance = 0;
   coinCount = 0;
+  level = 1;
   player.reset();
   coins.reset(); // لازم قبل العقبات، لأن العقبات تضيف عملات وهي تبدأ
   obstacles.reset();
@@ -52,7 +59,7 @@ new Input(container, (action) => {
   if (state !== 'running') return;
   if (action === 'left') player.moveLeft();
   if (action === 'right') player.moveRight();
-  if (action === 'up') player.jump();
+  if (action === 'up' && player.jump()) sound.playJump(); // هووب!
   if (action === 'down') player.slide();
 });
 
@@ -74,12 +81,21 @@ function loop(now) {
   lastTime = now;
 
   if (state === 'running') {
-    // السرعة تزيد شوي شوي لين توصل الحد الأقصى
-    speed = Math.min(CONFIG.maxSpeed, speed + CONFIG.speedIncrease * dt);
+    // السرعة تزيد مع الوقت: بسرعة بالبداية، وتخف الزيادة كل ما قربنا من الأقصى
+    const d = difficulty();
+    const rate = CONFIG.speedIncrease * (1 - 0.75 * d);
+    speed = Math.min(CONFIG.maxSpeed, speed + rate * dt);
     distance += speed * dt;
 
+    // مستوى جديد كل مسافة معينة: نعرض رسالة للاعب
+    const newLevel = 1 + Math.floor(distance / CONFIG.levelDistance);
+    if (newLevel > level) {
+      level = newLevel;
+      ui.showToast(`المستوى ${level} 🔥`);
+    }
+
     player.update(dt, speed);
-    obstacles.update(dt, speed);
+    obstacles.update(dt, speed, d);
     world.update(dt, speed, player.x);
     coinCount += coins.update(dt, speed, player.box);
     ui.updateHUD(distance, coinCount);
@@ -130,9 +146,11 @@ if (import.meta.env.DEV) {
     coins,
     world,
     sound,
+    ui,
     get coinCount() { return coinCount; },
     get distance() { return distance; },
     get speed() { return speed; },
+    get level() { return level; },
     get state() { return state; },
   };
 }
