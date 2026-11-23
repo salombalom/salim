@@ -1,9 +1,9 @@
-import { BalooBhaijaan2_700Bold } from '@expo-google-fonts/baloo-bhaijaan-2/700Bold';
-import { BalooBhaijaan2_800ExtraBold } from '@expo-google-fonts/baloo-bhaijaan-2/800ExtraBold';
+import { ElMessiri_400Regular } from '@expo-google-fonts/el-messiri/400Regular';
+import { ElMessiri_500Medium } from '@expo-google-fonts/el-messiri/500Medium';
+import { ElMessiri_600SemiBold } from '@expo-google-fonts/el-messiri/600SemiBold';
 import { IBMPlexSansArabic_400Regular } from '@expo-google-fonts/ibm-plex-sans-arabic/400Regular';
 import { IBMPlexSansArabic_500Medium } from '@expo-google-fonts/ibm-plex-sans-arabic/500Medium';
 import { IBMPlexSansArabic_600SemiBold } from '@expo-google-fonts/ibm-plex-sans-arabic/600SemiBold';
-import { IBMPlexSansArabic_700Bold } from '@expo-google-fonts/ibm-plex-sans-arabic/700Bold';
 import { useFonts } from 'expo-font';
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -14,7 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ensureRTL } from '@/lib/rtl';
 import { useProgress, useSettings } from '@/lib/store';
-import { fonts, useAppTheme } from '@/lib/theme';
+import { fonts, motion, useAppTheme } from '@/lib/theme';
 
 ensureRTL();
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -40,9 +40,9 @@ export default function RootLayout() {
     [fonts.regular]: IBMPlexSansArabic_400Regular,
     [fonts.medium]: IBMPlexSansArabic_500Medium,
     [fonts.semibold]: IBMPlexSansArabic_600SemiBold,
-    [fonts.bold]: IBMPlexSansArabic_700Bold,
-    [fonts.heading]: BalooBhaijaan2_700Bold,
-    [fonts.black]: BalooBhaijaan2_800ExtraBold,
+    [fonts.heading]: ElMessiri_500Medium,
+    [fonts.headingStrong]: ElMessiri_600SemiBold,
+    [fonts.display]: ElMessiri_400Regular,
   });
   const hydrated = useHydrated();
   const { isDark, colors } = useAppTheme();
@@ -58,9 +58,9 @@ export default function RootLayout() {
     ...(isDark ? DarkTheme : DefaultTheme),
     colors: {
       ...(isDark ? DarkTheme : DefaultTheme).colors,
-      primary: colors.primary,
+      primary: colors.gold,
       background: colors.background,
-      card: colors.surface,
+      card: colors.background,
       text: colors.text,
       border: colors.border,
     },
@@ -73,7 +73,10 @@ export default function RootLayout() {
           <StatusBar style={isDark ? 'light' : 'dark'} />
           <Stack
             screenOptions={{
-              headerTitleStyle: { fontFamily: fonts.heading, fontSize: 20 },
+              headerTitleStyle: { fontFamily: fonts.heading, fontSize: 19, color: colors.text },
+              headerTintColor: colors.gold,
+              animation: 'fade',
+              animationDuration: motion.normal,
               headerBackTitleStyle: { fontFamily: fonts.regular },
               headerTitleAlign: 'center',
               headerShadowVisible: false,

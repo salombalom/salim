@@ -1,27 +1,24 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { AppText, Gradient, Row } from '@/components/ui';
+import { AppText } from '@/components/ui';
 import { GRADES, gradeName, type GradeNumber } from '@/config/curriculum';
-import { radius, softShadow, spacing, useAppTheme } from '@/lib/theme';
+import { borderWidth, fonts, radius, spacing, useAppTheme } from '@/lib/theme';
 
-const STAGES: { title: string; emoji: string; grades: GradeNumber[]; colors: [string, string] }[] = [
-  { title: 'الحلقة الأولى', emoji: '🌱', grades: GRADES.filter((g) => g <= 4), colors: ['#34D399', '#0EA371'] },
-  { title: 'الحلقة الثانية', emoji: '🚀', grades: GRADES.filter((g) => g >= 5 && g <= 10), colors: ['#8B5CF6', '#5B3FE0'] },
-  { title: 'ما بعد الأساسي', emoji: '🎓', grades: GRADES.filter((g) => g >= 11), colors: ['#FF8A4C', '#FF4F7B'] },
+const STAGES: { title: string; grades: GradeNumber[] }[] = [
+  { title: 'الحلقة الأولى', grades: GRADES.filter((g) => g <= 4) },
+  { title: 'الحلقة الثانية', grades: GRADES.filter((g) => g >= 5 && g <= 10) },
+  { title: 'ما بعد التعليم الأساسي', grades: GRADES.filter((g) => g >= 11) },
 ];
 
 export function GradeGrid({ value, onSelect }: { value: GradeNumber | null; onSelect: (g: GradeNumber) => void }) {
-  const { colors, isDark } = useAppTheme();
+  const { colors, fontScale } = useAppTheme();
   return (
-    <View style={{ gap: spacing.lg }}>
+    <View style={{ gap: spacing.xl }}>
       {STAGES.map((stage) => (
-        <View key={stage.title} style={{ gap: spacing.sm }}>
-          <Row gap={6}>
-            <AppText>{stage.emoji}</AppText>
-            <AppText variant="label" weight="bold" color="textMuted">
-              {stage.title}
-            </AppText>
-          </Row>
+        <View key={stage.title} style={{ gap: spacing.md }}>
+          <AppText variant="overline" color="textMuted">
+            {stage.title}
+          </AppText>
           <View style={styles.grid}>
             {stage.grades.map((g) => {
               const active = g === value;
@@ -32,26 +29,19 @@ export function GradeGrid({ value, onSelect }: { value: GradeNumber | null; onSe
                   accessibilityRole="button"
                   accessibilityLabel={gradeName(g)}
                   accessibilityState={{ selected: active }}
-                  style={({ pressed }) => [styles.cellWrap, pressed && { transform: [{ scale: 0.95 }] }]}>
-                  {active ? (
-                    <Gradient colors={stage.colors} style={[styles.cell, { borderBottomColor: 'rgba(0,0,0,0.2)' }]}>
-                      <AppText variant="display" color="#FFFFFF" style={styles.num}>
-                        {g}
-                      </AppText>
-                      <AppText variant="tiny" color="#FFFFFF" numberOfLines={1}>
-                        {gradeName(g)}
-                      </AppText>
-                    </Gradient>
-                  ) : (
-                    <View style={[styles.cell, { backgroundColor: colors.surface, borderBottomColor: isDark ? colors.border : '#E3DDF7' }, softShadow(colors.shadow, isDark, 0.5)]}>
-                      <AppText variant="display" color={stage.colors[1]} style={styles.num}>
-                        {g}
-                      </AppText>
-                      <AppText variant="tiny" color="textMuted" numberOfLines={1}>
-                        {gradeName(g)}
-                      </AppText>
-                    </View>
-                  )}
+                  style={({ pressed }) => [
+                    styles.cell,
+                    {
+                      backgroundColor: active ? colors.goldFaint : colors.surface,
+                      borderColor: active || pressed ? colors.gold : colors.border,
+                    },
+                  ]}>
+                  <AppText color="goldText" style={{ fontFamily: fonts.heading, fontSize: 28 * fontScale, lineHeight: 44 * fontScale }}>
+                    {g}
+                  </AppText>
+                  <AppText variant="overline" color={active ? 'text' : 'textMuted'} numberOfLines={1}>
+                    {gradeName(g)}
+                  </AppText>
                 </Pressable>
               );
             })}
@@ -64,7 +54,5 @@ export function GradeGrid({ value, onSelect }: { value: GradeNumber | null; onSe
 
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  cellWrap: { width: '31.5%', flexGrow: 1 },
-  cell: { alignItems: 'center', paddingVertical: spacing.sm, borderRadius: radius.md, borderBottomWidth: 4 },
-  num: { fontSize: 32, lineHeight: 46 },
+  cell: { width: '31%', flexGrow: 1, alignItems: 'center', paddingVertical: spacing.md, borderRadius: radius.card - 6, borderWidth: borderWidth.hairline },
 });

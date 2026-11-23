@@ -1,25 +1,35 @@
 import { router } from 'expo-router';
-import { Alert, Platform, StyleSheet, Switch, View } from 'react-native';
+import { Alert, Platform, Switch, TextInput, View } from 'react-native';
 
-import { HeroBackground } from '@/components/HeroBackground';
-import { AppText, Card, Icon, ListRow, Row, Screen, Segmented, SectionTitle } from '@/components/ui';
+import { StatRow } from '@/components/StatRow';
+import { AppText, Card, IconCircle, ListRow, Row, Screen, Segmented, SectionTitle } from '@/components/ui';
 import { gradeName } from '@/config/curriculum';
 import { currentStreak, dayKey } from '@/lib/gamification';
 import { useProgress, useSettings, type ThemeMode } from '@/lib/store';
-import { radius, spacing, useAppTheme } from '@/lib/theme';
+import { borderWidth, fonts, radius, spacing, useAppTheme } from '@/lib/theme';
 
-function ToggleRow({ title, subtitle, value, onChange }: { title: string; subtitle?: string; value: boolean; onChange: (v: boolean) => void }) {
+function ToggleRow({ title, subtitle, value, onChange, last }: { title: string; subtitle?: string; value: boolean; onChange: (v: boolean) => void; last?: boolean }) {
   const { colors } = useAppTheme();
   return (
     <ListRow
       title={title}
       subtitle={subtitle}
-      right={<Switch value={value} onValueChange={onChange} trackColor={{ true: colors.primary, false: colors.border }} accessibilityLabel={title} />}
+      last={last}
+      right={
+        <Switch
+          value={value}
+          onValueChange={onChange}
+          trackColor={{ true: colors.gold, false: colors.borderStrong }}
+          thumbColor={colors.text}
+          accessibilityLabel={title}
+        />
+      }
     />
   );
 }
 
 export default function ProfileScreen() {
+  const { colors } = useAppTheme();
   const settings = useSettings();
   const progress = useProgress();
   const totalStudy = Object.values(progress.studySeconds).reduce((a, b) => a + b, 0);
@@ -30,7 +40,7 @@ export default function ProfileScreen() {
       useSettings.getState().reset();
       router.replace('/welcome');
     };
-    const msg = 'أنت في وضع التجربة؛ سيُحذف تقدمك المحفوظ على هذا الجهاز.';
+    const msg = 'أنت في وضع التجربة؛ سيُحذف تقدّمك المحفوظ على هذا الجهاز.';
     if (Platform.OS === 'web') {
       if (window.confirm(msg)) doIt();
       return;
@@ -43,58 +53,68 @@ export default function ProfileScreen() {
 
   return (
     <Screen>
-      <HeroBackground style={styles.hero}>
-        <Row gap={spacing.md}>
-          <View style={styles.avatar}>
-            <Icon name={settings.role === 'parent' ? 'account-child' : 'account-school'} size={40} color="#FFFFFF" />
-          </View>
+      <Card style={{ gap: spacing.xl }}>
+        <Row gap={spacing.lg}>
+          <IconCircle name={settings.role === 'parent' ? 'Users' : 'UserRound'} size={56} />
           <View style={{ flex: 1 }}>
-            <AppText variant="title" color="#FFFFFF">
-              {settings.role === 'parent' ? 'ولي أمر' : 'طالب مجتهد'}
-            </AppText>
-            <AppText variant="caption" color="rgba(255,255,255,0.9)">
-              {settings.grade ? gradeName(settings.grade) : '—'} • وضع التجربة
+            <AppText variant="title">{settings.displayName.trim() || (settings.role === 'parent' ? 'ولي أمر' : 'طالب')}</AppText>
+            <AppText variant="caption" color="textMuted">
+              {settings.grade ? gradeName(settings.grade) : '—'} · وضع التجربة
             </AppText>
           </View>
         </Row>
-        <Row gap={spacing.sm}>
-          {[
-            { icon: 'star-four-points' as const, value: String(progress.points), label: 'نقطة' },
-            { icon: 'fire' as const, value: String(currentStreak(progress.streak, dayKey())), label: `يوم (الأفضل ${progress.streak.best})` },
-            { icon: 'timer-sand' as const, value: String(Math.round(totalStudy / 60)), label: 'دقيقة دراسة' },
-          ].map((s) => (
-            <View key={s.icon} style={styles.stat}>
-              <Icon name={s.icon} size={18} color="#FFD34D" />
-              <AppText variant="h2" color="#FFFFFF" style={{ lineHeight: 26 }}>
-                {s.value}
-              </AppText>
-              <AppText variant="tiny" color="rgba(255,255,255,0.85)" numberOfLines={1}>
-                {s.label}
-              </AppText>
-            </View>
-          ))}
-        </Row>
-      </HeroBackground>
-
-      <SectionTitle icon="school">الدراسة</SectionTitle>
-      <Card style={{ paddingVertical: 0 }}>
-        <ListRow icon="school-outline" title="تغيير الصف" subtitle={settings.grade ? gradeName(settings.grade) : undefined} onPress={() => router.push('/grade-picker')} />
-        <ListRow icon="account-switch-outline" iconColor="#FF8A4C" last title="تغيير الدور" subtitle={settings.role === 'parent' ? 'ولي أمر' : 'طالب'} onPress={() => router.push('/role')} />
+        <StatRow
+          items={[
+            { value: String(progress.points), label: 'النقاط' },
+            { value: String(currentStreak(progress.streak, dayKey())), label: `أيام (الأفضل ${progress.streak.best})` },
+            { value: String(Math.round(totalStudy / 60)), label: 'دقيقة دراسة' },
+          ]}
+        />
       </Card>
 
-      <SectionTitle icon="palette">المظهر</SectionTitle>
-      <Card>
-        <AppText variant="label">الوضع</AppText>
+      <SectionTitle>الحساب</SectionTitle>
+      <Card style={{ paddingVertical: spacing.sm }}>
+        <View style={{ gap: spacing.xs, paddingVertical: spacing.sm }}>
+          <AppText variant="caption" color="textMuted">
+            الاسم المعروض (اختياري)
+          </AppText>
+          <TextInput
+            value={settings.displayName}
+            onChangeText={(t) => settings.set({ displayName: t.slice(0, 20) })}
+            placeholder="اسمك الأول أو اسم مستعار"
+            placeholderTextColor={colors.textMuted}
+            style={{
+              borderWidth: borderWidth.hairline,
+              borderColor: colors.border,
+              borderRadius: radius.button,
+              paddingHorizontal: spacing.lg,
+              paddingVertical: 12,
+              color: colors.text,
+              fontFamily: fonts.regular,
+              fontSize: 16,
+              textAlign: 'right',
+            }}
+          />
+        </View>
+        <ListRow icon="GraduationCap" title="الصف الدراسي" subtitle={settings.grade ? gradeName(settings.grade) : undefined} onPress={() => router.push('/grade-picker')} />
+        <ListRow icon="UserCog" title="الصفة" subtitle={settings.role === 'parent' ? 'ولي أمر' : 'طالب'} onPress={() => router.push('/role')} last />
+      </Card>
+
+      <SectionTitle>المظهر</SectionTitle>
+      <Card style={{ gap: spacing.lg }}>
+        <AppText variant="caption" color="textMuted">
+          الوضع
+        </AppText>
         <Segmented<ThemeMode>
           value={settings.themeMode}
           onChange={(themeMode) => settings.set({ themeMode })}
           options={[
-            { value: 'system', label: 'تلقائي', icon: 'theme-light-dark' },
-            { value: 'light', label: 'فاتح', icon: 'white-balance-sunny' },
-            { value: 'dark', label: 'ليلي', icon: 'weather-night' },
+            { value: 'dark', label: 'ليلي', icon: 'Moon' },
+            { value: 'light', label: 'نهاري', icon: 'Sun' },
+            { value: 'system', label: 'تلقائي', icon: 'SunMoon' },
           ]}
         />
-        <AppText variant="label" style={{ marginTop: spacing.sm }}>
+        <AppText variant="caption" color="textMuted">
           حجم الخط
         </AppText>
         <Segmented
@@ -104,39 +124,33 @@ export default function ProfileScreen() {
             { value: 'sm', label: 'صغير' },
             { value: 'md', label: 'متوسط' },
             { value: 'lg', label: 'كبير' },
-            { value: 'xl', label: 'كبير جداً' },
+            { value: 'xl', label: 'أكبر' },
           ]}
         />
       </Card>
 
-      <SectionTitle icon="volume-high">الصوت والاهتزاز</SectionTitle>
-      <Card style={{ paddingVertical: 0 }}>
+      <SectionTitle>الصوت والاهتزاز</SectionTitle>
+      <Card style={{ paddingVertical: spacing.xs }}>
         <ToggleRow title="الأصوات" value={settings.soundOn} onChange={(soundOn) => settings.set({ soundOn })} />
-        <ToggleRow title="الاهتزاز الخفيف" value={settings.hapticsOn} onChange={(hapticsOn) => settings.set({ hapticsOn })} />
+        <ToggleRow title="الاهتزاز الخفيف" value={settings.hapticsOn} onChange={(hapticsOn) => settings.set({ hapticsOn })} last />
       </Card>
 
-      <SectionTitle icon="code-tags">للمطوّر</SectionTitle>
-      <Card style={{ paddingVertical: 0 }}>
+      <SectionTitle>للمطوّر</SectionTitle>
+      <Card style={{ paddingVertical: spacing.xs }}>
         <ToggleRow
           title="عرض الأسئلة غير المراجَعة"
-          subtitle="للتجربة أثناء التطوير فقط. أطفئه قبل النشر."
+          subtitle="للتجربة أثناء التطوير فقط، أطفئه قبل النشر."
           value={settings.showUnreviewed}
           onChange={(showUnreviewed) => settings.set({ showUnreviewed })}
+          last
         />
       </Card>
 
-      <SectionTitle icon="information">عن التطبيق</SectionTitle>
-      <Card style={{ paddingVertical: 0 }}>
-        <ListRow icon="information-outline" title="عن التطبيق" onPress={() => router.push('/about')} />
-        <ListRow icon="shield-lock-outline" iconColor="#16B364" title="سياسة الخصوصية" onPress={() => router.push('/privacy')} />
-        <ListRow icon="logout" iconColor="#F0405F" title="تسجيل الخروج" onPress={signOut} last />
+      <Card style={{ paddingVertical: spacing.xs }}>
+        <ListRow icon="Info" title="عن التطبيق" onPress={() => router.push('/about')} />
+        <ListRow icon="ShieldCheck" title="سياسة الخصوصية" onPress={() => router.push('/privacy')} />
+        <ListRow icon="LogOut" title="تسجيل الخروج" onPress={signOut} last />
       </Card>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  hero: { borderRadius: radius.xl, padding: spacing.lg, gap: spacing.lg },
-  avatar: { width: 68, height: 68, borderRadius: 34, backgroundColor: 'rgba(255,255,255,0.22)', borderWidth: 3, borderColor: 'rgba(255,255,255,0.5)', alignItems: 'center', justifyContent: 'center' },
-  stat: { flex: 1, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: radius.md, paddingVertical: spacing.sm },
-});

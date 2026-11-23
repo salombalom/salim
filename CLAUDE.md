@@ -6,7 +6,12 @@ UI is Arabic and RTL throughout, except English-subject content, which renders L
 ## Stack
 - Expo SDK 58 (React Native 0.88, React 19), TypeScript strict, Expo Router (file-based routes in `app/`).
 - State: zustand + AsyncStorage (`lib/store.ts`). Settings and progress persist locally.
-- Design: violet primary, gradients (`expo-linear-gradient`), chunky 3D buttons. Headings use Baloo Bhaijaan 2; body text uses IBM Plex Sans Arabic (per-weight imports). Tokens live in `lib/theme.ts`; each subject's gradient is in `config/curriculum.ts`.
+- Design: calm, luxurious and Omani in feel. Deep navy with ivory, and gold used **only for details** (thin lines, icons, numbers, the primary button). Dark mode is the default. No gradients, no emoji, no sparkle effects.
+  - **All tokens live in `theme/tokens.ts`** (colours, subject jewel colours, fonts, type scale, spacing, radii, motion). Never hard-code a colour in a screen; use `useAppTheme()` from `lib/theme.ts`.
+  - Fonts: El Messiri for headings and numbers; IBM Plex Sans Arabic for body text.
+  - Icons: Lucide, imported per icon in `components/icons.tsx` (stroke 1.5, gold). To add one, import it there.
+  - The geometric pattern (`components/GeometricPattern.tsx`, 5% opacity) appears only on the welcome screen and at the top of home.
+  - Contrast: use the `*Text` colour variants for small text. `__tests__/contrast.test.ts` enforces WCAG AA.
 - Tests: Jest (`jest-expo` preset), in `__tests__/`.
 - Planned: Supabase (auth/DB/Edge Functions), YouTube Data API v3, Claude API (from Edge Functions only), plus a Next.js admin in `admin/`.
 
@@ -31,7 +36,7 @@ node tools/generate-sounds.js                    # regenerate quiz sound effects
 - `lib/data/repository.ts` – content access layer. Today it reads `seed/`; Phase 2 swaps it to Supabase behind the same functions.
 - `lib/bidi.ts` – wraps math expressions in Arabic text with LRI/PDI, so `36 ÷ 4` isn't shown reversed. `AppText` applies it automatically unless `ltr` is set.
 - `seed/content/gradeNN.ts` – original practice content written with the `mcq/tf/fill/order/lesson/unit` helpers. IDs are derived as `g5-math-u1-l2-q3`.
-- `components/ui.tsx` – design primitives (AppText, Card, Button, Segmented…). Always use `AppText`, never a raw `Text`.
+- `components/ui.tsx` – design primitives (AppText, Num, Card with `accent`, Button primary/secondary/ghost, Icon, IconCircle, ProgressBar 4px, Mastery, Segmented, Toast, FadeIn…). Always use `AppText`, never a raw `Text`.
 - `legacy/runner-game/` – an older, unrelated Vite game kept for reference.
 
 ## Rules

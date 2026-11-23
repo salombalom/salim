@@ -1,17 +1,17 @@
 import { router, Stack, useLocalSearchParams, useNavigation, usePreventRemove } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Platform, Pressable, View } from 'react-native';
 
 import { QuestionView } from '@/components/quiz/QuestionView';
-import { AppText, Button, EmptyState, Icon, ProgressBar, Row, Screen } from '@/components/ui';
+import { AppText, Button, Card, EmptyState, FadeIn, Icon, ProgressBar, Row, Screen, Toast } from '@/components/ui';
 import { buildLessonQuiz, getLesson } from '@/lib/data/repository';
 import { answerFeedback, playSound } from '@/lib/feedback';
-import { scoreQuiz } from '@/lib/gamification';
+import { POINTS_BY_DIFFICULTY, scoreQuiz } from '@/lib/gamification';
 import { correctAnswerText } from '@/lib/quiz/grading';
 import { gradePrepared, prepareQuiz, type PreparedQuestion } from '@/lib/quiz/prepare';
 import { randomSeed } from '@/lib/random';
 import { subjectIdFromLesson, useProgress, useSession, useSettings, type AnswerRecord } from '@/lib/store';
-import { alpha, radius, spacing, useAppTheme } from '@/lib/theme';
+import { spacing, useAppTheme } from '@/lib/theme';
 import { SUBJECTS } from '@/config/curriculum';
 import type { QuestionResponse } from '@/lib/types';
 import { useStudyTimer } from '@/lib/useStudyTimer';
@@ -52,6 +52,7 @@ export default function QuizScreen() {
   const answers = useRef<AnswerRecord[]>([]);
   const [startedAt] = useState(() => Date.now());
   const [correctCount, setCorrectCount] = useState(0);
+  const [toast, setToast] = useState<{ text: string; key: number } | null>(null);
 
   const lessonInfo = params.lessonId ? getLesson(params.lessonId) : undefined;
   const item = items[index];
@@ -82,7 +83,7 @@ export default function QuizScreen() {
   if (items.length === 0) {
     return (
       <Screen>
-        <EmptyState icon="clipboard-off-outline" title="لا توجد أسئلة" message="لا توجد أسئلة متاحة الآن.">
+        <EmptyState icon="ClipboardCheck" title="لا توجد أسئلة" message="لا توجد أسئلة متاحة الآن.">
           <Button title="رجوع" kind="secondary" onPress={() => router.back()} />
         </EmptyState>
       </Screen>
@@ -96,7 +97,10 @@ export default function QuizScreen() {
     setResult(correct);
     answers.current.push({ question: item.question, response: gradable, correct });
     setAnsweredCount((n) => n + 1);
-    if (correct) setCorrectCount((n) => n + 1);
+    if (correct) {
+      setCorrectCount((n) => n + 1);
+      setToast({ text: `+${POINTS_BY_DIFFICULTY[item.question.difficulty]} نقطة`, key: Date.now() });
+    }
     answerFeedback(correct);
   };
 
@@ -123,84 +127,64 @@ export default function QuizScreen() {
   };
 
   const isLast = index + 1 >= items.length;
-  const subjectMeta = subjectKey ? SUBJECTS[subjectKey as keyof typeof SUBJECTS] : undefined;
-  const accent = subjectMeta?.gradient[1] ?? colors.primary;
   const progress = (index + (result !== null ? 1 : 0)) / items.length;
 
   return (
     <Screen>
       <Stack.Screen
         options={{
-          title: mode === 'mistakes' ? 'حلّ أخطائي' : (lessonInfo?.lesson.title ?? 'الاختبار'),
+          title: mode === 'mistakes' ? 'مراجعة الأخطاء' : (lessonInfo?.lesson.title ?? 'الاختبار'),
           headerLeft: () => (
             <Pressable onPress={() => router.back()} accessibilityLabel="إغلاق الاختبار" hitSlop={12}>
-              <Icon name="close" size={26} color="textMuted" />
+              <Icon name="X" size={22} color="textMuted" />
             </Pressable>
           ),
         }}
       />
-      <Row gap={spacing.md}>
-        <View style={{ flex: 1 }}>
-          <ProgressBar value={progress} color={accent} height={14} />
-        </View>
-        <Row gap={4} style={[styles.scorePill, { backgroundColor: colors.starSoft }]}>
-          <Icon name="star-four-points" size={16} color={colors.star} />
-          <AppText variant="label" weight="black" color={colors.warning}>
-            {correctCount}
+      <View style={{ gap: spacing.sm }}>
+        <Row style={{ justifyContent: 'space-between' }}>
+          <AppText variant="caption" color="textMuted">
+            السؤال {index + 1} من {items.length}
+          </AppText>
+          <AppText variant="caption" color="goldText">
+            {correctCount} إجابات صحيحة
           </AppText>
         </Row>
-      </Row>
-      <AppText variant="caption" weight="bold" color="textMuted">
-        السؤال {index + 1} من {items.length}
-      </AppText>
+        <ProgressBar value={progress} />
+        {/* إشعار النقاط يطفو فوق المحتوى دون أن يزيحه */}
+        {toast && <Toast key={toast.key} text={toast.text} visible style={{ position: 'absolute', top: 40, zIndex: 10 }} />}
+      </View>
 
-      <QuestionView key={item.question.id + index} item={item} ltr={ltr} accent={accent} response={response} result={result} onChange={setResponse} onSubmit={submit} />
+      <FadeIn key={item.question.id + index}>
+        <QuestionView item={item} ltr={ltr} response={response} result={result} onChange={setResponse} onSubmit={submit} />
+      </FadeIn>
 
       {result !== null && (
-        <View
-          style={[
-            styles.feedback,
-            {
-              backgroundColor: result ? colors.successSoft : colors.dangerSoft,
-              borderColor: result ? colors.success : colors.danger,
-            },
-          ]}>
-          <Row gap={spacing.md}>
-            <View style={[styles.feedbackIcon, { backgroundColor: result ? colors.success : colors.danger }]}>
-              <Icon name={result ? 'check-bold' : 'close-thick'} size={28} color="#FFFFFF" />
-            </View>
-            <AppText variant="title" color={result ? 'successDeep' : 'dangerDeep'} style={{ flex: 1 }}>
-              {result ? (ltr ? 'Excellent! 🎉' : PRAISE[index % PRAISE.length]) : ltr ? 'Not quite!' : 'لا بأس، تعلّمنا شيئاً! 💡'}
+        <FadeIn>
+          <Card style={{ borderColor: result ? colors.success : colors.danger, gap: spacing.md }}>
+            <Row gap={spacing.sm}>
+              <Icon name={result ? 'CircleCheck' : 'CircleX'} color={result ? 'success' : 'danger'} />
+              <AppText variant="h2" color={result ? 'successText' : 'dangerText'}>
+                {result ? (ltr ? 'Correct' : 'إجابة صحيحة') : ltr ? 'Not quite' : 'ليست الإجابة الصحيحة'}
+              </AppText>
+            </Row>
+            {!result && (
+              <View style={{ gap: 2 }}>
+                <AppText variant="caption" color="textMuted">
+                  {ltr ? 'Correct answer' : 'الإجابة الصحيحة'}
+                </AppText>
+                <AppText variant="label" color="successText" ltr={ltr}>
+                  {correctAnswerText(item.question)}
+                </AppText>
+              </View>
+            )}
+            <AppText color="textMuted" ltr={ltr}>
+              {item.question.explanation}
             </AppText>
-          </Row>
-          {!result && (
-            <View style={[styles.answerBox, { borderColor: alpha(colors.danger, 0.3), backgroundColor: colors.surface }]}>
-              <AppText variant="caption" color="textMuted">
-                {ltr ? 'Correct answer' : 'الإجابة الصحيحة'}
-              </AppText>
-              <AppText weight="bold" color="successDeep" ltr={ltr}>
-                {correctAnswerText(item.question)}
-              </AppText>
-            </View>
-          )}
-          <AppText ltr={ltr}>{item.question.explanation}</AppText>
-          <Button
-            title={isLast ? 'عرض النتيجة' : 'متابعة'}
-            kind={result ? 'success' : 'danger'}
-            icon={isLast ? 'flag-checkered' : 'arrow-left'}
-            onPress={next}
-          />
-        </View>
+            <Button title={isLast ? 'عرض النتيجة' : 'متابعة'} onPress={next} style={{ marginTop: spacing.xs }} />
+          </Card>
+        </FadeIn>
       )}
     </Screen>
   );
 }
-
-const PRAISE = ['رائع! 🎉', 'أحسنت! 🌟', 'ممتاز! 👏', 'إجابة بطل! 🏆', 'استمر هكذا! 🚀'];
-
-const styles = StyleSheet.create({
-  scorePill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill },
-  feedback: { borderRadius: radius.lg, borderWidth: 2, padding: spacing.lg, gap: spacing.md },
-  feedbackIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
-  answerBox: { borderRadius: radius.md, padding: spacing.md, borderWidth: 1 },
-});

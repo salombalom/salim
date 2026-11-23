@@ -19,6 +19,8 @@ export interface SettingsState {
   onboarded: boolean;
   role: Role | null;
   grade: GradeNumber | null;
+  /** اسم مستعار اختياري للتحية — يُحفظ على الجهاز فقط */
+  displayName: string;
   themeMode: ThemeMode;
   fontScale: 'sm' | 'md' | 'lg' | 'xl';
   soundOn: boolean;
@@ -33,7 +35,9 @@ const defaultSettings = {
   onboarded: false,
   role: null,
   grade: null,
-  themeMode: 'system' as ThemeMode,
+  displayName: '',
+  // الوضع الليلي هو الافتراضي في هوية «دَرْسي»
+  themeMode: 'dark' as ThemeMode,
   fontScale: 'md' as const,
   soundOn: true,
   hapticsOn: true,
@@ -48,7 +52,17 @@ export const useSettings = create<SettingsState>()(
       set: (patch) => set(patch),
       reset: () => set(defaultSettings),
     }),
-    { name: 'darsi.settings.v1', storage: createJSONStorage(() => AsyncStorage) },
+    {
+      name: 'darsi.settings.v1',
+      storage: createJSONStorage(() => AsyncStorage),
+      version: 2,
+      // الإصدار 2: الوضع الليلي افتراضي + الاسم المستعار
+      migrate: (persisted, version) => {
+        const s = (persisted ?? {}) as Partial<SettingsState>;
+        if (version < 2) return { ...s, themeMode: s.themeMode === 'system' ? 'dark' : s.themeMode, displayName: s.displayName ?? '' } as SettingsState;
+        return s as SettingsState;
+      },
+    },
   ),
 );
 

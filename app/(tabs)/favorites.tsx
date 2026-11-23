@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { AppText, Card, EmptyState, Icon, Row, Screen, Segmented } from '@/components/ui';
 import { useProgress } from '@/lib/store';
@@ -15,32 +15,32 @@ export default function FavoritesScreen() {
         value={tab}
         onChange={setTab}
         options={[
-          { value: 'video', label: 'الفيديوهات', icon: 'play-circle-outline' },
-          { value: 'summary', label: 'الملخصات', icon: 'text-box-outline' },
+          { value: 'video', label: 'مقاطع الشرح' },
+          { value: 'summary', label: 'الملخصات' },
         ]}
       />
       {items.length === 0 ? (
         <EmptyState
-          icon="heart-outline"
-          title={tab === 'video' ? 'لا توجد فيديوهات محفوظة' : 'لا توجد ملخصات محفوظة'}
-          message="اضغط على رمز القلب في الدرس لحفظه هنا."
+          icon="Bookmark"
+          title={tab === 'video' ? 'لا توجد مقاطع محفوظة' : 'لا توجد ملخصات محفوظة'}
+          message="احفظ ما تحتاج الرجوع إليه من داخل الدرس، وستجده هنا."
         />
       ) : (
         items.map((f) => (
           <Card key={f.id}>
             <Row>
-              <AppText variant="label" style={{ flex: 1 }}>
-                {f.title}
-              </AppText>
-              <Pressable onPress={() => toggleFavorite(f)} accessibilityLabel="إزالة من المفضلة" hitSlop={10}>
-                <Icon name="heart" color="accent" />
+              <View style={{ flex: 1 }}>
+                <AppText variant="label">{f.title}</AppText>
+                {f.subtitle && (
+                  <AppText variant="caption" color="textMuted">
+                    {f.subtitle}
+                  </AppText>
+                )}
+              </View>
+              <Pressable onPress={() => toggleFavorite(f)} accessibilityLabel="إزالة من المحفوظات" hitSlop={10}>
+                <Icon name="Bookmark" />
               </Pressable>
             </Row>
-            {f.subtitle && (
-              <AppText variant="caption" color="textMuted">
-                {f.subtitle}
-              </AppText>
-            )}
           </Card>
         ))
       )}

@@ -1,8 +1,12 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import type { ComponentProps, ReactNode } from 'react';
+/**
+ * عناصر التصميم المشتركة — كل الألوان والمقاسات من theme/tokens.ts.
+ */
+import { useEffect, useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Animated,
+  Platform,
+  Easing,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,34 +20,49 @@ import {
 } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
+import { ICONS, type IconName } from '@/components/icons';
 import { isolateMath } from '@/lib/bidi';
-import { alpha, fonts, radius, softShadow, spacing, useAppTheme, type FontWeightName, type ThemeColors } from '@/lib/theme';
+import {
+  alpha,
+  borderWidth,
+  fonts,
+  iconSize,
+  iconStroke,
+  motion,
+  progress,
+  radius,
+  spacing,
+  typeScale,
+  useAppTheme,
+  type FontName,
+  type ThemeColors,
+} from '@/lib/theme';
 
-export type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
-type ColorProp = keyof ThemeColors | (string & {});
+export type { IconName };
+type ColorProp = keyof ThemeColors;
 
-function useColor() {
-  const { colors } = useAppTheme();
-  return (c: ColorProp) => (colors as Record<string, string>)[c] ?? c;
+/* ───────────── الحركة ───────────── */
+
+/** ظهور تدريجي هادئ (fade + انزلاق خفيف) */
+export function FadeIn({ children, delay = 0, style }: { children: ReactNode; delay?: number; style?: StyleProp<ViewStyle> }) {
+  const [v] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    Animated.timing(v, { toValue: 1, duration: motion.normal, delay, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start();
+  }, [v, delay]);
+  return (
+    <Animated.View style={[style, { opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [6, 0] }) }] }]}>
+      {children}
+    </Animated.View>
+  );
 }
 
 /* ───────────── النص ───────────── */
 
-const VARIANTS = {
-  display: { size: 34, line: 50, weight: 'black' },
-  title: { size: 25, line: 38, weight: 'heading' },
-  h2: { size: 19, line: 30, weight: 'heading' },
-  body: { size: 16, line: 26, weight: 'regular' },
-  label: { size: 15, line: 23, weight: 'medium' },
-  caption: { size: 13, line: 20, weight: 'regular' },
-  tiny: { size: 11, line: 16, weight: 'medium' },
-} as const satisfies Record<string, { size: number; line: number; weight: FontWeightName }>;
-
-export type TextVariant = keyof typeof VARIANTS;
+export type TextVariant = keyof typeof typeScale;
 
 export interface AppTextProps extends TextProps {
   variant?: TextVariant;
-  weight?: FontWeightName;
+  font?: FontName;
   color?: ColorProp;
   /** عرض النص باتجاه LTR (لمحتوى اللغة الإنجليزية) */
   ltr?: boolean;
@@ -59,20 +78,28 @@ function fixBidi(children: ReactNode): ReactNode {
   return children;
 }
 
-export function AppText({ variant = 'body', weight, color = 'text', ltr, center, style, children, ...rest }: AppTextProps) {
-  const { fontScale } = useAppTheme();
-  const resolve = useColor();
-  const v = VARIANTS[variant];
+export function AppText({ variant = 'body', font, color = 'text', ltr, center, style, children, ...rest }: AppTextProps) {
+  const { colors, fontScale } = useAppTheme();
+  const v = typeScale[variant];
   const s: TextStyle = {
-    fontFamily: fonts[weight ?? v.weight],
+    fontFamily: fonts[font ?? v.font],
     fontSize: v.size * fontScale,
     lineHeight: v.line * fontScale,
-    color: resolve(color),
+    color: colors[color],
   };
   return (
-    <Text {...rest} style={[s, ltr && styles.ltrText, center && styles.center, style]}>
+    <Text {...rest} style={[s, variant === 'overline' && styles.overline, ltr && styles.ltrText, center && styles.center, style]}>
       {ltr ? children : fixBidi(children)}
     </Text>
+  );
+}
+
+/** رقم بخط العناوين وباللون الذهبي */
+export function Num({ children, variant = 'title', color = 'goldText' }: { children: ReactNode; variant?: TextVariant; color?: ColorProp }) {
+  return (
+    <AppText variant={variant} font="heading" color={color}>
+      {children}
+    </AppText>
   );
 }
 
@@ -94,28 +121,12 @@ export function Screen({
     <SafeAreaView edges={edges} style={{ flex: 1, backgroundColor: colors.background }}>
       {scroll ? (
         <ScrollView contentContainerStyle={[styles.screenContent, contentStyle]} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-          {children}
+          <FadeIn style={{ gap: spacing.xl }}>{children}</FadeIn>
         </ScrollView>
       ) : (
-        <View style={[styles.screenContent, { flex: 1 }, contentStyle]}>{children}</View>
+        <FadeIn style={[styles.screenContent, { flex: 1 }, contentStyle]}>{children}</FadeIn>
       )}
     </SafeAreaView>
-  );
-}
-
-export function Gradient({
-  colors,
-  style,
-  children,
-}: {
-  colors: readonly [string, string, ...string[]];
-  style?: StyleProp<ViewStyle>;
-  children?: ReactNode;
-}) {
-  return (
-    <LinearGradient colors={colors} start={{ x: 1, y: 0 }} end={{ x: 0, y: 1 }} style={style}>
-      {children}
-    </LinearGradient>
   );
 }
 
@@ -124,26 +135,33 @@ export function Card({
   style,
   onPress,
   accessibilityLabel,
+  accent,
 }: {
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
   onPress?: () => void;
   accessibilityLabel?: string;
+  /** خط رفيع ملوّن على جانب البطاقة (لون المادة) */
+  accent?: string;
 }) {
-  const { colors, isDark } = useAppTheme();
-  const base = [
-    styles.card,
-    { backgroundColor: colors.surface, borderColor: isDark ? colors.border : 'transparent' },
-    softShadow(colors.shadow, isDark),
-    style,
-  ];
-  if (!onPress) return <View style={base}>{children}</View>;
+  const { colors } = useAppTheme();
+  const base = [styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style];
+  // على الويب لا يقلب المتصفح «start» تلقائياً، فنثبّت الخط على اليمين (بداية السطر العربي)
+  const strip = accent ? <View style={[styles.accent, Platform.OS === 'web' ? { right: 0 } : { start: 0 }, { backgroundColor: accent }]} /> : null;
+  if (!onPress)
+    return (
+      <View style={base}>
+        {strip}
+        {children}
+      </View>
+    );
   return (
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel}
-      style={({ pressed }) => [base, pressed && styles.pressed]}>
+      style={({ pressed }) => [base, pressed && { borderColor: colors.goldLine, backgroundColor: colors.surfaceRaised }]}>
+      {strip}
       {children}
     </Pressable>
   );
@@ -153,9 +171,22 @@ export function Row({ children, style, gap = spacing.sm }: { children: ReactNode
   return <View style={[{ flexDirection: 'row', alignItems: 'center', gap }, style]}>{children}</View>;
 }
 
-/* ───────────── الأزرار ثلاثية الأبعاد ───────────── */
+/** فاصل رفيع، مع زخرفة ماسية صغيرة اختيارية في الوسط */
+export function Divider({ ornament, style }: { ornament?: boolean; style?: StyleProp<ViewStyle> }) {
+  const { colors } = useAppTheme();
+  if (!ornament) return <View style={[{ height: StyleSheet.hairlineWidth, backgroundColor: colors.border }, style]} />;
+  return (
+    <Row gap={spacing.sm} style={[{ justifyContent: 'center' }, style]}>
+      <View style={{ height: 1, width: 48, backgroundColor: colors.goldLine }} />
+      <View style={[styles.diamond, { borderColor: colors.gold }]} />
+      <View style={{ height: 1, width: 48, backgroundColor: colors.goldLine }} />
+    </Row>
+  );
+}
 
-export type ButtonKind = 'primary' | 'secondary' | 'success' | 'danger' | 'ghost' | 'white';
+/* ───────────── الأزرار ───────────── */
+
+export type ButtonKind = 'primary' | 'secondary' | 'ghost';
 
 export function Button({
   title,
@@ -177,17 +208,9 @@ export function Button({
   size?: 'md' | 'sm';
   style?: StyleProp<ViewStyle>;
 } & Omit<PressableProps, 'style' | 'onPress'>) {
-  const { colors, isDark } = useAppTheme();
-  const k = {
-    primary: { face: colors.primary, edge: colors.primaryDeep, fg: colors.primaryText, border: undefined },
-    secondary: { face: colors.surface, edge: isDark ? colors.border : '#D8D1F5', fg: colors.primary, border: isDark ? colors.border : '#E6E1F7' },
-    success: { face: colors.success, edge: colors.successDeep, fg: '#FFFFFF', border: undefined },
-    danger: { face: colors.danger, edge: colors.dangerDeep, fg: '#FFFFFF', border: undefined },
-    ghost: { face: 'transparent', edge: 'transparent', fg: colors.primary, border: undefined },
-    white: { face: '#FFFFFF', edge: 'rgba(0,0,0,0.18)', fg: '#4B2FCF', border: undefined },
-  }[kind];
+  const { colors } = useAppTheme();
   const off = disabled || loading;
-  const depth = kind === 'ghost' ? 0 : size === 'sm' ? 3 : 5;
+  const fg: ColorProp = kind === 'primary' ? 'onGold' : 'goldText';
   return (
     <Pressable
       {...rest}
@@ -195,156 +218,142 @@ export function Button({
       disabled={off}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!off }}
-      style={style}>
-      {({ pressed }) => (
-        <View
-          style={[
-            size === 'sm' ? styles.buttonSm : styles.button,
-            {
-              backgroundColor: k.face,
-              borderBottomColor: k.edge,
-              borderBottomWidth: pressed && !off ? Math.min(1, depth) : depth,
-              marginTop: pressed && !off ? depth - Math.min(1, depth) : 0,
-            },
-            k.border ? { borderWidth: 2, borderColor: k.border, borderBottomColor: k.edge } : null,
-            off && { opacity: 0.45 },
-          ]}>
-          {loading ? (
-            <ActivityIndicator color={k.fg} />
-          ) : (
-            <Row gap={spacing.sm} style={{ justifyContent: 'center' }}>
-              {icon && <MaterialCommunityIcons name={icon} size={size === 'sm' ? 18 : 22} color={k.fg} />}
-              <AppText variant={size === 'sm' ? 'label' : 'body'} weight="bold" color={k.fg}>
-                {title}
-              </AppText>
-            </Row>
-          )}
-        </View>
+      style={({ pressed }) => [
+        size === 'sm' ? styles.buttonSm : styles.button,
+        kind === 'primary' && { backgroundColor: pressed ? colors.goldHover : colors.gold },
+        kind === 'secondary' && { borderWidth: borderWidth.hairline, borderColor: pressed ? colors.goldHover : colors.gold, backgroundColor: pressed ? colors.goldFaint : 'transparent' },
+        kind === 'ghost' && pressed && { backgroundColor: colors.goldFaint },
+        off && { opacity: 0.4 },
+        style,
+      ]}>
+      {loading ? (
+        <ActivityIndicator color={colors[fg]} />
+      ) : (
+        <Row gap={spacing.sm} style={{ justifyContent: 'center' }}>
+          <AppText variant="label" font="medium" color={fg}>
+            {title}
+          </AppText>
+          {icon && <Icon name={icon} size={iconSize.sm + 2} color={fg} />}
+        </Row>
       )}
     </Pressable>
   );
 }
 
-/* ───────────── عناصر صغيرة ───────────── */
+/* ───────────── الأيقونات ───────────── */
 
-export function Icon({ name, size = 22, color = 'text' }: { name: IconName; size?: number; color?: ColorProp }) {
-  const resolve = useColor();
-  return <MaterialCommunityIcons name={name} size={size} color={resolve(color)} />;
+export function Icon({ name, size = iconSize.md, color = 'gold', strokeWidth = iconStroke }: { name: IconName; size?: number; color?: ColorProp; strokeWidth?: number }) {
+  const { colors } = useAppTheme();
+  const C = ICONS[name];
+  return <C size={size} color={colors[color]} strokeWidth={strokeWidth} absoluteStrokeWidth />;
 }
 
-/** أيقونة داخل مربع دائري ملوّن */
-export function IconBadge({
-  name,
-  color = 'primary',
-  bg,
-  size = 44,
-  iconSize,
-  round,
-}: {
-  name: IconName;
-  color?: ColorProp;
-  bg?: string;
-  size?: number;
-  iconSize?: number;
-  round?: boolean;
-}) {
-  const resolve = useColor();
-  const fg = resolve(color);
+/** أيقونة ذهبية داخل دائرة بحد رفيع، مع خلفية خفيفة جداً بلون اختياري */
+export function IconCircle({ name, size = 44, tint, color = 'gold' }: { name: IconName; size?: number; tint?: string; color?: ColorProp }) {
+  const { colors } = useAppTheme();
   return (
     <View
       style={{
         width: size,
         height: size,
-        borderRadius: round ? size / 2 : size * 0.32,
-        backgroundColor: bg ?? (fg.startsWith('#') ? alpha(fg, 0.14) : 'rgba(0,0,0,0.06)'),
+        borderRadius: size / 2,
+        borderWidth: borderWidth.hairline,
+        borderColor: tint ? alpha(tint, 0.6) : colors.goldLine,
+        backgroundColor: tint ? alpha(tint, 0.16) : colors.goldFaint,
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <MaterialCommunityIcons name={name} size={iconSize ?? size * 0.55} color={fg} />
+      <Icon name={name} size={size * 0.46} color={color} />
     </View>
   );
 }
 
-export function ProgressBar({
-  value,
-  color,
-  trackColor,
-  height = 10,
-  style,
-}: {
-  value: number;
-  color?: string;
-  trackColor?: string;
-  height?: number;
-  style?: StyleProp<ViewStyle>;
-}) {
+/* ───────────── عناصر صغيرة ───────────── */
+
+export function ProgressBar({ value, style }: { value: number; style?: StyleProp<ViewStyle> }) {
   const { colors } = useAppTheme();
   const pct = Math.max(0, Math.min(1, value));
+  const [w] = useState(() => new Animated.Value(pct));
+  useEffect(() => {
+    Animated.timing(w, { toValue: pct, duration: motion.slow, easing: Easing.out(Easing.cubic), useNativeDriver: false }).start();
+  }, [pct, w]);
   return (
     <View
       accessibilityRole="progressbar"
       accessibilityValue={{ min: 0, max: 100, now: Math.round(pct * 100) }}
-      style={[{ height, borderRadius: height, backgroundColor: trackColor ?? colors.surfaceAlt, overflow: 'hidden', flexDirection: 'row' }, style]}>
-      <View style={{ width: `${pct * 100}%`, minWidth: pct > 0 ? height : 0, height: '100%', borderRadius: height, backgroundColor: color ?? colors.primary }}>
-        {/* لمعة خفيفة */}
-        <View style={{ position: 'absolute', top: height * 0.2, start: height * 0.4, end: height * 0.4, height: Math.max(2, height * 0.22), borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.35)' }} />
-      </View>
+      style={[{ height: progress.height, borderRadius: progress.height, backgroundColor: colors.border, overflow: 'hidden', flexDirection: 'row' }, style]}>
+      <Animated.View
+        style={{
+          height: '100%',
+          borderRadius: progress.height,
+          backgroundColor: colors.gold,
+          width: w.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }),
+        }}
+      />
     </View>
   );
 }
 
-export function Stars({ count, size = 18, emptyColor }: { count: number; size?: number; emptyColor?: string }) {
+/** مستوى الإتقان: ثلاث ماسات صغيرة (بديل هادئ للنجوم) */
+export function Mastery({ count, size = 8 }: { count: number; size?: number }) {
   const { colors } = useAppTheme();
   return (
-    <View style={{ flexDirection: 'row', gap: 2 }} accessible accessibilityLabel={`${count} من 3 نجوم`}>
+    <View style={{ flexDirection: 'row', gap: size * 0.7, alignItems: 'center' }} accessible accessibilityLabel={`مستوى الإتقان ${count} من 3`}>
       {[0, 1, 2].map((i) => (
-        <MaterialCommunityIcons key={i} name="star" size={size} color={i < count ? colors.star : (emptyColor ?? colors.border)} />
+        <View
+          key={i}
+          style={{
+            width: size,
+            height: size,
+            transform: [{ rotate: '45deg' }],
+            borderWidth: 1,
+            borderColor: colors.gold,
+            backgroundColor: i < count ? colors.gold : 'transparent',
+          }}
+        />
       ))}
     </View>
   );
 }
 
-export function Chip({ label, color, bg, icon }: { label: string; color?: string; bg?: string; icon?: IconName }) {
+export function Chip({ label, icon, tone = 'muted' }: { label: string; icon?: IconName; tone?: 'muted' | 'gold' | 'success' | 'danger' }) {
   const { colors } = useAppTheme();
-  const fg = color ?? colors.textMuted;
+  const fg: ColorProp = { muted: 'textMuted', gold: 'goldText', success: 'successText', danger: 'dangerText' }[tone] as ColorProp;
+  const border = { muted: colors.border, gold: colors.goldLine, success: alpha(colors.success, 0.5), danger: alpha(colors.danger, 0.5) }[tone];
   return (
-    <Row gap={4} style={[styles.chip, { backgroundColor: bg ?? colors.surfaceAlt }]}>
-      {icon && <MaterialCommunityIcons name={icon} size={14} color={fg} />}
-      <AppText variant="caption" weight="semibold" color={fg}>
+    <Row gap={4} style={[styles.chip, { borderColor: border }]}>
+      {icon && <Icon name={icon} size={iconSize.sm - 2} color={fg} />}
+      <AppText variant="caption" font="medium" color={fg}>
         {label}
       </AppText>
     </Row>
   );
 }
 
+/** تبويبات نصية بخط ذهبي رفيع تحت العنصر النشط */
 export function Segmented<T extends string | number>({
   options,
   value,
   onChange,
-  activeColor,
 }: {
   options: { value: T; label: string; icon?: IconName }[];
   value: T;
   onChange: (v: T) => void;
-  activeColor?: string;
 }) {
-  const { colors, isDark } = useAppTheme();
-  const active = activeColor ?? colors.primary;
+  const { colors } = useAppTheme();
   return (
-    <View style={[styles.segmented, { backgroundColor: colors.surfaceAlt }]} accessibilityRole="tablist">
+    <View style={[styles.segmented, { borderColor: colors.border }]} accessibilityRole="tablist">
       {options.map((o) => {
         const on = o.value === value;
         return (
-          <Pressable
-            key={String(o.value)}
-            onPress={() => onChange(o.value)}
-            accessibilityRole="tab"
-            accessibilityState={{ selected: on }}
-            style={[styles.segment, on && [{ backgroundColor: active }, softShadow(active, isDark, 0.8)]]}>
-            {o.icon && <MaterialCommunityIcons name={o.icon} size={18} color={on ? '#FFFFFF' : colors.textMuted} />}
-            <AppText variant="caption" weight={on ? 'bold' : 'medium'} color={on ? '#FFFFFF' : 'textMuted'} numberOfLines={1}>
-              {o.label}
-            </AppText>
+          <Pressable key={String(o.value)} onPress={() => onChange(o.value)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={styles.segment}>
+            <Row gap={6}>
+              {o.icon && <Icon name={o.icon} size={iconSize.sm} color={on ? 'gold' : 'textMuted'} />}
+              <AppText variant="label" font={on ? 'medium' : 'regular'} color={on ? 'text' : 'textMuted'} numberOfLines={1}>
+                {o.label}
+              </AppText>
+            </Row>
+            <View style={[styles.segmentLine, { backgroundColor: on ? colors.gold : 'transparent' }]} />
           </Pressable>
         );
       })}
@@ -353,17 +362,14 @@ export function Segmented<T extends string | number>({
 }
 
 export function EmptyState({ icon, title, message, children }: { icon: IconName; title: string; message?: string; children?: ReactNode }) {
-  const { gradients } = useAppTheme();
   return (
     <View style={styles.empty}>
-      <Gradient colors={gradients.hero} style={styles.emptyIcon}>
-        <MaterialCommunityIcons name={icon} size={44} color="#FFFFFF" />
-      </Gradient>
+      <IconCircle name={icon} size={72} />
       <AppText variant="h2" center>
         {title}
       </AppText>
       {message && (
-        <AppText color="textMuted" center>
+        <AppText color="textMuted" center style={{ maxWidth: 320 }}>
           {message}
         </AppText>
       )}
@@ -372,21 +378,22 @@ export function EmptyState({ icon, title, message, children }: { icon: IconName;
   );
 }
 
-export function SectionTitle({ children, action, icon }: { children: ReactNode; action?: ReactNode; icon?: IconName }) {
+/** عنوان قسم هادئ مع خط رفيع */
+export function SectionTitle({ children, action }: { children: ReactNode; action?: ReactNode }) {
+  const { colors } = useAppTheme();
   return (
-    <Row style={{ justifyContent: 'space-between', marginTop: spacing.xs }}>
-      <Row gap={6}>
-        {icon && <Icon name={icon} color="primary" size={22} />}
+    <View style={{ gap: spacing.sm }}>
+      <Row style={{ justifyContent: 'space-between' }}>
         <AppText variant="h2">{children}</AppText>
+        {action}
       </Row>
-      {action}
-    </Row>
+      <View style={{ height: 1, width: 32, backgroundColor: colors.gold }} />
+    </View>
   );
 }
 
 export function ListRow({
   icon,
-  iconColor,
   title,
   subtitle,
   onPress,
@@ -394,7 +401,6 @@ export function ListRow({
   last,
 }: {
   icon?: IconName;
-  iconColor?: string;
   title: string;
   subtitle?: string;
   onPress?: () => void;
@@ -404,18 +410,16 @@ export function ListRow({
   const { colors } = useAppTheme();
   const content = (
     <>
-      {icon && <IconBadge name={icon} color={iconColor ?? colors.primary} size={38} />}
+      {icon && <Icon name={icon} />}
       <View style={{ flex: 1 }}>
-        <AppText variant="label" weight="semibold">
-          {title}
-        </AppText>
+        <AppText variant="label">{title}</AppText>
         {subtitle && (
           <AppText variant="caption" color="textMuted">
             {subtitle}
           </AppText>
         )}
       </View>
-      {right ?? (onPress && <MaterialCommunityIcons name="chevron-left" size={22} color={colors.textMuted} />)}
+      {right ?? (onPress && <Icon name="ChevronLeft" size={iconSize.md} color="textMuted" />)}
     </>
   );
   const rowStyle = [styles.listRow, { borderColor: colors.border }, last && { borderBottomWidth: 0 }];
@@ -428,41 +432,43 @@ export function ListRow({
   );
 }
 
+/** إشعار صغير يظهر ويختفي بهدوء (مثل نقاط الإجابة) */
+export function Toast({ text, visible, style }: { text: string; visible: boolean; style?: StyleProp<ViewStyle> }) {
+  const { colors } = useAppTheme();
+  const [v] = useState(() => new Animated.Value(0));
+  useEffect(() => {
+    if (!visible) return;
+    v.setValue(0);
+    Animated.sequence([
+      Animated.timing(v, { toValue: 1, duration: motion.normal, useNativeDriver: true }),
+      Animated.delay(1200),
+      Animated.timing(v, { toValue: 0, duration: motion.slow, useNativeDriver: true }),
+    ]).start();
+  }, [visible, text, v]);
+  return (
+    <Animated.View pointerEvents="none" style={[styles.toast, { backgroundColor: colors.surfaceRaised, borderColor: colors.goldLine, opacity: v }, style]}>
+      <AppText variant="caption" font="medium" color="goldText">
+        {text}
+      </AppText>
+    </Animated.View>
+  );
+}
+
 const styles = StyleSheet.create({
-  screenContent: { padding: spacing.lg, gap: spacing.lg, paddingBottom: spacing.xxl * 1.5 },
-  card: { borderRadius: radius.lg, borderWidth: 1, padding: spacing.lg, gap: spacing.sm },
-  pressed: { transform: [{ scale: 0.97 }], opacity: 0.95 },
-  button: {
-    minHeight: 56,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonSm: {
-    minHeight: 40,
-    borderRadius: radius.sm + 2,
-    paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  chip: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: radius.pill, alignSelf: 'flex-start' },
-  segmented: { flexDirection: 'row', borderRadius: radius.md, padding: 5, gap: 4 },
-  segment: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 9,
-    paddingHorizontal: 4,
-    borderRadius: radius.sm + 2,
-  },
+  screenContent: { paddingHorizontal: spacing.xl, paddingTop: spacing.xl, paddingBottom: spacing.xxxl, gap: spacing.xl },
+  card: { borderRadius: radius.card, borderWidth: borderWidth.hairline, padding: spacing.xl, gap: spacing.md, overflow: 'hidden' },
+  accent: { position: 'absolute', top: spacing.xl, bottom: spacing.xl, width: 2, borderRadius: 1 },
+  button: { minHeight: 52, borderRadius: radius.button, paddingHorizontal: spacing.xl, alignItems: 'center', justifyContent: 'center' },
+  buttonSm: { minHeight: 38, borderRadius: radius.button, paddingHorizontal: spacing.lg, alignItems: 'center', justifyContent: 'center' },
+  chip: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: radius.chip, borderWidth: borderWidth.hairline, alignSelf: 'flex-start' },
+  segmented: { flexDirection: 'row', borderBottomWidth: borderWidth.hairline },
+  segment: { flex: 1, alignItems: 'center', paddingTop: spacing.sm, gap: spacing.sm },
+  segmentLine: { height: 2, alignSelf: 'stretch', marginHorizontal: spacing.md, borderRadius: 1 },
   empty: { alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xxl, paddingHorizontal: spacing.lg },
-  emptyIcon: { width: 96, height: 96, borderRadius: 34, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-6deg' }] },
-  listRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: 12, borderBottomWidth: StyleSheet.hairlineWidth },
+  listRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, paddingVertical: spacing.lg, borderBottomWidth: StyleSheet.hairlineWidth },
+  diamond: { width: 7, height: 7, borderWidth: 1, transform: [{ rotate: '45deg' }] },
+  toast: { alignSelf: 'center', paddingHorizontal: spacing.lg, paddingVertical: 6, borderRadius: radius.chip, borderWidth: borderWidth.hairline },
+  overline: { letterSpacing: 0.5 },
   ltrText: { writingDirection: 'ltr', textAlign: 'left' },
   center: { textAlign: 'center' },
 });

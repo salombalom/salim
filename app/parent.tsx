@@ -4,9 +4,9 @@ export default function ParentScreen() {
   return (
     <Screen>
       <EmptyState
-        icon="account-child-outline"
+        icon="Users"
         title="لوحة ولي الأمر"
-        message="قريباً: اربط حساب ابنك بكود، وتابع وقت الدراسة والدرجات لكل مادة ونقاط الضعف. تحتاج هذه الميزة إلى تسجيل الدخول."
+        message="قريباً: اربط حساب ابنك برمز، وتابع وقت الدراسة والدرجات في كل مادة ومواطن الضعف. تتطلب هذه الميزة تسجيل الدخول."
       />
     </Screen>
   );

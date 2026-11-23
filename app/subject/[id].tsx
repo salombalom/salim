@@ -1,25 +1,22 @@
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { HeroBackground } from '@/components/HeroBackground';
-import { AppText, Card, EmptyState, Gradient, Icon, ProgressBar, Row, Screen, Segmented, Stars } from '@/components/ui';
+import { AppText, Card, EmptyState, Icon, IconCircle, Mastery, Num, ProgressBar, Row, Screen, Segmented } from '@/components/ui';
 import { gradeName, TERMS, type TermNumber } from '@/config/curriculum';
 import { getSubject } from '@/lib/data/repository';
 import { completionFor, isLessonDone } from '@/lib/progress';
 import { useProgress } from '@/lib/store';
-import { alpha, radius, spacing, useAppTheme } from '@/lib/theme';
+import { borderWidth, fonts, spacing, useAppTheme } from '@/lib/theme';
 
 export default function SubjectScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const subject = getSubject(id);
-  const { colors } = useAppTheme();
+  const { colors, fontScale } = useAppTheme();
   const lessonBest = useProgress((s) => s.lessonBest);
   const [term, setTerm] = useState<TermNumber>(1);
 
-  if (!subject) return <EmptyState icon="alert-circle-outline" title="المادة غير موجودة" />;
-  const [from, to] = subject.meta.gradient;
+  if (!subject) return <EmptyState icon="CircleAlert" title="المادة غير موجودة" />;
   const units = subject.units.filter((u) => u.term === term);
   const all = completionFor(
     subject.units.flatMap((u) => u.lessons.map((l) => l.id)),
@@ -28,36 +25,31 @@ export default function SubjectScreen() {
 
   return (
     <Screen>
-      <Stack.Screen options={{ title: subject.meta.nameAr }} />
-      <HeroBackground colors={[from, to]} style={styles.hero}>
-        <Row gap={spacing.md}>
-          <View style={styles.heroIcon}>
-            <MaterialCommunityIcons name={subject.meta.icon as never} size={36} color="#FFFFFF" />
-          </View>
+      <Stack.Screen options={{ title: '' }} />
+      {/* رأس المادة */}
+      <View style={{ gap: spacing.lg }}>
+        <Row gap={spacing.lg}>
+          <IconCircle name={subject.meta.icon} size={56} tint={subject.meta.color} />
           <View style={{ flex: 1 }}>
-            <AppText variant="title" color="#FFFFFF">
-              {subject.meta.nameAr}
-            </AppText>
-            <AppText variant="caption" color="rgba(255,255,255,0.9)">
-              {gradeName(subject.grade)}
-            </AppText>
-          </View>
-          <View style={styles.percent}>
-            <AppText variant="h2" color="#FFFFFF">
-              {Math.round(all.ratio * 100)}%
-            </AppText>
-            <AppText variant="tiny" color="rgba(255,255,255,0.9)">
-              الإنجاز
-            </AppText>
+            <AppText variant="display">{subject.meta.nameAr}</AppText>
+            <AppText color="textMuted">{gradeName(subject.grade)}</AppText>
           </View>
         </Row>
-        <ProgressBar value={all.ratio} color="#FFFFFF" trackColor="rgba(255,255,255,0.28)" />
-      </HeroBackground>
+        <View style={{ gap: spacing.sm }}>
+          <Row style={{ justifyContent: 'space-between' }}>
+            <AppText variant="caption" color="textMuted">
+              نسبة الإنجاز
+            </AppText>
+            <Num variant="label">{`${Math.round(all.ratio * 100)}%`}</Num>
+          </Row>
+          <ProgressBar value={all.ratio} />
+        </View>
+      </View>
 
-      <Segmented value={term} onChange={setTerm} activeColor={to} options={TERMS.map((t) => ({ value: t.number, label: t.nameAr }))} />
+      <Segmented value={term} onChange={setTerm} options={TERMS.map((t) => ({ value: t.number, label: t.nameAr }))} />
 
       {units.length === 0 ? (
-        <EmptyState icon="book-clock-outline" title="لا توجد وحدات بعد" message="سيُضاف محتوى هذا الفصل قريباً." />
+        <EmptyState icon="BookOpen" title="لا توجد وحدات بعد" message="سيُضاف محتوى هذا الفصل قريباً." />
       ) : (
         units.map((unit) => {
           const comp = completionFor(
@@ -65,71 +57,60 @@ export default function SubjectScreen() {
             lessonBest,
           );
           return (
-            <Card key={unit.id} style={{ gap: spacing.md }}>
-              <Row style={{ justifyContent: 'space-between' }}>
+            <Card key={unit.id} accent={subject.meta.color} style={{ gap: spacing.sm, paddingVertical: spacing.lg }}>
+              <Row style={{ justifyContent: 'space-between', paddingBottom: spacing.sm }}>
                 <View style={{ flex: 1 }}>
-                  <AppText variant="tiny" weight="bold" color={to}>
+                  <AppText variant="overline" color="goldText">
                     الوحدة {unit.order}
                   </AppText>
                   <AppText variant="h2">{unit.title}</AppText>
                 </View>
-                <View style={[styles.unitBadge, { backgroundColor: alpha(to, 0.12) }]}>
-                  <AppText variant="label" weight="bold" color={to}>
-                    {comp.done}/{comp.total}
-                  </AppText>
-                </View>
+                <AppText variant="caption" color="textMuted">
+                  {comp.done} / {comp.total}
+                </AppText>
               </Row>
-              <ProgressBar value={comp.ratio} color={to} height={8} />
-
-              <View style={{ gap: 0 }}>
-                {unit.lessons.map((lesson, i) => {
-                  const best = lessonBest[lesson.id];
-                  const done = isLessonDone(best);
-                  const lastItem = i === unit.lessons.length - 1;
-                  return (
-                    <View key={lesson.id} style={styles.pathRow}>
-                      {/* العقدة والخط الواصل */}
-                      <View style={styles.pathCol}>
-                        {done ? (
-                          <Gradient colors={[from, to]} style={styles.node}>
-                            <Icon name="check-bold" size={20} color="#FFFFFF" />
-                          </Gradient>
-                        ) : (
-                          <View style={[styles.node, { backgroundColor: colors.surface, borderWidth: 3, borderColor: alpha(to, 0.35) }]}>
-                            <AppText variant="label" weight="black" color={to}>
-                              {lesson.order}
-                            </AppText>
-                          </View>
-                        )}
-                        {!lastItem && <View style={[styles.line, { backgroundColor: done ? to : colors.border }]} />}
-                      </View>
-                      <Pressable
-                        onPress={() => router.push({ pathname: '/lesson/[id]', params: { id: lesson.id } })}
-                        accessibilityRole="button"
-                        style={({ pressed }) => [styles.lesson, { backgroundColor: colors.surfaceAlt }, pressed && { transform: [{ scale: 0.98 }] }]}>
-                        <View style={{ flex: 1 }}>
-                          <AppText variant="label" weight="bold">
-                            {lesson.title}
-                          </AppText>
-                          {best ? (
-                            <Row gap={6}>
-                              <Stars count={best.stars} size={14} />
-                              <AppText variant="tiny" color="textMuted">
-                                أفضل نتيجة {best.percent}%
-                              </AppText>
-                            </Row>
-                          ) : (
-                            <AppText variant="tiny" color="textMuted">
-                              {lesson.objectives.length} أهداف • اختبار قصير
-                            </AppText>
-                          )}
-                        </View>
-                        <Icon name="chevron-left" color="textMuted" />
-                      </Pressable>
+              {unit.lessons.map((lesson, i) => {
+                const best = lessonBest[lesson.id];
+                const done = isLessonDone(best);
+                return (
+                  <Pressable
+                    key={lesson.id}
+                    onPress={() => router.push({ pathname: '/lesson/[id]', params: { id: lesson.id } })}
+                    accessibilityRole="button"
+                    style={({ pressed }) => [
+                      styles.lesson,
+                      { borderTopColor: colors.border, borderTopWidth: i === 0 ? StyleSheet.hairlineWidth : 0, borderBottomColor: colors.border },
+                      i === unit.lessons.length - 1 && { borderBottomWidth: 0 },
+                      pressed && { opacity: 0.6 },
+                    ]}>
+                    <View style={[styles.num, { borderColor: colors.gold, backgroundColor: done ? colors.goldFaint : 'transparent' }]}>
+                      {done ? (
+                        <Icon name="Check" size={16} />
+                      ) : (
+                        <AppText color="goldText" style={{ fontFamily: fonts.heading, fontSize: 15 * fontScale, lineHeight: 22 * fontScale }}>
+                          {lesson.order}
+                        </AppText>
+                      )}
                     </View>
-                  );
-                })}
-              </View>
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <AppText variant="label">{lesson.title}</AppText>
+                      {best ? (
+                        <Row gap={spacing.sm}>
+                          <Mastery count={best.stars} size={7} />
+                          <AppText variant="caption" color="textMuted">
+                            أفضل نتيجة {best.percent}%
+                          </AppText>
+                        </Row>
+                      ) : (
+                        <AppText variant="caption" color="textMuted">
+                          لم يبدأ بعد
+                        </AppText>
+                      )}
+                    </View>
+                    <Icon name="ChevronLeft" size={18} color="textMuted" />
+                  </Pressable>
+                );
+              })}
             </Card>
           );
         })
@@ -139,13 +120,6 @@ export default function SubjectScreen() {
 }
 
 const styles = StyleSheet.create({
-  hero: { borderRadius: radius.xl, padding: spacing.lg, gap: spacing.md },
-  heroIcon: { width: 62, height: 62, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center' },
-  percent: { alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.14)', borderRadius: radius.md, paddingHorizontal: 12, paddingVertical: 4 },
-  unitBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: radius.pill },
-  pathRow: { flexDirection: 'row', gap: spacing.md },
-  pathCol: { alignItems: 'center', width: 44 },
-  node: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
-  line: { width: 4, flex: 1, minHeight: 14, borderRadius: 2, marginVertical: 2 },
-  lesson: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: spacing.sm, padding: spacing.md, borderRadius: radius.md, marginBottom: spacing.sm },
+  lesson: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg, paddingVertical: spacing.lg, borderBottomWidth: StyleSheet.hairlineWidth },
+  num: { width: 36, height: 36, borderRadius: 18, borderWidth: borderWidth.hairline, alignItems: 'center', justifyContent: 'center' },
 });
