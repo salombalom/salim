@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
-import { Alert, Platform, Switch, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Switch, View } from 'react-native';
 
-import { AppText, Card, Chip, ListRow, Row, Screen, Segmented, SectionTitle } from '@/components/ui';
+import { HeroBackground } from '@/components/HeroBackground';
+import { AppText, Card, Icon, ListRow, Row, Screen, Segmented, SectionTitle } from '@/components/ui';
 import { gradeName } from '@/config/curriculum';
 import { currentStreak, dayKey } from '@/lib/gamification';
-import { formatDuration } from '@/lib/progress';
 import { useProgress, useSettings, type ThemeMode } from '@/lib/store';
-import { spacing, useAppTheme } from '@/lib/theme';
+import { radius, spacing, useAppTheme } from '@/lib/theme';
 
 function ToggleRow({ title, subtitle, value, onChange }: { title: string; subtitle?: string; value: boolean; onChange: (v: boolean) => void }) {
   const { colors } = useAppTheme();
@@ -43,34 +43,46 @@ export default function ProfileScreen() {
 
   return (
     <Screen>
-      <Card>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <View>
-            <AppText variant="h2">{settings.role === 'parent' ? 'ولي أمر' : 'طالب'}</AppText>
-            <AppText color="textMuted">{settings.grade ? gradeName(settings.grade) : '—'}</AppText>
+      <HeroBackground style={styles.hero}>
+        <Row gap={spacing.md}>
+          <View style={styles.avatar}>
+            <Icon name={settings.role === 'parent' ? 'account-child' : 'account-school'} size={40} color="#FFFFFF" />
           </View>
-          <Chip label="وضع التجربة" icon="account-question-outline" />
+          <View style={{ flex: 1 }}>
+            <AppText variant="title" color="#FFFFFF">
+              {settings.role === 'parent' ? 'ولي أمر' : 'طالب مجتهد'}
+            </AppText>
+            <AppText variant="caption" color="rgba(255,255,255,0.9)">
+              {settings.grade ? gradeName(settings.grade) : '—'} • وضع التجربة
+            </AppText>
+          </View>
         </Row>
-        <View style={{ marginTop: spacing.sm, gap: 2 }}>
-          <AppText variant="caption" color="textMuted">
-            النقاط: {progress.points}
-          </AppText>
-          <AppText variant="caption" color="textMuted">
-            السلسلة اليومية: {currentStreak(progress.streak, dayKey())} يوم (أفضل سلسلة: {progress.streak.best})
-          </AppText>
-          <AppText variant="caption" color="textMuted">
-            إجمالي وقت الدراسة: {formatDuration(totalStudy)}
-          </AppText>
-        </View>
-      </Card>
+        <Row gap={spacing.sm}>
+          {[
+            { icon: 'star-four-points' as const, value: String(progress.points), label: 'نقطة' },
+            { icon: 'fire' as const, value: String(currentStreak(progress.streak, dayKey())), label: `يوم (الأفضل ${progress.streak.best})` },
+            { icon: 'timer-sand' as const, value: String(Math.round(totalStudy / 60)), label: 'دقيقة دراسة' },
+          ].map((s) => (
+            <View key={s.icon} style={styles.stat}>
+              <Icon name={s.icon} size={18} color="#FFD34D" />
+              <AppText variant="h2" color="#FFFFFF" style={{ lineHeight: 26 }}>
+                {s.value}
+              </AppText>
+              <AppText variant="tiny" color="rgba(255,255,255,0.85)" numberOfLines={1}>
+                {s.label}
+              </AppText>
+            </View>
+          ))}
+        </Row>
+      </HeroBackground>
 
-      <SectionTitle>الدراسة</SectionTitle>
+      <SectionTitle icon="school">الدراسة</SectionTitle>
       <Card style={{ paddingVertical: 0 }}>
         <ListRow icon="school-outline" title="تغيير الصف" subtitle={settings.grade ? gradeName(settings.grade) : undefined} onPress={() => router.push('/grade-picker')} />
-        <ListRow icon="account-switch-outline" title="تغيير الدور" subtitle={settings.role === 'parent' ? 'ولي أمر' : 'طالب'} onPress={() => router.push('/role')} />
+        <ListRow icon="account-switch-outline" iconColor="#FF8A4C" last title="تغيير الدور" subtitle={settings.role === 'parent' ? 'ولي أمر' : 'طالب'} onPress={() => router.push('/role')} />
       </Card>
 
-      <SectionTitle>المظهر</SectionTitle>
+      <SectionTitle icon="palette">المظهر</SectionTitle>
       <Card>
         <AppText variant="label">الوضع</AppText>
         <Segmented<ThemeMode>
@@ -97,13 +109,13 @@ export default function ProfileScreen() {
         />
       </Card>
 
-      <SectionTitle>الصوت والاهتزاز</SectionTitle>
+      <SectionTitle icon="volume-high">الصوت والاهتزاز</SectionTitle>
       <Card style={{ paddingVertical: 0 }}>
         <ToggleRow title="الأصوات" value={settings.soundOn} onChange={(soundOn) => settings.set({ soundOn })} />
         <ToggleRow title="الاهتزاز الخفيف" value={settings.hapticsOn} onChange={(hapticsOn) => settings.set({ hapticsOn })} />
       </Card>
 
-      <SectionTitle>للمطوّر</SectionTitle>
+      <SectionTitle icon="code-tags">للمطوّر</SectionTitle>
       <Card style={{ paddingVertical: 0 }}>
         <ToggleRow
           title="عرض الأسئلة غير المراجَعة"
@@ -113,12 +125,18 @@ export default function ProfileScreen() {
         />
       </Card>
 
-      <SectionTitle>عن التطبيق</SectionTitle>
+      <SectionTitle icon="information">عن التطبيق</SectionTitle>
       <Card style={{ paddingVertical: 0 }}>
         <ListRow icon="information-outline" title="عن التطبيق" onPress={() => router.push('/about')} />
-        <ListRow icon="shield-lock-outline" title="سياسة الخصوصية" onPress={() => router.push('/privacy')} />
-        <ListRow icon="logout" title="تسجيل الخروج" onPress={signOut} />
+        <ListRow icon="shield-lock-outline" iconColor="#16B364" title="سياسة الخصوصية" onPress={() => router.push('/privacy')} />
+        <ListRow icon="logout" iconColor="#F0405F" title="تسجيل الخروج" onPress={signOut} last />
       </Card>
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  hero: { borderRadius: radius.xl, padding: spacing.lg, gap: spacing.lg },
+  avatar: { width: 68, height: 68, borderRadius: 34, backgroundColor: 'rgba(255,255,255,0.22)', borderWidth: 3, borderColor: 'rgba(255,255,255,0.5)', alignItems: 'center', justifyContent: 'center' },
+  stat: { flex: 1, alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: radius.md, paddingVertical: spacing.sm },
+});

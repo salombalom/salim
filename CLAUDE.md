@@ -6,7 +6,7 @@ UI is Arabic and RTL throughout, except English-subject content, which renders L
 ## Stack
 - Expo SDK 58 (React Native 0.88, React 19), TypeScript strict, Expo Router (file-based routes in `app/`).
 - State: zustand + AsyncStorage (`lib/store.ts`). Settings and progress persist locally.
-- Font: IBM Plex Sans Arabic (`@expo-google-fonts/ibm-plex-sans-arabic`, per-weight imports).
+- Design: violet primary, gradients (`expo-linear-gradient`), chunky 3D buttons. Headings use Baloo Bhaijaan 2; body text uses IBM Plex Sans Arabic (per-weight imports). Tokens live in `lib/theme.ts`; each subject's gradient is in `config/curriculum.ts`.
 - Tests: Jest (`jest-expo` preset), in `__tests__/`.
 - Planned: Supabase (auth/DB/Edge Functions), YouTube Data API v3, Claude API (from Edge Functions only), plus a Next.js admin in `admin/`.
 

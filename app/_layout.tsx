@@ -1,3 +1,5 @@
+import { BalooBhaijaan2_700Bold } from '@expo-google-fonts/baloo-bhaijaan-2/700Bold';
+import { BalooBhaijaan2_800ExtraBold } from '@expo-google-fonts/baloo-bhaijaan-2/800ExtraBold';
 import { IBMPlexSansArabic_400Regular } from '@expo-google-fonts/ibm-plex-sans-arabic/400Regular';
 import { IBMPlexSansArabic_500Medium } from '@expo-google-fonts/ibm-plex-sans-arabic/500Medium';
 import { IBMPlexSansArabic_600SemiBold } from '@expo-google-fonts/ibm-plex-sans-arabic/600SemiBold';
@@ -39,6 +41,8 @@ export default function RootLayout() {
     [fonts.medium]: IBMPlexSansArabic_500Medium,
     [fonts.semibold]: IBMPlexSansArabic_600SemiBold,
     [fonts.bold]: IBMPlexSansArabic_700Bold,
+    [fonts.heading]: BalooBhaijaan2_700Bold,
+    [fonts.black]: BalooBhaijaan2_800ExtraBold,
   });
   const hydrated = useHydrated();
   const { isDark, colors } = useAppTheme();
@@ -69,7 +73,7 @@ export default function RootLayout() {
           <StatusBar style={isDark ? 'light' : 'dark'} />
           <Stack
             screenOptions={{
-              headerTitleStyle: { fontFamily: fonts.bold, fontSize: 18 },
+              headerTitleStyle: { fontFamily: fonts.heading, fontSize: 20 },
               headerBackTitleStyle: { fontFamily: fonts.regular },
               headerTitleAlign: 'center',
               headerShadowVisible: false,

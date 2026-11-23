@@ -31,21 +31,23 @@ export interface SubjectDefinition {
   color: string;
   /** لون أفتح للخلفيات */
   tint: string;
+  /** تدرّج بطاقة المادة [من، إلى] */
+  gradient: [string, string];
   /** اتجاه عرض المحتوى (الإنجليزية LTR، وباقي المواد RTL) */
   direction: TextDirection;
 }
 
 export const SUBJECTS: Record<SubjectKey, SubjectDefinition> = {
-  islamic: { key: 'islamic', nameAr: 'التربية الإسلامية', icon: 'mosque', color: '#0F766E', tint: '#CCFBF1', direction: 'rtl' },
-  arabic: { key: 'arabic', nameAr: 'اللغة العربية', icon: 'abjad-arabic', color: '#B45309', tint: '#FEF3C7', direction: 'rtl' },
-  math: { key: 'math', nameAr: 'الرياضيات', icon: 'calculator-variant', color: '#1D4ED8', tint: '#DBEAFE', direction: 'rtl' },
-  science: { key: 'science', nameAr: 'العلوم', icon: 'flask', color: '#15803D', tint: '#DCFCE7', direction: 'rtl' },
-  english: { key: 'english', nameAr: 'اللغة الإنجليزية', icon: 'alphabetical-variant', color: '#BE123C', tint: '#FFE4E6', direction: 'ltr' },
-  social: { key: 'social', nameAr: 'الدراسات الاجتماعية', icon: 'earth', color: '#7C3AED', tint: '#EDE9FE', direction: 'rtl' },
-  physics: { key: 'physics', nameAr: 'الفيزياء', icon: 'atom', color: '#0369A1', tint: '#E0F2FE', direction: 'rtl' },
-  chemistry: { key: 'chemistry', nameAr: 'الكيمياء', icon: 'test-tube', color: '#C2410C', tint: '#FFEDD5', direction: 'rtl' },
-  biology: { key: 'biology', nameAr: 'الأحياء', icon: 'dna', color: '#4D7C0F', tint: '#ECFCCB', direction: 'rtl' },
-  national: { key: 'national', nameAr: 'هذا وطني', icon: 'flag', color: '#B91C1C', tint: '#FEE2E2', direction: 'rtl' },
+  islamic: { key: 'islamic', nameAr: 'التربية الإسلامية', icon: 'mosque', color: '#0F766E', tint: '#CCFBF1', gradient: ['#10B981', '#047857'], direction: 'rtl' },
+  arabic: { key: 'arabic', nameAr: 'اللغة العربية', icon: 'abjad-arabic', color: '#B45309', tint: '#FEF3C7', gradient: ['#F59E0B', '#EA580C'], direction: 'rtl' },
+  math: { key: 'math', nameAr: 'الرياضيات', icon: 'calculator-variant', color: '#1D4ED8', tint: '#DBEAFE', gradient: ['#3B82F6', '#4F46E5'], direction: 'rtl' },
+  science: { key: 'science', nameAr: 'العلوم', icon: 'flask', color: '#15803D', tint: '#DCFCE7', gradient: ['#22C55E', '#0D9488'], direction: 'rtl' },
+  english: { key: 'english', nameAr: 'اللغة الإنجليزية', icon: 'alphabetical-variant', color: '#BE123C', tint: '#FFE4E6', gradient: ['#F43F5E', '#DB2777'], direction: 'ltr' },
+  social: { key: 'social', nameAr: 'الدراسات الاجتماعية', icon: 'earth', color: '#7C3AED', tint: '#EDE9FE', gradient: ['#A855F7', '#7C3AED'], direction: 'rtl' },
+  physics: { key: 'physics', nameAr: 'الفيزياء', icon: 'atom', color: '#0369A1', tint: '#E0F2FE', gradient: ['#06B6D4', '#2563EB'], direction: 'rtl' },
+  chemistry: { key: 'chemistry', nameAr: 'الكيمياء', icon: 'test-tube', color: '#C2410C', tint: '#FFEDD5', gradient: ['#FB923C', '#E11D48'], direction: 'rtl' },
+  biology: { key: 'biology', nameAr: 'الأحياء', icon: 'dna', color: '#4D7C0F', tint: '#ECFCCB', gradient: ['#84CC16', '#15803D'], direction: 'rtl' },
+  national: { key: 'national', nameAr: 'هذا وطني', icon: 'flag', color: '#B91C1C', tint: '#FEE2E2', gradient: ['#EF4444', '#B91C1C'], direction: 'rtl' },
 };
 
 export type GradeNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;

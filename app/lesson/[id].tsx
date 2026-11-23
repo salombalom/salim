@@ -1,12 +1,14 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { AppText, Button, Card, Chip, EmptyState, Icon, Row, Screen, Segmented, Stars } from '@/components/ui';
+import { HeroBackground } from '@/components/HeroBackground';
+import { AppText, Button, Card, Chip, EmptyState, Gradient, Icon, Row, Screen, Segmented, Stars } from '@/components/ui';
 import { gradeName } from '@/config/curriculum';
 import { GENERATED_MATH_COUNT, getLesson, getLessonQuestions } from '@/lib/data/repository';
 import { useProgress, useSettings } from '@/lib/store';
-import { spacing, subjectColors, useAppTheme } from '@/lib/theme';
+import { alpha, radius, spacing, useAppTheme } from '@/lib/theme';
 import { useStudyTimer } from '@/lib/useStudyTimer';
 
 type Tab = 'summary' | 'videos' | 'quiz' | 'book';
@@ -15,14 +17,14 @@ export default function LessonScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const info = getLesson(id);
   const [tab, setTab] = useState<Tab>('summary');
-  const { isDark } = useAppTheme();
+  const { colors } = useAppTheme();
   const showUnreviewed = useSettings((s) => s.showUnreviewed);
   const best = useProgress((s) => s.lessonBest[id]);
   useStudyTimer();
 
   if (!info) return <EmptyState icon="alert-circle-outline" title="الدرس غير موجود" />;
   const { lesson, unit, subject, meta } = info;
-  const c = subjectColors(meta.color, meta.tint, isDark);
+  const [from, to] = meta.gradient;
   const isMath = subject.key === 'math';
   const fixed = getLessonQuestions(lesson.id, { includeUnreviewed: showUnreviewed });
   const unreviewedCount = fixed.filter((q) => !q.reviewed).length;
@@ -31,20 +33,34 @@ export default function LessonScreen() {
   return (
     <Screen>
       <Stack.Screen options={{ title: meta.nameAr }} />
-      <View style={{ gap: 4 }}>
-        <AppText variant="caption" color={c.fg} weight="semibold">
-          {gradeName(subject.grade)} • الوحدة {unit.order}: {unit.title}
+      <HeroBackground colors={[from, to]} style={styles.hero}>
+        <Row gap={6}>
+          <MaterialCommunityIcons name={meta.icon as never} size={16} color="rgba(255,255,255,0.9)" />
+          <AppText variant="caption" weight="semibold" color="rgba(255,255,255,0.9)">
+            {gradeName(subject.grade)} • الوحدة {unit.order}: {unit.title}
+          </AppText>
+        </Row>
+        <AppText variant="title" color="#FFFFFF">
+          {lesson.title}
         </AppText>
-        <AppText variant="title">{lesson.title}</AppText>
-      </View>
+        {best && (
+          <Row gap={6} style={styles.bestPill}>
+            <Stars count={best.stars} size={16} emptyColor="rgba(255,255,255,0.35)" />
+            <AppText variant="caption" weight="bold" color="#FFFFFF">
+              أفضل نتيجة {best.percent}%
+            </AppText>
+          </Row>
+        )}
+      </HeroBackground>
 
       <Segmented
         value={tab}
         onChange={setTab}
+        activeColor={to}
         options={[
           { value: 'summary', label: 'الملخص', icon: 'text-box-outline' },
-          { value: 'videos', label: 'الفيديوهات', icon: 'play-circle-outline' },
-          { value: 'quiz', label: 'الاختبار', icon: 'clipboard-check-outline' },
+          { value: 'videos', label: 'فيديو', icon: 'play-circle-outline' },
+          { value: 'quiz', label: 'اختبار', icon: 'lightning-bolt' },
           { value: 'book', label: 'الكتاب', icon: 'book-open-variant' },
         ]}
       />
@@ -53,14 +69,16 @@ export default function LessonScreen() {
         <>
           <Card>
             <Row>
-              <Icon name="target" color={c.fg} />
+              <Icon name="bullseye-arrow" color={to} size={24} />
               <AppText variant="h2">أهداف الدرس</AppText>
             </Row>
             {lesson.objectives.map((o, i) => (
-              <Row key={i} style={{ alignItems: 'flex-start' }}>
-                <AppText color={c.fg} weight="bold">
-                  •
-                </AppText>
+              <Row key={i} style={{ alignItems: 'flex-start' }} gap={spacing.sm}>
+                <View style={[styles.objNum, { backgroundColor: alpha(to, 0.14) }]}>
+                  <AppText variant="tiny" weight="bold" color={to}>
+                    {i + 1}
+                  </AppText>
+                </View>
                 <AppText style={{ flex: 1 }} ltr={meta.direction === 'ltr'}>
                   {o}
                 </AppText>
@@ -77,7 +95,9 @@ export default function LessonScreen() {
 
       {tab === 'quiz' && (
         <Card style={{ alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xl }}>
-          <Icon name="clipboard-check-outline" size={48} color={c.fg} />
+          <Gradient colors={[from, to]} style={styles.quizIcon}>
+            <Icon name="lightning-bolt" size={52} color="#FFFFFF" />
+          </Gradient>
           {quizCount === 0 ? (
             <>
               <AppText variant="h2" center>
@@ -89,17 +109,15 @@ export default function LessonScreen() {
             </>
           ) : (
             <>
-              <AppText variant="h2" center>
-                اختبار قصير: {quizCount} أسئلة
+              <AppText variant="title" center>
+                تحدَّ نفسك! 💪
               </AppText>
-              {isMath && <Chip label="أسئلة رياضيات جديدة في كل مرة" icon="refresh" color={c.fg} bg={c.bg} />}
-              {unreviewedCount > 0 && <Chip label={`يشمل ${unreviewedCount} أسئلة غير مراجَعة (وضع التطوير)`} icon="flask-outline" />}
-              {best && (
-                <Row>
-                  <AppText color="textMuted">أفضل نتيجة: {best.percent}%</AppText>
-                  <Stars count={best.stars} />
-                </Row>
-              )}
+              <Row gap={spacing.sm} style={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+                <Chip label={`${quizCount} أسئلة`} icon="help-circle-outline" color={to} bg={alpha(to, 0.12)} />
+                <Chip label={`حتى ${quizCount * 20} نقطة`} icon="star-four-points" color={colors.warning} bg={colors.starSoft} />
+                {isMath && <Chip label="أسئلة جديدة كل مرة" icon="refresh" color={colors.sky} bg={colors.skySoft} />}
+              </Row>
+              {unreviewedCount > 0 && <Chip label={`يشمل ${unreviewedCount} أسئلة غير مراجَعة (وضع التطوير)`} icon="flask-outline" color={colors.warning} bg={colors.warningSoft} />}
               <Button
                 title={best ? 'أعد الاختبار' : 'ابدأ الاختبار'}
                 icon="play"
@@ -117,3 +135,10 @@ export default function LessonScreen() {
     </Screen>
   );
 }
+
+const styles = StyleSheet.create({
+  hero: { borderRadius: radius.xl, padding: spacing.lg, gap: spacing.xs },
+  bestPill: { alignSelf: 'flex-start', backgroundColor: 'rgba(0,0,0,0.16)', borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4, marginTop: 4 },
+  objNum: { width: 24, height: 24, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginTop: 2 },
+  quizIcon: { width: 96, height: 96, borderRadius: 32, alignItems: 'center', justifyContent: 'center', transform: [{ rotate: '-6deg' }] },
+});

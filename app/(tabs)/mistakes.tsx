@@ -2,20 +2,21 @@ import { router } from 'expo-router';
 import { View } from 'react-native';
 
 import { AnswerReview } from '@/components/AnswerReview';
-import { AppText, Button, Chip, EmptyState, Row, Screen, SectionTitle } from '@/components/ui';
+import { HeroBackground } from '@/components/HeroBackground';
+import { AppText, Button, Chip, EmptyState, Icon, Row, Screen, SectionTitle } from '@/components/ui';
 import { getSubject } from '@/lib/data/repository';
 import { useProgress } from '@/lib/store';
-import { spacing, subjectColors, useAppTheme } from '@/lib/theme';
+import { radius, spacing, subjectColors, useAppTheme } from '@/lib/theme';
 
 export default function MistakesScreen() {
   const mistakes = useProgress((s) => s.mistakes);
-  const { isDark } = useAppTheme();
+  const { isDark, gradients } = useAppTheme();
   const list = Object.values(mistakes).sort((a, b) => b.lastAt - a.lastAt);
 
   if (list.length === 0) {
     return (
       <Screen>
-        <EmptyState icon="check-decagram-outline" title="لا توجد أخطاء" message="عندما تخطئ في سؤال سيظهر هنا لتعيد حله لاحقاً." />
+        <EmptyState icon="check-decagram" title="لا توجد أخطاء! 🎯" message="عندما تخطئ في سؤال سيظهر هنا لتعيد حله وتتقنه." />
       </Screen>
     );
   }
@@ -25,8 +26,22 @@ export default function MistakesScreen() {
 
   return (
     <Screen>
-      <AppText color="textMuted">لديك {list.length} سؤالاً لإعادة حله. كل سؤال تحله بشكل صحيح يُحذف من القائمة.</AppText>
-      <Button title="حلّ كل أخطائي" icon="refresh" onPress={() => router.push({ pathname: '/quiz', params: { mode: 'mistakes' } })} />
+      <HeroBackground colors={gradients.sunset} style={{ borderRadius: radius.xl, padding: spacing.lg, gap: spacing.md }}>
+        <Row gap={spacing.md}>
+          <View style={{ width: 56, height: 56, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.22)', alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="target" size={32} color="#FFFFFF" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="title" color="#FFFFFF">
+              {list.length} سؤالاً للإتقان
+            </AppText>
+            <AppText variant="caption" color="rgba(255,255,255,0.9)">
+              كل سؤال تحله بشكل صحيح يُحذف من القائمة.
+            </AppText>
+          </View>
+        </Row>
+        <Button title="حلّ كل أخطائي" kind="white" icon="refresh" onPress={() => router.push({ pathname: '/quiz', params: { mode: 'mistakes' } })} />
+      </HeroBackground>
       {[...bySubject.entries()].map(([subjectId, items]) => {
         const subject = getSubject(subjectId);
         const c = subject ? subjectColors(subject.meta.color, subject.meta.tint, isDark) : undefined;
@@ -37,7 +52,8 @@ export default function MistakesScreen() {
                 <Button
                   title="حلّها"
                   kind="secondary"
-                  style={{ minHeight: 36, paddingVertical: 4 }}
+                  size="sm"
+                  icon="play"
                   onPress={() => router.push({ pathname: '/quiz', params: { mode: 'mistakes', subjectId } })}
                 />
               }>

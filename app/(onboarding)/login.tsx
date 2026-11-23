@@ -2,7 +2,8 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { TextInput, View } from 'react-native';
 
-import { AppText, Button, Card, Chip, Screen, Segmented } from '@/components/ui';
+import { Logo } from '@/components/Logo';
+import { AppText, Button, Card, Chip, Icon, Row, Screen, Segmented } from '@/components/ui';
 import { useSettings } from '@/lib/store';
 import { fonts, radius, spacing, useAppTheme } from '@/lib/theme';
 
@@ -21,52 +22,52 @@ export default function Login() {
     router.replace('/role');
   };
 
-  const inputStyle = {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    color: colors.text,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    fontFamily: fonts.regular,
-    fontSize: 16,
-    textAlign: 'right' as const,
-  };
-
   return (
     <Screen edges={['top', 'bottom']} contentStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-      <AppText variant="title">تسجيل الدخول</AppText>
-      <AppText color="textMuted">سجّل الدخول لحفظ تقدمك على أكثر من جهاز ولربط حسابك بولي الأمر.</AppText>
+      <Logo size={72} showName={false} />
+      <View style={{ gap: 4 }}>
+        <AppText variant="title" center>
+          أهلاً بك في دَرْسي 👋
+        </AppText>
+        <AppText color="textMuted" center>
+          سجّل الدخول لحفظ تقدمك على أكثر من جهاز ولربط حسابك بولي الأمر.
+        </AppText>
+      </View>
 
-      <Card>
+      <Card style={{ gap: spacing.md }}>
         <Segmented
           value={method}
           onChange={setMethod}
           options={[
-            { value: 'email', label: 'البريد الإلكتروني', icon: 'email-outline' },
+            { value: 'email', label: 'البريد', icon: 'email-outline' },
             { value: 'phone', label: 'رقم الهاتف', icon: 'phone-outline' },
           ]}
         />
-        {method === 'email' ? (
+        <Row
+          style={{
+            borderWidth: 2,
+            borderColor: colors.border,
+            backgroundColor: colors.surfaceAlt,
+            borderRadius: radius.md,
+            paddingHorizontal: spacing.md,
+          }}>
+          <Icon name={method === 'email' ? 'email-outline' : 'phone-outline'} color="textMuted" />
           <TextInput
-            style={inputStyle}
-            placeholder="example@mail.com"
+            style={{ flex: 1, paddingVertical: 14, color: colors.text, fontFamily: fonts.medium, fontSize: 16, textAlign: 'right' }}
+            placeholder={method === 'email' ? 'example@mail.com' : '+968 9XXXXXXX'}
             placeholderTextColor={colors.textMuted}
-            keyboardType="email-address"
+            keyboardType={method === 'email' ? 'email-address' : 'phone-pad'}
             autoCapitalize="none"
             editable={false}
           />
-        ) : (
-          <TextInput style={inputStyle} placeholder="+968 9XXXXXXX" placeholderTextColor={colors.textMuted} keyboardType="phone-pad" editable={false} />
-        )}
+        </Row>
         <Button title="إرسال رمز التحقق" disabled />
         <View style={{ alignItems: 'center' }}>
-          <Chip label="تسجيل الدخول يتوفر في المرحلة القادمة" icon="clock-outline" />
+          <Chip label="تسجيل الدخول يتوفر في المرحلة القادمة" icon="clock-outline" color={colors.warning} bg={colors.warningSoft} />
         </View>
       </Card>
 
-      <Button title="تجربة بدون حساب" kind="secondary" icon="account-question-outline" onPress={continueAsGuest} />
+      <Button title="تجربة بدون حساب" kind="secondary" icon="rocket-launch-outline" onPress={continueAsGuest} />
       <AppText variant="caption" color="textMuted" center>
         في وضع التجربة يُحفظ تقدمك على هذا الجهاز فقط.
       </AppText>

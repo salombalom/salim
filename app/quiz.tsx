@@ -1,9 +1,9 @@
 import { router, Stack, useLocalSearchParams, useNavigation, usePreventRemove } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Platform, Pressable, View } from 'react-native';
+import { Alert, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { QuestionView } from '@/components/quiz/QuestionView';
-import { AppText, Button, Card, EmptyState, Icon, ProgressBar, Row, Screen } from '@/components/ui';
+import { AppText, Button, EmptyState, Icon, ProgressBar, Row, Screen } from '@/components/ui';
 import { buildLessonQuiz, getLesson } from '@/lib/data/repository';
 import { answerFeedback, playSound } from '@/lib/feedback';
 import { scoreQuiz } from '@/lib/gamification';
@@ -11,7 +11,7 @@ import { correctAnswerText } from '@/lib/quiz/grading';
 import { gradePrepared, prepareQuiz, type PreparedQuestion } from '@/lib/quiz/prepare';
 import { randomSeed } from '@/lib/random';
 import { subjectIdFromLesson, useProgress, useSession, useSettings, type AnswerRecord } from '@/lib/store';
-import { spacing, useAppTheme } from '@/lib/theme';
+import { alpha, radius, spacing, useAppTheme } from '@/lib/theme';
 import { SUBJECTS } from '@/config/curriculum';
 import type { QuestionResponse } from '@/lib/types';
 import { useStudyTimer } from '@/lib/useStudyTimer';
@@ -123,6 +123,9 @@ export default function QuizScreen() {
   };
 
   const isLast = index + 1 >= items.length;
+  const subjectMeta = subjectKey ? SUBJECTS[subjectKey as keyof typeof SUBJECTS] : undefined;
+  const accent = subjectMeta?.gradient[1] ?? colors.primary;
+  const progress = (index + (result !== null ? 1 : 0)) / items.length;
 
   return (
     <Screen>
@@ -131,51 +134,73 @@ export default function QuizScreen() {
           title: mode === 'mistakes' ? 'حلّ أخطائي' : (lessonInfo?.lesson.title ?? 'الاختبار'),
           headerLeft: () => (
             <Pressable onPress={() => router.back()} accessibilityLabel="إغلاق الاختبار" hitSlop={12}>
-              <Icon name="close" />
+              <Icon name="close" size={26} color="textMuted" />
             </Pressable>
           ),
         }}
       />
-      <View style={{ gap: spacing.sm }}>
-        <Row style={{ justifyContent: 'space-between' }}>
-          <AppText variant="caption" color="textMuted">
-            السؤال {index + 1} من {items.length}
+      <Row gap={spacing.md}>
+        <View style={{ flex: 1 }}>
+          <ProgressBar value={progress} color={accent} height={14} />
+        </View>
+        <Row gap={4} style={[styles.scorePill, { backgroundColor: colors.starSoft }]}>
+          <Icon name="star-four-points" size={16} color={colors.star} />
+          <AppText variant="label" weight="black" color={colors.warning}>
+            {correctCount}
           </AppText>
-          <Row gap={4}>
-            <Icon name="check-circle" size={16} color="success" />
-            <AppText variant="caption" color="textMuted">
-              {correctCount}
-            </AppText>
-          </Row>
         </Row>
-        <ProgressBar value={(index + (result !== null ? 1 : 0)) / items.length} />
-      </View>
+      </Row>
+      <AppText variant="caption" weight="bold" color="textMuted">
+        السؤال {index + 1} من {items.length}
+      </AppText>
 
-      <QuestionView key={item.question.id + index} item={item} ltr={ltr} response={response} result={result} onChange={setResponse} onSubmit={submit} />
+      <QuestionView key={item.question.id + index} item={item} ltr={ltr} accent={accent} response={response} result={result} onChange={setResponse} onSubmit={submit} />
 
       {result !== null && (
-        <Card
-          style={{
-            backgroundColor: result ? colors.successSoft : colors.dangerSoft,
-            borderColor: result ? colors.success : colors.danger,
-          }}>
-          <Row>
-            <Icon name={result ? 'check-circle' : 'close-circle'} color={result ? 'success' : 'danger'} size={26} />
-            <AppText variant="h2" color={result ? 'success' : 'danger'}>
-              {result ? (ltr ? 'Correct! 🎉' : 'إجابة صحيحة! 🎉') : ltr ? 'Not quite' : 'إجابة خاطئة'}
+        <View
+          style={[
+            styles.feedback,
+            {
+              backgroundColor: result ? colors.successSoft : colors.dangerSoft,
+              borderColor: result ? colors.success : colors.danger,
+            },
+          ]}>
+          <Row gap={spacing.md}>
+            <View style={[styles.feedbackIcon, { backgroundColor: result ? colors.success : colors.danger }]}>
+              <Icon name={result ? 'check-bold' : 'close-thick'} size={28} color="#FFFFFF" />
+            </View>
+            <AppText variant="title" color={result ? 'successDeep' : 'dangerDeep'} style={{ flex: 1 }}>
+              {result ? (ltr ? 'Excellent! 🎉' : PRAISE[index % PRAISE.length]) : ltr ? 'Not quite!' : 'لا بأس، تعلّمنا شيئاً! 💡'}
             </AppText>
           </Row>
           {!result && (
-            <AppText weight="semibold" ltr={ltr}>
-              {ltr ? 'Correct answer: ' : 'الإجابة الصحيحة: '}
-              {correctAnswerText(item.question)}
-            </AppText>
+            <View style={[styles.answerBox, { borderColor: alpha(colors.danger, 0.3), backgroundColor: colors.surface }]}>
+              <AppText variant="caption" color="textMuted">
+                {ltr ? 'Correct answer' : 'الإجابة الصحيحة'}
+              </AppText>
+              <AppText weight="bold" color="successDeep" ltr={ltr}>
+                {correctAnswerText(item.question)}
+              </AppText>
+            </View>
           )}
           <AppText ltr={ltr}>{item.question.explanation}</AppText>
-        </Card>
+          <Button
+            title={isLast ? 'عرض النتيجة' : 'متابعة'}
+            kind={result ? 'success' : 'danger'}
+            icon={isLast ? 'flag-checkered' : 'arrow-left'}
+            onPress={next}
+          />
+        </View>
       )}
-
-      {result !== null && <Button title={isLast ? 'عرض النتيجة' : 'السؤال التالي'} icon={isLast ? 'flag-checkered' : 'arrow-left'} onPress={next} />}
     </Screen>
   );
 }
+
+const PRAISE = ['رائع! 🎉', 'أحسنت! 🌟', 'ممتاز! 👏', 'إجابة بطل! 🏆', 'استمر هكذا! 🚀'];
+
+const styles = StyleSheet.create({
+  scorePill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: radius.pill },
+  feedback: { borderRadius: radius.lg, borderWidth: 2, padding: spacing.lg, gap: spacing.md },
+  feedbackIcon: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  answerBox: { borderRadius: radius.md, padding: spacing.md, borderWidth: 1 },
+});
