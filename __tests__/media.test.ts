@@ -17,7 +17,7 @@ describe('media content files', () => {
     }
     for (const v of VIDEOS) {
       expect(['pending', 'approved', 'rejected']).toContain(v.status);
-      if (v.status === 'approved') expect(v.lessonId).toBeTruthy();
+      if (v.status === 'approved') expect(Boolean(v.lessonId || v.subjectId)).toBe(true);
     }
   });
 });
@@ -58,7 +58,9 @@ describe('lesson videos', () => {
       },
       version: 502,
     });
-    expect(getSubjectVideos('g12-biology').map((v) => v.youtubeId)).toEqual(['ccc']);
+    const subjectIds = getSubjectVideos('g12-biology').map((v) => v.youtubeId);
+    expect(subjectIds).toContain('ccc');
+    expect(subjectIds).not.toContain('ddd'); // المربوط بدرس لا يتكرر في قائمة المادة
     expect(getLessonVideos('g12-biology-u1-l1').map((v) => v.youtubeId)).toEqual(['ddd']);
     expect(getSubjectVideos('g11-biology')).toHaveLength(0);
   });

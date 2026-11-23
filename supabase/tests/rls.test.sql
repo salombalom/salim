@@ -231,7 +231,7 @@ insert into public.videos (youtube_id, channel_id, title, status, lesson_id, sug
 set role anon;
 select set_config('request.jwt.claim.sub', '', false);
 do $$ begin
-  assert (select count(*) from public.videos) = 1, 'anon sees approved videos only';
+  assert (select count(*) from public.videos where youtube_id like 'vid\_%') = 1, 'anon sees approved videos only';
   assert (select count(*) from public.channels) >= 1, 'channel info is public';
 end $$;
 reset role;
@@ -239,7 +239,7 @@ reset role;
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000a', false);
 do $$ begin
-  assert (select count(*) from public.videos) = 1, 'student sees approved videos only';
+  assert (select count(*) from public.videos where youtube_id like 'vid\_%') = 1, 'student sees approved videos only';
   insert into public.video_ratings (user_id, video_id, helpful) values (auth.uid(), (select id from public.videos where youtube_id = 'vid_ok'), true);
   begin
     insert into public.video_ratings (user_id, video_id, helpful) values ('00000000-0000-0000-0000-00000000000c', (select id from public.videos where youtube_id = 'vid_ok'), false);
@@ -256,7 +256,7 @@ reset role;
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000d', false);
 do $$ begin
-  assert (select count(*) from public.videos) = 4, 'admin sees all videos';
+  assert (select count(*) from public.videos where youtube_id like 'vid\_%') = 4, 'admin sees all videos';
   perform public.review_video((select id from public.videos where youtube_id = 'vid_pending'), 'approved');
   assert (select lesson_id from public.videos where youtube_id = 'vid_pending') = 'g5-math-u1-l2', 'approval uses the suggested lesson';
   begin
@@ -277,7 +277,8 @@ reset role;
 set role anon;
 select set_config('request.jwt.claim.sub', '', false);
 do $$ begin
-  assert (select count(*) from public.videos) = 4, 'newly approved videos become visible';
+  assert (select count(*) from public.videos where youtube_id like 'vid\_%') = 4, 'newly approved videos become visible';
+  assert (select count(*) from public.videos where youtube_id not like 'vid\_%') >= 15, 'seeded Mawred videos are visible';
   assert (select count(*) from public.textbooks where subject_id = 'g5-math') > 1, 'textbook links are public';
   assert (select count(*) from public.textbooks) >= 266, 'all official textbook links seeded';
 end $$;
