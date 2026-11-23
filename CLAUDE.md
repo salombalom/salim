@@ -42,6 +42,8 @@ npm run db:login && npm run db:link -- <ref> && npm run db:push   # deploy to a 
 npm run publish:preview -- --message "…"   # EAS Update for Expo Go (project @salombalom/darsi, runtimeVersion policy sdkVersion = exposdk:58.0.0)
 #   stable Expo Go link (channel preview → branch preview): exp://u.expo.dev/b8fbeeb7-4095-44fd-bca9-91d74b07f338?channel-name=preview&runtime-version=exposdk:58.0.0
 npm run videos -- fetch|list|approve <id> [lessonId]|reject <id>|approve-suggested --min 0.8   # local video curation (needs YOUTUBE_API_KEY)
+NODE_USE_ENV_PROXY=1 npm run textbooks:fetch   # re-crawl the MOE library index (HTML only, never PDFs) into seed/media/textbooks.ts
+# Node's built-in fetch needs NODE_USE_ENV_PROXY=1 in the cloud sandbox
 npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supabase/functions/fetch-videos/index.ts
 ```
 `npx expo install <pkg>` needs network access to api.expo.dev. If that host is blocked, use `EXPO_OFFLINE=1 npx expo install <pkg>`.
@@ -73,7 +75,7 @@ npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supab
 ## Phases
 1. ✅ Structure, navigation, design, quizzes from local data (no login)
 2. ✅ Supabase, auth (email/phone + guest), progress sync, points/streak server-side
-3. ✅ Textbook links and YouTube videos (daily Edge Function, admin approval). Links and channel IDs are still to be filled in by the owner.
+3. ✅ Textbook links and YouTube videos (daily Edge Function, admin approval). 266 official textbook links from home.moe.gov.om (Arabic for grades 11–12 is pending the owner's confirmation of «المؤنس» / «المفيد»). Mawred channel: @EduMawred / UCL4a6BHJlgItAV_jjUAw4JA.
 4. Claude-generated summaries (draft → approved) and PDF export
 5. Parent dashboard
 6. Admin (Next.js in `admin/`)

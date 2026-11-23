@@ -68,10 +68,12 @@ out.push('insert into public.questions (id, lesson_id, type, prompt, options, an
 out.push(questionRows.join(',\n') + '\non conflict (id) do nothing;\n');
 // ───── الوسائط: الكتب (روابط) والقنوات والفيديوهات ─────
 if (TEXTBOOKS.length) {
-  out.push('insert into public.textbooks (grade_id, subject_id, term, title, official_url, license_status) values');
+  out.push('insert into public.textbooks (grade_id, subject_id, term, part, sort, title, official_url, license_status) values');
   out.push(
-    TEXTBOOKS.map((t) => `  (${Number(t.subjectId.match(/^g(\d+)-/)?.[1])}, ${q(t.subjectId)}, ${t.term}, ${q(t.title)}, ${q(t.officialUrl)}, ${q(t.licenseStatus)})`).join(',\n') +
-      '\non conflict (subject_id, term) do update set title = excluded.title, official_url = excluded.official_url, license_status = excluded.license_status;\n',
+    TEXTBOOKS.map(
+      (t, i) =>
+        `  (${Number(t.subjectId.match(/^g(\d+)-/)?.[1])}, ${q(t.subjectId)}, ${t.term ?? 'null'}, ${t.part ?? 'null'}, ${i}, ${q(t.title)}, ${q(t.officialUrl)}, ${q(t.licenseStatus)})`,
+    ).join(',\n') + '\non conflict (official_url) do update set title = excluded.title, term = excluded.term, part = excluded.part, sort = excluded.sort;\n',
   );
 }
 const channels = CHANNELS.filter((c) => c.channelId || c.handle);

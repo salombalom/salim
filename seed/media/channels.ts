@@ -8,9 +8,9 @@ export const CHANNELS: ChannelEntry[] = [
   {
     key: 'mawred',
     name: 'مورد — وزارة التربية والتعليم',
-    channelId: undefined,
-    handle: undefined, // ← ضع هنا الاسم المختصر لقناة مورد من رابطها
-    url: '',
-    active: false,
+    channelId: 'UCL4a6BHJlgItAV_jjUAw4JA',
+    handle: 'EduMawred',
+    url: 'https://www.youtube.com/@EduMawred',
+    active: true,
   },
 ];

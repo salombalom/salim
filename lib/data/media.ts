@@ -59,13 +59,14 @@ export function getLessonVideos(lessonId: string): LessonVideo[] {
   return [...out.values()];
 }
 
-export function getTextbook(subjectId: string, term: number): Textbook | null {
+/** كتب المادة للفصل المحدد (والكتب السنوية التي بلا فصل). الخادم أولاً، ثم الملفات المحلية. */
+export function getTextbooks(subjectId: string, term: number): Textbook[] {
+  const matches = (x: { subjectId: string; term: number | null }) => x.subjectId === subjectId && (x.term === term || x.term === null);
   for (const g of Object.values(useContent.getState().grades)) {
-    const t = g?.textbooks?.find((x) => x.subjectId === subjectId && x.term === term);
-    if (t) return { title: t.title, officialUrl: t.officialUrl, licenseStatus: t.licenseStatus };
+    const remote = g?.textbooks?.filter(matches) ?? [];
+    if (remote.length) return remote.map((t) => ({ title: t.title, officialUrl: t.officialUrl, licenseStatus: t.licenseStatus }));
   }
-  const local = TEXTBOOKS.find((x) => x.subjectId === subjectId && x.term === term);
-  return local ? { title: local.title, officialUrl: local.officialUrl, licenseStatus: local.licenseStatus } : null;
+  return TEXTBOOKS.filter(matches).map((t) => ({ title: t.title, officialUrl: t.officialUrl, licenseStatus: t.licenseStatus }));
 }
 
 export function formatDuration(sec: number | null): string {

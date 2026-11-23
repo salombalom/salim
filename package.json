@@ -65,7 +65,8 @@
     "db:link": "npx -y supabase@3.3.0 link",
     "db:push": "npx -y supabase@3.3.0 db push --remote --include-seed",
     "publish:preview": "npx -y eas-cli@27.11.0 update --branch preview --environment preview --platform all",
-    "videos": "tsx --env-file-if-exists=.env tools/videos.ts"
+    "videos": "tsx --env-file-if-exists=.env tools/videos.ts",
+    "textbooks:fetch": "tsx tools/fetch-textbooks.ts"
   },
   "private": true
 }

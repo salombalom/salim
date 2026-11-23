@@ -1,5 +1,5 @@
 import { useContent } from '@/lib/data/contentStore';
-import { formatDuration, getLessonVideos, getTextbook } from '@/lib/data/media';
+import { formatDuration, getLessonVideos, getTextbooks } from '@/lib/data/media';
 import { makeGateQuestion } from '@/lib/parentalGate';
 import { CHANNELS, TEXTBOOKS, VIDEOS } from '@/seed/media';
 
@@ -48,13 +48,23 @@ describe('lesson videos', () => {
 });
 
 describe('textbooks', () => {
-  it('prefers the server link and falls back to local files', () => {
+  it('has official https links for every grade/subject the app teaches (Arabic 11–12 pending)', () => {
+    expect(TEXTBOOKS.length).toBeGreaterThan(200);
+    expect(new Set(TEXTBOOKS.map((t) => t.officialUrl)).size).toBe(TEXTBOOKS.length);
+    for (const t of TEXTBOOKS) expect(t.officialUrl).toMatch(/^https:\/\/home\.moe\.gov\.om\/ar\/manaheg\/\d+\/show\/\d+$/);
+  });
+
+  it('returns the term books plus full-year books, server first', () => {
+    const g1 = getTextbooks('g1-arabic', 1);
+    expect(g1.length).toBeGreaterThanOrEqual(2);
+    expect(g1.every((b) => /الفصل الأول/.test(b.title))).toBe(true);
+    const national = getTextbooks('g11-national', 2);
+    expect(national.length).toBeGreaterThan(0); // كتاب سنوي بلا فصل
     useContent.setState({
       grades: { 5: { subjects: [], questions: [], fetchedAt: 1, textbooks: [{ subjectId: 'g5-math', term: 1, title: 'رياضيات 5', officialUrl: 'https://example.om/m5', licenseStatus: 'link_only' }] } },
       version: 501,
     });
-    expect(getTextbook('g5-math', 1)?.officialUrl).toBe('https://example.om/m5');
-    expect(getTextbook('g5-math', 2)).toBe(TEXTBOOKS.find((t) => t.subjectId === 'g5-math' && t.term === 2) ? expect.anything() : null);
+    expect(getTextbooks('g5-math', 1).map((b) => b.officialUrl)).toEqual(['https://example.om/m5']);
   });
 });
 

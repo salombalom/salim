@@ -24,7 +24,7 @@ export interface RemoteVideo {
 
 export interface RemoteTextbook {
   subjectId: string;
-  term: number;
+  term: number | null;
   title: string;
   officialUrl: string;
   licenseStatus: 'link_only' | 'permission_granted';
@@ -136,7 +136,7 @@ export async function refreshGradeContent(grade: GradeNumber): Promise<void> {
         .select('id, youtube_id, title, lesson_id, duration_sec, thumbnail_url, channels(name, url)')
         .eq('status', 'approved')
         .in('lesson_id', lessonIds),
-      supabase.from('textbooks').select('subject_id, term, title, official_url, license_status').eq('grade_id', grade),
+      supabase.from('textbooks').select('subject_id, term, title, official_url, license_status').eq('grade_id', grade).order('sort'),
     ]);
     const videos: RemoteVideo[] = (vrows ?? []).map((v: Row) => ({
       dbId: v.id,

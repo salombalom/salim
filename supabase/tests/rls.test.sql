@@ -274,7 +274,8 @@ set role anon;
 select set_config('request.jwt.claim.sub', '', false);
 do $$ begin
   assert (select count(*) from public.videos) = 3, 'newly approved videos become visible';
-  assert (select count(*) from public.textbooks where subject_id = 'g5-math') = 1, 'textbook links are public';
+  assert (select count(*) from public.textbooks where subject_id = 'g5-math') > 1, 'textbook links are public';
+  assert (select count(*) from public.textbooks) >= 266, 'all official textbook links seeded';
 end $$;
 reset role;
 

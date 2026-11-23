@@ -5,7 +5,10 @@ export type LicenseStatus = 'link_only' | 'permission_granted';
 export interface TextbookEntry {
   /** مثل g5-math */
   subjectId: string;
-  term: 1 | 2;
+  /** الفصل الدراسي، أو null إذا كان الكتاب للعام كاملاً */
+  term: 1 | 2 | null;
+  /** رقم الجزء إن وُجد */
+  part?: number | null;
   title: string;
   /** رابط المصدر الرسمي (https فقط) — لا نرفع ملفات الكتب */
   officialUrl: string;
