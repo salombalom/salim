@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Card, EmptyState, Icon, IconCircle, Mastery, Num, ProgressBar, Row, Screen, Segmented } from '@/components/ui';
 import { gradeName, TERMS, type TermNumber } from '@/config/curriculum';
+import { useContent } from '@/lib/data/contentStore';
 import { getSubject } from '@/lib/data/repository';
 import { completionFor, isLessonDone } from '@/lib/progress';
 import { useProgress } from '@/lib/store';
@@ -13,6 +14,7 @@ export default function SubjectScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const subject = getSubject(id);
   const { colors, fontScale } = useAppTheme();
+  useContent((c) => c.version); // يعيد العرض بعد تنزيل محتوى جديد
   const lessonBest = useProgress((s) => s.lessonBest);
   const [term, setTerm] = useState<TermNumber>(1);
 

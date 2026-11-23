@@ -14,6 +14,7 @@ import { subjectIdFromLesson, useProgress, useSession, useSettings, type AnswerR
 import { spacing, useAppTheme } from '@/lib/theme';
 import { SUBJECTS } from '@/config/curriculum';
 import type { QuestionResponse } from '@/lib/types';
+import { queueAttempt } from '@/lib/sync';
 import { useStudyTimer } from '@/lib/useStudyTimer';
 
 /**
@@ -115,6 +116,8 @@ export default function QuizScreen() {
       durationSec: Math.round((Date.now() - startedAt) / 1000),
     });
     useSession.getState().setLastResult({ attempt, answers: [...answers.current] });
+    // الرفع إلى الخادم (إن كان المستخدم مسجلاً) — لا ينتظر حتى لا يتأخر عرض النتيجة
+    queueAttempt(attempt, [...answers.current]).catch(() => {});
     playSound('finish');
     setDone(true);
   };

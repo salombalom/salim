@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { AppText, Card, Icon, IconCircle, Screen, type IconName } from '@/components/ui';
 import { useSettings, type Role } from '@/lib/store';
+import { syncProfile } from '@/lib/sync';
 import { spacing, useAppTheme } from '@/lib/theme';
 
 const ROLES: { role: Role; title: string; text: string; icon: IconName }[] = [
@@ -16,6 +17,7 @@ export default function RoleScreen() {
 
   const choose = (role: Role) => {
     set({ role, onboarded: true });
+    syncProfile().catch(() => {});
     router.push('/grade');
   };
 

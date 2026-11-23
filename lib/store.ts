@@ -106,6 +106,22 @@ export interface LessonBest {
   attempts: number;
 }
 
+/** محاولة بانتظار الرفع إلى الخادم (عند انقطاع الاتصال) */
+export interface PendingAttempt {
+  id: string;
+  lessonId: string | null;
+  subjectId: string | null;
+  mode: 'lesson' | 'mistakes';
+  answers: {
+    question_id: string | null;
+    question_key: string;
+    question_snapshot: Question;
+    given_answer: QuestionResponse | null;
+    is_correct: boolean;
+  }[];
+  durationSec: number;
+}
+
 export interface ProgressState {
   points: number;
   streak: StreakState;
@@ -115,6 +131,9 @@ export interface ProgressState {
   favorites: FavoriteRecord[];
   /** ثوانٍ الدراسة لكل يوم (YYYY-MM-DD) */
   studySeconds: Record<string, number>;
+  /** مزامنة: محاولات ووقت دراسة لم تُرفع بعد */
+  pendingAttempts: PendingAttempt[];
+  pendingStudySeconds: number;
 
   recordQuiz: (input: {
     lessonId: string | null;
@@ -126,6 +145,12 @@ export interface ProgressState {
   }) => AttemptRecord;
   toggleFavorite: (fav: Omit<FavoriteRecord, 'addedAt'>) => void;
   addStudyTime: (seconds: number) => void;
+  /** استبدال حقول بقيم الخادم (الخادم هو المرجع عند تسجيل الدخول) */
+  applyServer: (patch: Partial<Pick<ProgressState, 'points' | 'streak' | 'lessonBest' | 'mistakes' | 'favorites' | 'studySeconds' | 'attempts'>>) => void;
+  enqueueAttempt: (a: PendingAttempt) => void;
+  removePendingAttempt: (id: string) => void;
+  /** يأخذ ثواني الدراسة غير المرفوعة ويصفّرها */
+  takePendingStudySeconds: () => number;
   reset: () => void;
 }
 
@@ -137,6 +162,8 @@ const emptyProgress = {
   mistakes: {},
   favorites: [],
   studySeconds: {},
+  pendingAttempts: [] as PendingAttempt[],
+  pendingStudySeconds: 0,
 };
 
 const MAX_ATTEMPTS = 300;
@@ -208,7 +235,19 @@ export const useProgress = create<ProgressState>()(
         if (seconds <= 0) return;
         const key = dayKey();
         const cur = get().studySeconds;
-        set({ studySeconds: { ...cur, [key]: (cur[key] ?? 0) + Math.round(seconds) } });
+        set({
+          studySeconds: { ...cur, [key]: (cur[key] ?? 0) + Math.round(seconds) },
+          pendingStudySeconds: get().pendingStudySeconds + Math.round(seconds),
+        });
+      },
+
+      applyServer: (patch) => set(patch),
+      enqueueAttempt: (a) => set({ pendingAttempts: [...get().pendingAttempts, a].slice(-50) }),
+      removePendingAttempt: (id) => set({ pendingAttempts: get().pendingAttempts.filter((p) => p.id !== id) }),
+      takePendingStudySeconds: () => {
+        const n = get().pendingStudySeconds;
+        set({ pendingStudySeconds: 0 });
+        return n;
       },
 
       reset: () => set(emptyProgress),
@@ -224,6 +263,8 @@ export const useProgress = create<ProgressState>()(
         mistakes: s.mistakes,
         favorites: s.favorites,
         studySeconds: s.studySeconds,
+        pendingAttempts: s.pendingAttempts,
+        pendingStudySeconds: s.pendingStudySeconds,
       }),
     },
   ),

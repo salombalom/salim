@@ -9,10 +9,14 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
+import { AppState } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { initAuth } from '@/lib/auth';
+import { refreshGradeContent } from '@/lib/data/contentStore';
 import { ensureRTL } from '@/lib/rtl';
+import { flushPending } from '@/lib/sync';
 import { useProgress, useSettings } from '@/lib/store';
 import { fonts, motion, useAppTheme } from '@/lib/theme';
 
@@ -35,6 +39,22 @@ function useHydrated() {
   return ready;
 }
 
+/** مزامنة الخلفية: الجلسة، ومحتوى الصف، ورفع ما لم يُرفع عند مغادرة التطبيق */
+function useBackgroundSync(ready: boolean) {
+  const grade = useSettings((s) => s.grade);
+  useEffect(() => {
+    if (!ready) return;
+    initAuth();
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state !== 'active') flushPending().catch(() => {});
+    });
+    return () => sub.remove();
+  }, [ready]);
+  useEffect(() => {
+    if (ready && grade) refreshGradeContent(grade).catch(() => {});
+  }, [ready, grade]);
+}
+
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts({
     [fonts.regular]: IBMPlexSansArabic_400Regular,
@@ -47,6 +67,7 @@ export default function RootLayout() {
   const hydrated = useHydrated();
   const { isDark, colors } = useAppTheme();
   const ready = (fontsLoaded || !!fontError) && hydrated;
+  useBackgroundSync(hydrated);
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});

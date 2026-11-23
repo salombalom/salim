@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, Card, Chip, EmptyState, IconCircle, Mastery, Row, Screen, Segmented } from '@/components/ui';
 import { gradeName } from '@/config/curriculum';
+import { useContent } from '@/lib/data/contentStore';
 import { GENERATED_MATH_COUNT, getLesson, getLessonQuestions } from '@/lib/data/repository';
 import { useProgress, useSettings } from '@/lib/store';
 import { spacing, useAppTheme } from '@/lib/theme';
@@ -16,6 +17,7 @@ export default function LessonScreen() {
   const info = getLesson(id);
   const [tab, setTab] = useState<Tab>('summary');
   const { colors } = useAppTheme();
+  useContent((c) => c.version); // يعيد العرض بعد تنزيل محتوى جديد
   const showUnreviewed = useSettings((s) => s.showUnreviewed);
   const best = useProgress((s) => s.lessonBest[id]);
   useStudyTimer();

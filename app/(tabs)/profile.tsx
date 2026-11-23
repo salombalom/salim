@@ -2,10 +2,13 @@ import { router } from 'expo-router';
 import { Alert, Platform, Switch, TextInput, View } from 'react-native';
 
 import { StatRow } from '@/components/StatRow';
-import { AppText, Card, IconCircle, ListRow, Row, Screen, Segmented, SectionTitle } from '@/components/ui';
+import { AppText, Button, Card, IconCircle, ListRow, Row, Screen, Segmented, SectionTitle } from '@/components/ui';
 import { gradeName } from '@/config/curriculum';
 import { currentStreak, dayKey } from '@/lib/gamification';
+import { deleteAccount, signOut, useAuth } from '@/lib/auth';
 import { useProgress, useSettings, type ThemeMode } from '@/lib/store';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import { clearLocalAccountData, syncProfile } from '@/lib/sync';
 import { borderWidth, fonts, radius, spacing, useAppTheme } from '@/lib/theme';
 
 function ToggleRow({ title, subtitle, value, onChange, last }: { title: string; subtitle?: string; value: boolean; onChange: (v: boolean) => void; last?: boolean }) {
@@ -34,22 +37,45 @@ export default function ProfileScreen() {
   const progress = useProgress();
   const totalStudy = Object.values(progress.studySeconds).reduce((a, b) => a + b, 0);
 
-  const signOut = () => {
-    const doIt = () => {
-      useProgress.getState().reset();
-      useSettings.getState().reset();
-      router.replace('/welcome');
-    };
-    const msg = 'أنت في وضع التجربة؛ سيُحذف تقدّمك المحفوظ على هذا الجهاز.';
+  const auth = useAuth();
+  const signedIn = auth.status === 'signedIn';
+  const account = auth.session?.user.email ?? auth.session?.user.phone ?? '';
+
+  const confirm = (title: string, msg: string, action: string, onOk: () => void) => {
     if (Platform.OS === 'web') {
-      if (window.confirm(msg)) doIt();
+      if (window.confirm(msg)) onOk();
       return;
     }
-    Alert.alert('تسجيل الخروج', msg, [
+    Alert.alert(title, msg, [
       { text: 'إلغاء', style: 'cancel' },
-      { text: 'تسجيل الخروج', style: 'destructive', onPress: doIt },
+      { text: action, style: 'destructive', onPress: onOk },
     ]);
   };
+
+  const signOutPressed = () => {
+    if (signedIn) {
+      confirm('تسجيل الخروج', 'تقدّمك محفوظ في حسابك، وستجده عند تسجيل الدخول مرة أخرى.', 'تسجيل الخروج', async () => {
+        await signOut();
+        router.replace('/welcome');
+      });
+      return;
+    }
+    confirm('مسح بيانات التجربة', 'أنت في وضع التجربة؛ سيُحذف تقدّمك المحفوظ على هذا الجهاز.', 'مسح', () => {
+      clearLocalAccountData();
+      router.replace('/welcome');
+    });
+  };
+
+  const deletePressed = () =>
+    confirm('حذف الحساب', 'سيُحذف حسابك وكل بياناتك نهائياً، ولا يمكن التراجع عن ذلك.', 'حذف نهائياً', async () => {
+      const err = await deleteAccount();
+      if (err) {
+        if (Platform.OS === 'web') window.alert(err);
+        else Alert.alert('تعذّر الحذف', err);
+        return;
+      }
+      router.replace('/welcome');
+    });
 
   return (
     <Screen>
@@ -59,7 +85,7 @@ export default function ProfileScreen() {
           <View style={{ flex: 1 }}>
             <AppText variant="title">{settings.displayName.trim() || (settings.role === 'parent' ? 'ولي أمر' : 'طالب')}</AppText>
             <AppText variant="caption" color="textMuted">
-              {settings.grade ? gradeName(settings.grade) : '—'} · وضع التجربة
+              {settings.grade ? gradeName(settings.grade) : '—'} · {signedIn ? 'حساب مسجّل' : 'وضع التجربة'}
             </AppText>
           </View>
         </Row>
@@ -73,6 +99,21 @@ export default function ProfileScreen() {
       </Card>
 
       <SectionTitle>الحساب</SectionTitle>
+      {signedIn ? (
+        <Card style={{ paddingVertical: spacing.xs }}>
+          <ListRow icon={auth.session?.user.email ? 'Mail' : 'Phone'} title={account} subtitle="تقدّمك محفوظ ومتزامن مع حسابك" last />
+        </Card>
+      ) : (
+        <Card style={{ gap: spacing.md }}>
+          <AppText variant="label">احفظ تقدّمك في حساب</AppText>
+          <AppText variant="caption" color="textMuted">
+            {isSupabaseConfigured
+              ? 'سجّل الدخول برمز يصلك على بريدك أو هاتفك، وسيُنقل تقدّمك الحالي إلى حسابك.'
+              : 'تسجيل الدخول غير متاح بعد في هذه النسخة.'}
+          </AppText>
+          {isSupabaseConfigured && <Button title="تسجيل الدخول أو إنشاء حساب" kind="secondary" onPress={() => router.push('/login')} />}
+        </Card>
+      )}
       <Card style={{ paddingVertical: spacing.sm }}>
         <View style={{ gap: spacing.xs, paddingVertical: spacing.sm }}>
           <AppText variant="caption" color="textMuted">
@@ -81,6 +122,7 @@ export default function ProfileScreen() {
           <TextInput
             value={settings.displayName}
             onChangeText={(t) => settings.set({ displayName: t.slice(0, 20) })}
+            onEndEditing={() => syncProfile().catch(() => {})}
             placeholder="اسمك الأول أو اسم مستعار"
             placeholderTextColor={colors.textMuted}
             style={{
@@ -149,7 +191,8 @@ export default function ProfileScreen() {
       <Card style={{ paddingVertical: spacing.xs }}>
         <ListRow icon="Info" title="عن التطبيق" onPress={() => router.push('/about')} />
         <ListRow icon="ShieldCheck" title="سياسة الخصوصية" onPress={() => router.push('/privacy')} />
-        <ListRow icon="LogOut" title="تسجيل الخروج" onPress={signOut} last />
+        <ListRow icon="LogOut" title={signedIn ? 'تسجيل الخروج' : 'مسح بيانات التجربة'} onPress={signOutPressed} last={!signedIn} />
+        {signedIn && <ListRow icon="CircleX" title="حذف الحساب نهائياً" subtitle="يحذف حسابك وكل بياناتك" onPress={deletePressed} last />}
       </Card>
     </Screen>
   );

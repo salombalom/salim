@@ -7,6 +7,7 @@ import { StatRow } from '@/components/StatRow';
 import { SubjectCard } from '@/components/SubjectCard';
 import { AppText, Card, FadeIn, Icon, IconCircle, ProgressBar, Row, SectionTitle } from '@/components/ui';
 import { gradeName } from '@/config/curriculum';
+import { useContent } from '@/lib/data/contentStore';
 import { getLesson, getSubjectsForGrade } from '@/lib/data/repository';
 import { currentStreak, dayKey } from '@/lib/gamification';
 import { useProgress, useSettings } from '@/lib/store';
@@ -23,6 +24,7 @@ function greeting() {
 export default function Home() {
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
+  useContent((c) => c.version); // يعيد العرض بعد تنزيل محتوى جديد
   const { grade, role, displayName } = useSettings();
   const { points, streak, studySeconds, attempts } = useProgress();
   if (!grade) return null;

@@ -3,6 +3,7 @@ import { Pressable, View } from 'react-native';
 
 import { AppText, Card, EmptyState, Icon, Row, Screen, Segmented } from '@/components/ui';
 import { useProgress } from '@/lib/store';
+import { syncFavorite } from '@/lib/sync';
 
 export default function FavoritesScreen() {
   const [tab, setTab] = useState<'video' | 'summary'>('video');
@@ -37,7 +38,11 @@ export default function FavoritesScreen() {
                   </AppText>
                 )}
               </View>
-              <Pressable onPress={() => toggleFavorite(f)} accessibilityLabel="إزالة من المحفوظات" hitSlop={10}>
+              <Pressable
+                onPress={() => {
+                  toggleFavorite(f);
+                  syncFavorite(f, false).catch(() => {});
+                }} accessibilityLabel="إزالة من المحفوظات" hitSlop={10}>
                 <Icon name="Bookmark" />
               </Pressable>
             </Row>

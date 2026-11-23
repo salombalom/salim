@@ -3,6 +3,7 @@ import { TextInput, View } from 'react-native';
 
 import { GradeGrid } from '@/components/GradeGrid';
 import { AppText, Screen } from '@/components/ui';
+import { syncProfile } from '@/lib/sync';
 import { useSettings } from '@/lib/store';
 import { borderWidth, fonts, radius, spacing, useAppTheme } from '@/lib/theme';
 
@@ -44,6 +45,7 @@ export default function GradeScreen() {
         value={grade}
         onSelect={(g) => {
           set({ grade: g });
+          syncProfile().catch(() => {});
           router.replace('/home');
         }}
       />

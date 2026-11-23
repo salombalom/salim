@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 
 import { GradeGrid } from '@/components/GradeGrid';
 import { Screen } from '@/components/ui';
+import { syncProfile } from '@/lib/sync';
 import { useSettings } from '@/lib/store';
 
 export default function GradePicker() {
@@ -12,6 +13,7 @@ export default function GradePicker() {
         value={grade}
         onSelect={(g) => {
           set({ grade: g });
+          syncProfile().catch(() => {});
           router.back();
         }}
       />
