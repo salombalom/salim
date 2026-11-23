@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { useParentalGate } from '@/components/ParentalGate';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { AppText, Card, EmptyState, Icon, Row } from '@/components/ui';
+import { formatMixedTitle } from '@/lib/bidi';
 import { formatDuration, type LessonVideo } from '@/lib/data/media';
 import { openExternal } from '@/lib/openLink';
 import { useProgress } from '@/lib/store';
@@ -62,7 +63,9 @@ export function VideosTab({
       <VideoPlayer youtubeId={v.youtubeId} />
 
       <View style={{ gap: spacing.sm }}>
-        <AppText variant="label">{v.title}</AppText>
+        <AppText variant="label" preformatted>
+          {formatMixedTitle(v.title)}
+        </AppText>
         <Row style={{ justifyContent: 'space-between' }}>
           <Pressable onPress={v.channelUrl ? openChannel : undefined} disabled={!v.channelUrl} accessibilityRole="link" hitSlop={8}>
             <Row gap={6}>
@@ -116,8 +119,8 @@ export function VideosTab({
                   )}
                 </View>
                 <View style={{ flex: 1, gap: 2 }}>
-                  <AppText variant="caption" numberOfLines={2}>
-                    {x.title}
+                  <AppText variant="caption" numberOfLines={2} preformatted>
+                    {formatMixedTitle(x.title)}
                   </AppText>
                   <AppText variant="overline" color="textMuted">
                     {x.channelName}

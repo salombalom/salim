@@ -10,7 +10,7 @@
     "subjectId": "g10-english",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "q-jBRg8lQ4M",
@@ -23,7 +23,7 @@
     "subjectId": "g12-biology",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "awMNS300NXs",
@@ -36,7 +36,7 @@
     "subjectId": "g10-english",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "RJEaz6vhqPQ",
@@ -49,7 +49,7 @@
     "subjectId": "g12-biology",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "l2HyxLOZqDY",
@@ -62,7 +62,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "sAeE6FZjiRk",
@@ -75,7 +75,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "XRcaV08UVcY",
@@ -88,7 +88,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "NuQFVuN-HEc",
@@ -101,7 +101,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "KP5FdWejg8c",
@@ -114,7 +114,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "imyXz8G9X4E",
@@ -127,7 +127,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "pISB-HVEQ0Q",
@@ -140,7 +140,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "n4jp3DS8JRU",
@@ -153,7 +153,7 @@
     "subjectId": "g11-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "V8Es0saswp0",
@@ -166,7 +166,7 @@
     "subjectId": "g12-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "5XwWvpJ_QK0",
@@ -179,7 +179,7 @@
     "subjectId": "g12-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   },
   {
     "youtubeId": "ASoIbrGy2Lw",
@@ -192,6 +192,6 @@
     "subjectId": "g12-math",
     "matchScore": 0.45,
     "lessonId": null,
-    "status": "pending"
+    "status": "approved"
   }
 ]

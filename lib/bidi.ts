@@ -37,3 +37,24 @@ export function isolateMath(text: string): string {
 export function stripIsolates(text: string): string {
   return text.replace(new RegExp(`[${LRI}${PDI}]`, 'g'), '');
 }
+
+/**
+ * تنسيق عناوين الفيديو (مثل «الرياضيات المتقدمة 11 - (11 - 4) - المواد الإثرائية 2024»):
+ * - رقم الوحدة والدرس بين القوسين يبقى متجاوراً بالترتيب الصحيح: (11-4)
+ * - الشَّرطات الفاصلة بين الأجزاء تصبح نقطة وسطى «·» حتى لا تقلب ترتيب الأجزاء
+ * النتيجة جاهزة للعرض كما هي (بدون isolateMath).
+ */
+export function formatMixedTitle(title: string): string {
+  if (!/[\u0600-\u06FF]/.test(title)) return title;
+  const parts: string[] = [];
+  const marked = title.replace(/\(\s*([\d.]+)\s*[-–]\s*([\d.]+)\s*\)/g, (_, a, b) => {
+    parts.push(`${LRI}(${a}-${b})${PDI}`);
+    return `\u0000${parts.length - 1}\u0000`;
+  });
+  return marked
+    .split(/\s*[-–—|]\s+|\s+[-–—|]\s*/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .join(' · ')
+    .replace(/\u0000(\d+)\u0000/g, (_, i) => parts[Number(i)]);
+}

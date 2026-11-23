@@ -67,6 +67,8 @@ export interface AppTextProps extends TextProps {
   /** عرض النص باتجاه LTR (لمحتوى اللغة الإنجليزية) */
   ltr?: boolean;
   center?: boolean;
+  /** النص مُنسَّق مسبقاً (مثل formatMixedTitle): لا نطبّق عزل التعابير الرياضية */
+  preformatted?: boolean;
 }
 
 /** نعزل التعابير الرياضية في النص العربي حتى لا تُعرض معكوسة (انظر lib/bidi.ts) */
@@ -78,7 +80,7 @@ function fixBidi(children: ReactNode): ReactNode {
   return children;
 }
 
-export function AppText({ variant = 'body', font, color = 'text', ltr, center, style, children, ...rest }: AppTextProps) {
+export function AppText({ variant = 'body', font, color = 'text', ltr, center, preformatted, style, children, ...rest }: AppTextProps) {
   const { colors, fontScale } = useAppTheme();
   const v = typeScale[variant];
   const s: TextStyle = {
@@ -89,7 +91,7 @@ export function AppText({ variant = 'body', font, color = 'text', ltr, center, s
   };
   return (
     <Text {...rest} style={[s, variant === 'overline' && styles.overline, ltr && styles.ltrText, center && styles.center, style]}>
-      {ltr ? children : fixBidi(children)}
+      {ltr || preformatted ? children : fixBidi(children)}
     </Text>
   );
 }
