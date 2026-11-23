@@ -251,3 +251,12 @@ export function clearLocalAccountData() {
   useSettings.getState().reset();
   useSettings.getState().set({ themeMode, fontScale, soundOn, hapticsOn, showUnreviewed });
 }
+
+/* ───────────── تقييم الفيديوهات ───────────── */
+
+export async function syncVideoRating(dbId: string | undefined, helpful: boolean | null) {
+  const id = await uid();
+  if (!supabase || !id || !dbId) return;
+  if (helpful === null) await supabase.from('video_ratings').delete().match({ user_id: id, video_id: dbId });
+  else await supabase.from('video_ratings').upsert({ user_id: id, video_id: dbId, helpful });
+}

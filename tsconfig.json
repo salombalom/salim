@@ -10,7 +10,8 @@
     "types": [
       "jest",
       "node"
-    ]
+    ],
+    "allowImportingTsExtensions": true
   },
   "include": [
     "**/*.ts",
@@ -21,6 +22,7 @@
   "exclude": [
     "node_modules",
     "legacy",
-    "admin"
+    "admin",
+    "supabase/functions/*/index.ts"
   ]
 }

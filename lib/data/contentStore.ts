@@ -10,9 +10,31 @@ import { SUBJECTS, type GradeNumber, type SubjectKey, type TermNumber } from '@/
 import { supabase } from '@/lib/supabase';
 import type { Question, SubjectContent } from '@/lib/types';
 
+export interface RemoteVideo {
+  /** معرّف الصف في قاعدة البيانات (لتقييمات الطلاب) */
+  dbId: string;
+  youtubeId: string;
+  title: string;
+  lessonId: string;
+  durationSec: number | null;
+  thumbnailUrl: string | null;
+  channelName: string;
+  channelUrl: string;
+}
+
+export interface RemoteTextbook {
+  subjectId: string;
+  term: number;
+  title: string;
+  officialUrl: string;
+  licenseStatus: 'link_only' | 'permission_granted';
+}
+
 interface GradeContent {
   subjects: SubjectContent[];
   questions: Question[];
+  videos?: RemoteVideo[];
+  textbooks?: RemoteTextbook[];
   fetchedAt: number;
 }
 
@@ -106,8 +128,36 @@ export async function refreshGradeContent(grade: GradeNumber): Promise<void> {
       .in('lesson_id', lessonIds);
     if (qerr) throw qerr;
     const questions = (qrows ?? []).map(mapQuestion).filter((q): q is Question => !!q);
+
+    // الفيديوهات المعتمدة فقط (RLS) وروابط الكتب
+    const [{ data: vrows }, { data: trows }] = await Promise.all([
+      supabase
+        .from('videos')
+        .select('id, youtube_id, title, lesson_id, duration_sec, thumbnail_url, channels(name, url)')
+        .eq('status', 'approved')
+        .in('lesson_id', lessonIds),
+      supabase.from('textbooks').select('subject_id, term, title, official_url, license_status').eq('grade_id', grade),
+    ]);
+    const videos: RemoteVideo[] = (vrows ?? []).map((v: Row) => ({
+      dbId: v.id,
+      youtubeId: v.youtube_id,
+      title: v.title,
+      lessonId: v.lesson_id,
+      durationSec: v.duration_sec,
+      thumbnailUrl: v.thumbnail_url,
+      channelName: v.channels?.name ?? '',
+      channelUrl: v.channels?.url ?? '',
+    }));
+    const textbooks: RemoteTextbook[] = (trows ?? []).map((t: Row) => ({
+      subjectId: t.subject_id,
+      term: t.term,
+      title: t.title,
+      officialUrl: t.official_url,
+      licenseStatus: t.license_status,
+    }));
+
     useContent.setState((s) => ({
-      grades: { ...s.grades, [grade]: { subjects, questions, fetchedAt: Date.now() } },
+      grades: { ...s.grades, [grade]: { subjects, questions, videos, textbooks, fetchedAt: Date.now() } },
       version: s.version + 1,
       status: 'idle',
     }));

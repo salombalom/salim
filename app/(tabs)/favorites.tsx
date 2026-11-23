@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 
@@ -28,7 +29,9 @@ export default function FavoritesScreen() {
         />
       ) : (
         items.map((f) => (
-          <Card key={f.id}>
+          <Card
+            key={f.id}
+            onPress={f.lessonId ? () => router.push({ pathname: '/lesson/[id]', params: { id: f.lessonId!, tab: f.type === 'video' ? 'videos' : 'summary' } }) : undefined}>
             <Row>
               <View style={{ flex: 1 }}>
                 <AppText variant="label">{f.title}</AppText>

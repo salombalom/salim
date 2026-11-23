@@ -4,7 +4,10 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, Card, Chip, EmptyState, IconCircle, Mastery, Row, Screen, Segmented } from '@/components/ui';
-import { gradeName } from '@/config/curriculum';
+import { BookTab } from '@/components/lesson/BookTab';
+import { VideosTab } from '@/components/lesson/VideosTab';
+import { gradeName, TERMS } from '@/config/curriculum';
+import { getLessonVideos, getTextbook } from '@/lib/data/media';
 import { useContent } from '@/lib/data/contentStore';
 import { GENERATED_MATH_COUNT, getLesson, getLessonQuestions } from '@/lib/data/repository';
 import { useProgress, useSettings } from '@/lib/store';
@@ -14,9 +17,9 @@ import { useStudyTimer } from '@/lib/useStudyTimer';
 type Tab = 'summary' | 'videos' | 'quiz' | 'book';
 
 export default function LessonScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, tab: initialTab } = useLocalSearchParams<{ id: string; tab?: Tab }>();
   const info = getLesson(id);
-  const [tab, setTab] = useState<Tab>('summary');
+  const [tab, setTab] = useState<Tab>(initialTab ?? 'summary');
   const { colors } = useAppTheme();
   useContent((c) => c.version); // يعيد العرض بعد تنزيل محتوى جديد
   const showUnreviewed = useSettings((s) => s.showUnreviewed);
@@ -79,7 +82,7 @@ export default function LessonScreen() {
         </>
       )}
 
-      {tab === 'videos' && <EmptyState icon="CirclePlay" title="لا توجد مقاطع شرح بعد" message="تظهر هنا مقاطع مختارة من قنوات تعليمية موثوقة بعد مراجعتها." />}
+      {tab === 'videos' && <VideosTab videos={getLessonVideos(lesson.id)} lessonId={lesson.id} lessonTitle={lesson.title} />}
 
       {tab === 'quiz' && (
         <Card style={{ alignItems: 'center', gap: spacing.lg, paddingVertical: spacing.xxl }}>
@@ -117,7 +120,7 @@ export default function LessonScreen() {
         </Card>
       )}
 
-      {tab === 'book' && <EmptyState icon="BookOpen" title="الكتاب المدرسي" message="يتوفر هنا رابط الكتاب من مصدره الرسمي، ويُفتح داخل التطبيق." />}
+      {tab === 'book' && <BookTab book={getTextbook(subject.id, unit.term)} termName={TERMS.find((t) => t.number === unit.term)?.nameAr ?? ''} />}
     </Screen>
   );
 }

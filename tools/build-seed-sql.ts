@@ -7,6 +7,7 @@ import { join } from 'node:path';
 
 import { GRADES, GRADE_SUBJECTS, SUBJECTS, TERMS, gradeName, subjectId } from '../config/curriculum';
 import { seedDatabase } from '../seed';
+import { CHANNELS, TEXTBOOKS, VIDEOS } from '../seed/media';
 
 const q = (v: string | null | undefined) => (v === null || v === undefined ? 'null' : `'${v.replace(/'/g, "''")}'`);
 const j = (v: unknown) => (v === undefined || v === null ? 'null' : `${q(JSON.stringify(v))}::jsonb`);
@@ -65,8 +66,36 @@ const questionRows = seedDatabase.questions.map((x) => {
 out.push('-- لا نغيّر حالة المراجعة لأسئلة موجودة مسبقاً');
 out.push('insert into public.questions (id, lesson_id, type, prompt, options, answer, accepted, explanation, difficulty, reviewed, source) values');
 out.push(questionRows.join(',\n') + '\non conflict (id) do nothing;\n');
+// ───── الوسائط: الكتب (روابط) والقنوات والفيديوهات ─────
+if (TEXTBOOKS.length) {
+  out.push('insert into public.textbooks (grade_id, subject_id, term, title, official_url, license_status) values');
+  out.push(
+    TEXTBOOKS.map((t) => `  (${Number(t.subjectId.match(/^g(\d+)-/)?.[1])}, ${q(t.subjectId)}, ${t.term}, ${q(t.title)}, ${q(t.officialUrl)}, ${q(t.licenseStatus)})`).join(',\n') +
+      '\non conflict (subject_id, term) do update set title = excluded.title, official_url = excluded.official_url, license_status = excluded.license_status;\n',
+  );
+}
+const channels = CHANNELS.filter((c) => c.channelId || c.handle);
+for (const c of channels) {
+  out.push(
+    `insert into public.channels (youtube_channel_id, handle, name, url, active) values (${q(c.channelId ?? null)}, ${q(c.handle ?? null)}, ${q(c.name)}, ${q(c.url || 'https://www.youtube.com/')}, ${c.active}) on conflict do nothing;`,
+  );
+}
+const channelRef = (key: string) => {
+  const c = CHANNELS.find((x) => x.key === key);
+  return c?.channelId ? `(select id from public.channels where youtube_channel_id = ${q(c.channelId)})` : `(select id from public.channels where handle = ${q(c?.handle ?? '')})`;
+};
+const videos = VIDEOS.filter((v) => channels.some((c) => c.key === v.channelKey));
+if (videos.length) {
+  out.push('insert into public.videos (youtube_id, channel_id, title, thumbnail_url, published_at, duration_sec, suggested_lesson_id, lesson_id, match_score, status) values');
+  out.push(
+    videos
+      .map((v) => `  (${q(v.youtubeId)}, ${channelRef(v.channelKey)}, ${q(v.title)}, ${q(v.thumbnailUrl)}, ${q(v.publishedAt)}, ${v.durationSec ?? 'null'}, ${q(v.suggestedLessonId)}, ${q(v.lessonId)}, ${v.matchScore}, ${q(v.status)})`)
+      .join(',\n') + '\non conflict (youtube_id) do nothing;\n',
+  );
+}
+
 out.push('commit;');
 
 const path = join(__dirname, '..', 'supabase', 'seed.sql');
 writeFileSync(path, out.join('\n') + '\n');
-console.log(`wrote ${path}: ${seedDatabase.subjects.length} subjects, ${unitRows.length} units, ${lessonRows.length} lessons, ${questionRows.length} questions`);
+console.log(`wrote ${path}: ${seedDatabase.subjects.length} subjects, ${unitRows.length} units, ${lessonRows.length} lessons, ${questionRows.length} questions, ${TEXTBOOKS.length} textbooks, ${channels.length} channels, ${videos.length} videos`);

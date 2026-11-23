@@ -102,6 +102,8 @@ export interface FavoriteRecord {
   id: string;
   title: string;
   subtitle?: string;
+  /** للعودة إلى الدرس من شاشة المحفوظات */
+  lessonId?: string;
   addedAt: number;
 }
 
@@ -136,6 +138,8 @@ export interface ProgressState {
   favorites: FavoriteRecord[];
   /** ثوانٍ الدراسة لكل يوم (YYYY-MM-DD) */
   studySeconds: Record<string, number>;
+  /** تقييم الفيديوهات: true مفيد، false غير مفيد */
+  videoRatings: Record<string, boolean>;
   /** مزامنة: محاولات ووقت دراسة لم تُرفع بعد */
   pendingAttempts: PendingAttempt[];
   pendingStudySeconds: number;
@@ -150,6 +154,8 @@ export interface ProgressState {
   }) => AttemptRecord;
   toggleFavorite: (fav: Omit<FavoriteRecord, 'addedAt'>) => void;
   addStudyTime: (seconds: number) => void;
+  /** تقييم فيديو؛ الضغط على نفس التقييم مرة أخرى يلغيه */
+  rateVideo: (videoId: string, helpful: boolean) => void;
   /** استبدال حقول بقيم الخادم (الخادم هو المرجع عند تسجيل الدخول) */
   applyServer: (patch: Partial<Pick<ProgressState, 'points' | 'streak' | 'lessonBest' | 'mistakes' | 'favorites' | 'studySeconds' | 'attempts'>>) => void;
   enqueueAttempt: (a: PendingAttempt) => void;
@@ -167,6 +173,7 @@ const emptyProgress = {
   mistakes: {},
   favorites: [],
   studySeconds: {},
+  videoRatings: {} as Record<string, boolean>,
   pendingAttempts: [] as PendingAttempt[],
   pendingStudySeconds: 0,
 };
@@ -246,6 +253,13 @@ export const useProgress = create<ProgressState>()(
         });
       },
 
+      rateVideo: (videoId, helpful) => {
+        const cur = { ...get().videoRatings };
+        if (cur[videoId] === helpful) delete cur[videoId];
+        else cur[videoId] = helpful;
+        set({ videoRatings: cur });
+      },
+
       applyServer: (patch) => set(patch),
       enqueueAttempt: (a) => set({ pendingAttempts: [...get().pendingAttempts, a].slice(-50) }),
       removePendingAttempt: (id) => set({ pendingAttempts: get().pendingAttempts.filter((p) => p.id !== id) }),
@@ -268,6 +282,7 @@ export const useProgress = create<ProgressState>()(
         mistakes: s.mistakes,
         favorites: s.favorites,
         studySeconds: s.studySeconds,
+        videoRatings: s.videoRatings,
         pendingAttempts: s.pendingAttempts,
         pendingStudySeconds: s.pendingStudySeconds,
       }),

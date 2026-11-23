@@ -3,6 +3,10 @@
  * تصفح الأيقونات: https://lucide.dev/icons
  */
 import type { LucideIcon } from 'lucide-react-native';
+import ExternalLink from 'lucide-react-native/icons/external-link';
+import BookmarkCheck from 'lucide-react-native/icons/bookmark-check';
+import ThumbsDown from 'lucide-react-native/icons/thumbs-down';
+import ThumbsUp from 'lucide-react-native/icons/thumbs-up';
 import MoonStar from 'lucide-react-native/icons/moon-star';
 import Feather from 'lucide-react-native/icons/feather';
 import Sigma from 'lucide-react-native/icons/sigma';
@@ -127,6 +131,10 @@ export const ICONS = {
   Lock,
   Baby,
   Shuffle,
+  ThumbsUp,
+  ThumbsDown,
+  BookmarkCheck,
+  ExternalLink,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

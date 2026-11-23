@@ -432,3 +432,8 @@ enabled = true
 [auth.email.template.magic_link]
 subject = "رمز الدخول إلى دَرْسي"
 content_path = "./supabase/templates/magic_link.html"
+
+# ── دَرْسي: دالة جلب الفيديوهات اليومية ──
+# نتحقق من مفتاح الخدمة داخل الدالة نفسها (يدعم مفاتيح sb_secret الجديدة التي ليست JWT)
+[functions.fetch-videos]
+verify_jwt = false

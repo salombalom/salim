@@ -18,7 +18,13 @@ UI is Arabic and RTL throughout, except English-subject content, which renders L
   - The geometric pattern (`components/GeometricPattern.tsx`, 5% opacity) appears only on the welcome screen and at the top of home.
   - Contrast: use the `*Text` colour variants for small text. `__tests__/contrast.test.ts` enforces WCAG AA.
 - Tests: Jest (`jest-expo` preset), in `__tests__/`.
-- Planned: Edge Functions, YouTube Data API v3, Claude API (from Edge Functions only), plus a Next.js admin in `admin/`.
+- Media (phase 3): textbook links, plus YouTube videos played in the official iframe player (`react-native-youtube-iframe`; `components/VideoPlayer.web.tsx` for web).
+  - Local sources: `seed/media/{textbooks.ts,channels.ts,videos.json}`.
+  - Server sources: the `textbooks` and `videos` tables (approved only), cached by contentStore.
+  - `lib/data/media.ts` merges the two.
+  - External links (textbook, channel) go through `components/ParentalGate.tsx` (Kids-category requirement).
+  - Video matching and the YouTube client live in `supabase/functions/_shared/` (dependency-free; used by the Edge Function `fetch-videos`, by `tools/videos.ts` and by Jest). Never use `search.list`; read the uploads playlist and stop at the first known video.
+- Planned: Claude API (from Edge Functions only), plus a Next.js admin in `admin/`.
 
 ## Commands
 ```bash
@@ -34,6 +40,9 @@ npm run db:test       # spin up a temporary local Postgres, apply migrations + s
 npm run db:seed-sql   # regenerate supabase/seed.sql from seed/ (never edit seed.sql by hand)
 npm run db:login && npm run db:link -- <ref> && npm run db:push   # deploy to a hosted project
 npm run publish:preview -- --message "…"   # EAS Update for Expo Go (project @salombalom/darsi, runtimeVersion policy sdkVersion = exposdk:58.0.0)
+#   stable Expo Go link (channel preview → branch preview): exp://u.expo.dev/b8fbeeb7-4095-44fd-bca9-91d74b07f338?channel-name=preview&runtime-version=exposdk:58.0.0
+npm run videos -- fetch|list|approve <id> [lessonId]|reject <id>|approve-suggested --min 0.8   # local video curation (needs YOUTUBE_API_KEY)
+npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supabase/functions/fetch-videos/index.ts
 ```
 `npx expo install <pkg>` needs network access to api.expo.dev. If that host is blocked, use `EXPO_OFFLINE=1 npx expo install <pkg>`.
 
@@ -49,6 +58,8 @@ npm run publish:preview -- --message "…"   # EAS Update for Expo Go (project @
 - `supabase/migrations/` – `…01_schema.sql` (all tables; content uses text ids that match the seed), `…02_functions.sql` (is_admin, record_attempt, add_study_time, import_guest_progress, delete_my_account, plus the views my_lesson_best and my_open_mistakes), `…03_rls.sql` (policies and column grants).
   - `supabase/tests/` – the local Postgres harness, with a stub of Supabase's auth schema and roles.
   - `supabase/templates/magic_link.html` – Arabic OTP email.
+  - `…04_media.sql` – channel handle, video duration, video_fetch_runs, review_video(), video_rating_stats.
+  - `supabase/functions/fetch-videos` – the daily job. `supabase/cron/schedule_fetch_videos.sql` schedules it once via pg_cron + pg_net + Vault.
 - `legacy/runner-game/` – an older, unrelated Vite game kept for reference.
 
 ## Rules
@@ -62,7 +73,7 @@ npm run publish:preview -- --message "…"   # EAS Update for Expo Go (project @
 ## Phases
 1. ✅ Structure, navigation, design, quizzes from local data (no login)
 2. ✅ Supabase, auth (email/phone + guest), progress sync, points/streak server-side
-3. Textbook links and YouTube videos (daily Edge Function, admin approval)
+3. ✅ Textbook links and YouTube videos (daily Edge Function, admin approval). Links and channel IDs are still to be filled in by the owner.
 4. Claude-generated summaries (draft → approved) and PDF export
 5. Parent dashboard
 6. Admin (Next.js in `admin/`)

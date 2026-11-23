@@ -213,4 +213,69 @@ do $$ begin
   assert not exists (select 1 from public.attempts where user_id = '00000000-0000-0000-0000-00000000000b'), 'data cascaded';
 end $$;
 
+
+-- ═════════════ المرحلة 3: الفيديوهات والكتب ═════════════
+insert into public.channels (handle, name, url) values ('mawred_test', 'مورد', 'https://www.youtube.com/@mawred_test');
+do $$ begin
+  begin
+    insert into public.channels (name, url) values ('بلا معرّف', 'https://youtube.com');
+    assert false, 'channel needs id or handle';
+  exception when check_violation then null; end;
+end $$;
+insert into public.videos (youtube_id, channel_id, title, status, lesson_id, suggested_lesson_id) values
+  ('vid_ok', (select id from public.channels where handle = 'mawred_test'), 'مفهوم الكسر', 'approved', 'g5-math-u1-l1', 'g5-math-u1-l1'),
+  ('vid_pending', (select id from public.channels where handle = 'mawred_test'), 'جمع الكسور', 'pending', null, 'g5-math-u1-l2'),
+  ('vid_nolesson', (select id from public.channels where handle = 'mawred_test'), 'لقاء تربوي', 'pending', null, null),
+  ('vid_rejected', (select id from public.channels where handle = 'mawred_test'), 'غير مناسب', 'rejected', null, null);
+
+set role anon;
+select set_config('request.jwt.claim.sub', '', false);
+do $$ begin
+  assert (select count(*) from public.videos) = 1, 'anon sees approved videos only';
+  assert (select count(*) from public.channels) >= 1, 'channel info is public';
+end $$;
+reset role;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000a', false);
+do $$ begin
+  assert (select count(*) from public.videos) = 1, 'student sees approved videos only';
+  insert into public.video_ratings (user_id, video_id, helpful) values (auth.uid(), (select id from public.videos where youtube_id = 'vid_ok'), true);
+  begin
+    insert into public.video_ratings (user_id, video_id, helpful) values ('00000000-0000-0000-0000-00000000000c', (select id from public.videos where youtube_id = 'vid_ok'), false);
+    assert false, 'cannot rate on behalf of another user';
+  exception when insufficient_privilege then null; end;
+  begin
+    perform public.review_video((select id from public.videos where youtube_id = 'vid_ok'), 'rejected');
+    assert false, 'students cannot review videos';
+  exception when insufficient_privilege then null; end;
+  assert (select count(*) from public.video_fetch_runs) = 0, 'fetch runs are admin-only';
+end $$;
+reset role;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000d', false);
+do $$ begin
+  assert (select count(*) from public.videos) = 4, 'admin sees all videos';
+  perform public.review_video((select id from public.videos where youtube_id = 'vid_pending'), 'approved');
+  assert (select lesson_id from public.videos where youtube_id = 'vid_pending') = 'g5-math-u1-l2', 'approval uses the suggested lesson';
+  begin
+    perform public.review_video((select id from public.videos where youtube_id = 'vid_nolesson'), 'approved');
+    assert false, 'cannot approve a video without a lesson';
+  exception when raise_exception then null; end;
+  perform public.review_video((select id from public.videos where youtube_id = 'vid_nolesson'), 'approved', 'g5-math-u1-l1');
+  assert (select status from public.videos where youtube_id = 'vid_nolesson') = 'approved', 'admin links manually';
+  assert (select helpful from public.video_rating_stats where video_id = (select id from public.videos where youtube_id = 'vid_ok')) = 1, 'admin sees rating stats';
+  insert into public.textbooks (grade_id, subject_id, term, title, official_url) values (5, 'g5-math', 1, 'الرياضيات', 'https://example.om/math5');
+end $$;
+reset role;
+
+set role anon;
+select set_config('request.jwt.claim.sub', '', false);
+do $$ begin
+  assert (select count(*) from public.videos) = 3, 'newly approved videos become visible';
+  assert (select count(*) from public.textbooks where subject_id = 'g5-math') = 1, 'textbook links are public';
+end $$;
+reset role;
+
 \echo 'RLS & function tests: OK'

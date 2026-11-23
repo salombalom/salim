@@ -63,8 +63,9 @@ npx expo start --tunnel
 1. ثبّت تطبيق **Expo Go** من App Store أو Google Play، وتأكد أنه محدَّث.
 2. افتح الرابط التالي على الجوال، أو امسح رمز QR الخاص به:
    ```
-   exp://u.expo.dev/b8fbeeb7-4095-44fd-bca9-91d74b07f338/group/204948f2-d0ea-429d-ab37-7934c8b58d41
+   exp://u.expo.dev/b8fbeeb7-4095-44fd-bca9-91d74b07f338?channel-name=preview&runtime-version=exposdk:58.0.0
    ```
+   هذا الرابط ثابت، ويفتح دائماً **آخر نسخة منشورة**.
    - **أندرويد:** افتح Expo Go واضغط **Scan QR code**.
    - **آيفون:** وجّه تطبيق الكاميرا إلى رمز QR.
 3. يمكنك أيضاً فتح صفحة التحديثات في حسابك ومسح رمز QR منها: https://expo.dev/accounts/salombalom/projects/darsi/updates
@@ -74,7 +75,58 @@ npx expo start --tunnel
 npx eas-cli login          # مرة واحدة على حاسوبك
 npm run publish:preview -- --message "وصف التعديل"
 ```
-بعد النشر يظهر رابط جديد في صفحة التحديثات على expo.dev.
+بعد النشر يفتح نفس الرابط أعلاه النسخة الجديدة. إذا كان التطبيق مفتوحاً، أغلقه تماماً ثم افتحه من جديد مرتين ليتحدّث.
+
+---
+
+## الكتب المدرسية وفيديوهات الشرح (المرحلة 3)
+
+### روابط الكتب الرسمية
+- أضف الروابط في الملف `seed/media/textbooks.ts`، بسطر واحد لكل مادة وفصل:
+  ```ts
+  { subjectId: 'g5-math', term: 1, title: 'الرياضيات — الصف الخامس — الفصل الأول',
+    officialUrl: 'https://…رابط الكتاب من موقع الوزارة…', licenseStatus: 'link_only' },
+  ```
+- لا نرفع ملفات الكتب أبداً. زر «افتح الكتاب» يفتح الرابط الرسمي في متصفح داخل التطبيق.
+- `licenseStatus` قيمته `link_only`، ولا تغيّرها إلى `permission_granted` إلا بعد الحصول على إذن رسمي.
+- قبل فتح أي رابط خارجي يظهر **سؤال لولي الأمر**، لأن هذا شرط من شروط فئة الأطفال في App Store.
+
+### القنوات (قناة «مورد» أولاً)
+1. افتح قناة «مورد» على يوتيوب، وانسخ رابطها، مثل `https://www.youtube.com/@اسم_القناة`.
+2. في `seed/media/channels.ts` ضع الاسم الذي يأتي بعد `@` في الحقل `handle` (أو معرّف القناة الذي يبدأ بـ `UC` في `channelId`)، واجعل `active: true`.
+
+### مفتاح YouTube Data API (مجاني)
+1. ادخل إلى https://console.cloud.google.com وأنشئ مشروعاً.
+2. من **APIs & Services ← Library** فعّل **YouTube Data API v3**.
+3. من **Credentials ← Create credentials ← API key** أنشئ مفتاحاً، ثم قيّده بـ YouTube Data API v3 فقط.
+4. ضعه في ملف `.env` هكذا: `YOUTUBE_API_KEY=...`. لا يدخل هذا المفتاح في التطبيق أبداً.
+
+### جلب الفيديوهات ومراجعتها (الوضع المحلي)
+```bash
+npm run videos -- fetch                 # يجلب الجديد ويقترح الدرس المناسب لكل فيديو (حالته: بانتظار الموافقة)
+npm run videos -- list                  # الفيديوهات بانتظار الموافقة مع الدرس المقترح ودرجة المطابقة
+npm run videos -- approve <youtubeId>   # اعتماد الفيديو على الدرس المقترح
+npm run videos -- approve <youtubeId> g5-math-u1-l2   # اعتماده على درس آخر
+npm run videos -- reject <youtubeId>
+npm run publish:preview -- --message "فيديوهات جديدة"  # لتظهر في التطبيق على جوالك
+```
+- **لا يظهر للطلاب إلا الفيديو المعتمد.**
+- أول جلب يستهلك بضع وحدات فقط من الحصة المجانية (10,000 وحدة يومياً)، والجلب اليومي يستهلك وحدة أو وحدتين.
+- يُعرض الفيديو بمشغّل يوتيوب الرسمي مع اسم القناة ورابطها، ولا نحمّل أي فيديو ولا نعيد رفعه.
+- في الدرس يستطيع الطالب حفظ الفيديو في «المحفوظات» وتقييمه (مفيد أو غير مفيد).
+
+### عند تفعيل Supabase لاحقاً
+- الدالة `supabase/functions/fetch-videos` تعمل يومياً، وتقوم بنفس العمل على الخادم.
+- لتفعيلها:
+  ```bash
+  npx supabase secrets set YOUTUBE_API_KEY=...
+  npx supabase functions deploy fetch-videos
+  ```
+- ثم شغّل `supabase/cron/schedule_fetch_videos.sql` مرة واحدة في SQL Editor، بعد أن تحفظ رابط المشروع ومفتاح الخدمة في Vault كما هو موضّح داخل الملف.
+- الموافقة على الفيديوهات تكون من لوحة الإدارة في المرحلة 6، أو مؤقتاً من SQL Editor:
+  ```sql
+  select public.review_video('<video uuid>', 'approved');
+  ```
 
 ---
 
@@ -186,6 +238,8 @@ order('أنا أحب مدرستي', 'الشرح'),
 | `npm run db:test` | اختبار قاعدة البيانات والصلاحيات (RLS) محلياً، ويحتاج PostgreSQL مثبتاً |
 | `npm run db:seed-sql` | إعادة توليد `supabase/seed.sql` بعد تعديل أسئلة `seed/` |
 | `npm run db:push` | رفع التعديلات على قاعدة البيانات إلى Supabase |
+| `npm run videos -- fetch` / `list` / `approve` / `reject` | جلب فيديوهات القنوات ومراجعتها |
+| `npm run publish:preview` | نشر نسخة جديدة على رابط Expo Go |
 
 ## حل المشاكل الشائعة
 - **«Project is incompatible with this version of Expo Go»**: حدّث تطبيق Expo Go من المتجر.
