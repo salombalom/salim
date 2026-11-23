@@ -4,6 +4,15 @@
  */
 import type { LucideIcon } from 'lucide-react-native';
 import ExternalLink from 'lucide-react-native/icons/external-link';
+import FileDown from 'lucide-react-native/icons/file-down';
+import Share2 from 'lucide-react-native/icons/share-2';
+import ChartColumn from 'lucide-react-native/icons/chart-column';
+import TrendingUp from 'lucide-react-native/icons/trending-up';
+import CalendarDays from 'lucide-react-native/icons/calendar-days';
+import KeyRound from 'lucide-react-native/icons/key-round';
+import Link2 from 'lucide-react-native/icons/link-2';
+import ClipboardList from 'lucide-react-native/icons/clipboard-list';
+import Printer from 'lucide-react-native/icons/printer';
 import BookmarkCheck from 'lucide-react-native/icons/bookmark-check';
 import ThumbsDown from 'lucide-react-native/icons/thumbs-down';
 import ThumbsUp from 'lucide-react-native/icons/thumbs-up';
@@ -135,6 +144,15 @@ export const ICONS = {
   ThumbsDown,
   BookmarkCheck,
   ExternalLink,
+  FileDown,
+  Share2,
+  ChartColumn,
+  TrendingUp,
+  CalendarDays,
+  KeyRound,
+  Link2,
+  ClipboardList,
+  Printer,
 } satisfies Record<string, LucideIcon>;
 
 export type IconName = keyof typeof ICONS;

@@ -1,17 +1,19 @@
 import { LOCAL_ONLY } from '@/config/app';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 import { AppText, Button, Card, Chip, EmptyState, IconCircle, Mastery, Row, Screen, Segmented } from '@/components/ui';
 import { BookTab } from '@/components/lesson/BookTab';
+import { SummaryTab } from '@/components/lesson/SummaryTab';
 import { VideosTab } from '@/components/lesson/VideosTab';
 import { gradeName, TERMS } from '@/config/curriculum';
 import { getLessonVideos, getSubjectVideos, getTextbooks } from '@/lib/data/media';
 import { useContent } from '@/lib/data/contentStore';
+import { getSummary } from '@/lib/data/summaries';
 import { GENERATED_MATH_COUNT, getLesson, getLessonQuestions } from '@/lib/data/repository';
 import { useProgress, useSettings } from '@/lib/store';
-import { spacing, useAppTheme } from '@/lib/theme';
+import { spacing } from '@/lib/theme';
 import { useStudyTimer } from '@/lib/useStudyTimer';
 
 type Tab = 'summary' | 'videos' | 'quiz' | 'book';
@@ -20,7 +22,6 @@ export default function LessonScreen() {
   const { id, tab: initialTab } = useLocalSearchParams<{ id: string; tab?: Tab }>();
   const info = getLesson(id);
   const [tab, setTab] = useState<Tab>(initialTab ?? 'summary');
-  const { colors } = useAppTheme();
   useContent((c) => c.version); // يعيد العرض بعد تنزيل محتوى جديد
   const showUnreviewed = useSettings((s) => s.showUnreviewed);
   const best = useProgress((s) => s.lessonBest[id]);
@@ -66,20 +67,17 @@ export default function LessonScreen() {
       />
 
       {tab === 'summary' && (
-        <>
-          <Card accent={meta.color}>
-            <AppText variant="h2">أهداف الدرس</AppText>
-            {lesson.objectives.map((o, i) => (
-              <Row key={i} style={{ alignItems: 'flex-start' }} gap={spacing.md}>
-                <View style={[styles.bullet, { borderColor: colors.gold }]} />
-                <AppText style={{ flex: 1 }} ltr={meta.direction === 'ltr'}>
-                  {o}
-                </AppText>
-              </Row>
-            ))}
-          </Card>
-          <EmptyState icon="FileText" title="الملخص قيد الإعداد" message="يظهر ملخص الدرس هنا بعد مراجعته واعتماده." />
-        </>
+        <SummaryTab
+          summary={getSummary(lesson.id, { includeDrafts: showUnreviewed })}
+          lessonId={lesson.id}
+          lessonTitle={lesson.title}
+          objectives={lesson.objectives}
+          unitTitle={`الوحدة ${unit.order}: ${unit.title}`}
+          subjectName={meta.nameAr}
+          gradeName={gradeName(subject.grade)}
+          accent={meta.color}
+          ltr={meta.direction === 'ltr'}
+        />
       )}
 
       {tab === 'videos' && <VideosTab lessonVideos={getLessonVideos(lesson.id)} subjectVideos={getSubjectVideos(subject.id)} subjectName={meta.nameAr} lessonId={lesson.id} lessonTitle={lesson.title} />}
@@ -124,7 +122,3 @@ export default function LessonScreen() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  bullet: { width: 7, height: 7, borderWidth: 1, transform: [{ rotate: '45deg' }], marginTop: 10 },
-});

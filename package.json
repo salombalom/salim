@@ -18,7 +18,9 @@
     "expo-image": "~58.0.18",
     "expo-linking": "~58.0.17",
     "expo-localization": "~58.0.5",
+    "expo-print": "~58.0.9",
     "expo-router": "~58.0.32",
+    "expo-sharing": "~58.0.23",
     "expo-splash-screen": "~58.0.14",
     "expo-status-bar": "~58.0.5",
     "expo-symbols": "~58.0.5",
@@ -42,6 +44,7 @@
     "zustand": "^5.1.0"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "1.12.0",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.3.0",
     "eslint": "^9.39.5",
@@ -67,7 +70,8 @@
     "publish:preview": "npx -y eas-cli@27.11.0 update --branch preview --environment preview --platform all",
     "videos": "tsx --env-file-if-exists=.env tools/videos.ts",
     "textbooks:fetch": "tsx tools/fetch-textbooks.ts",
-    "questions": "tsx tools/questions.ts"
+    "questions": "tsx tools/questions.ts",
+    "summaries": "tsx --env-file-if-exists=.env tools/summaries.ts"
   },
   "private": true
 }

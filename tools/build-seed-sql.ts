@@ -8,6 +8,8 @@ import { join } from 'node:path';
 import { GRADES, GRADE_SUBJECTS, SUBJECTS, TERMS, gradeName, subjectId } from '../config/curriculum';
 import { seedDatabase } from '../seed';
 import { CHANNELS, TEXTBOOKS, VIDEOS } from '../seed/media';
+import summariesJson from '../seed/summaries.json';
+import type { SummaryRecord } from '../supabase/functions/_shared/summary';
 
 const q = (v: string | null | undefined) => (v === null || v === undefined ? 'null' : `'${v.replace(/'/g, "''")}'`);
 const j = (v: unknown) => (v === undefined || v === null ? 'null' : `${q(JSON.stringify(v))}::jsonb`);
@@ -66,6 +68,17 @@ const questionRows = seedDatabase.questions.map((x) => {
 out.push('-- المراجعة لا تُلغى من هنا: سؤال راجعه المشرف يبقى مراجَعاً، وما في reviewed.json يصبح مراجَعاً');
 out.push('insert into public.questions (id, lesson_id, type, prompt, options, answer, accepted, explanation, difficulty, reviewed, source) values');
 out.push(questionRows.join(',\n') + '\non conflict (id) do update set reviewed = public.questions.reviewed or excluded.reviewed;\n');
+// ───── الملخصات (seed/summaries.json) — الاعتماد لا يُلغى من هنا ─────
+const summaries = Object.entries(summariesJson as unknown as Record<string, SummaryRecord>);
+if (summaries.length) {
+  out.push('insert into public.summaries (lesson_id, content, model, status, approved_at) values');
+  out.push(
+    summaries
+      .map(([id, r]) => `  (${q(id)}, ${j(r.content)}, ${q(r.model)}, ${q(r.status)}, ${r.status === 'approved' ? 'now()' : 'null'})`)
+      .join(',\n') +
+      "\non conflict (lesson_id) do update set content = excluded.content, model = excluded.model, updated_at = now(),\n  status = case when public.summaries.status = 'approved' then 'approved'::public.summary_status else excluded.status end;\n",
+  );
+}
 // ───── الوسائط: الكتب (روابط) والقنوات والفيديوهات ─────
 if (TEXTBOOKS.length) {
   out.push('insert into public.textbooks (grade_id, subject_id, term, part, sort, title, official_url, license_status) values');
@@ -100,4 +113,4 @@ out.push('commit;');
 
 const path = join(__dirname, '..', 'supabase', 'seed.sql');
 writeFileSync(path, out.join('\n') + '\n');
-console.log(`wrote ${path}: ${seedDatabase.subjects.length} subjects, ${unitRows.length} units, ${lessonRows.length} lessons, ${questionRows.length} questions, ${TEXTBOOKS.length} textbooks, ${channels.length} channels, ${videos.length} videos`);
+console.log(`wrote ${path}: ${seedDatabase.subjects.length} subjects, ${unitRows.length} units, ${lessonRows.length} lessons, ${questionRows.length} questions, ${TEXTBOOKS.length} textbooks, ${channels.length} channels, ${videos.length} videos, ${summaries.length} summaries`);

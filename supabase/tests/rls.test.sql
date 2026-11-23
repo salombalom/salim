@@ -12,6 +12,11 @@ insert into public.admins (user_id) values ('00000000-0000-0000-0000-00000000000
 -- سؤال واحد مراجَع (نصفّر أولاً ما راجعه المعلم في seed/reviewed.json ليبقى العدّ ثابتاً)
 update public.questions set reviewed = false;
 update public.questions set reviewed = true where id = 'g5-math-u1-l1-q1';
+-- ملخصان: معتمد ومسودة (نصفّر أولاً ما جاء من seed/summaries.json)
+delete from public.summaries;
+insert into public.summaries (lesson_id, content, status) values
+  ('g5-math-u1-l1', '{"overview":"x","concepts":["a","b"],"definitions":[],"review":["c"]}', 'approved'),
+  ('g5-math-u1-l2', '{"overview":"y","concepts":["a","b"],"definitions":[],"review":["c"]}', 'draft');
 -- ولي الأمر مرتبط بالطالب A فقط
 insert into public.parent_links (parent_id, student_id, status)
 values ('00000000-0000-0000-0000-00000000000c', '00000000-0000-0000-0000-00000000000a', 'active');
@@ -29,7 +34,12 @@ do $$ begin
   assert (select count(*) from public.subjects) = 72, 'anon reads all subjects';
   assert (select count(*) from public.lessons) = 288, 'anon reads published lessons';
   assert (select count(*) from public.questions) = 1, 'anon sees reviewed questions only';
+  assert (select count(*) from public.summaries) = 1, 'anon sees approved summaries only';
   assert (select count(*) from public.profiles) = 0, 'anon sees no profiles';
+  begin
+    perform public.child_report('00000000-0000-0000-0000-00000000000a');
+    assert false, 'anon must not read reports';
+  exception when insufficient_privilege then null; end;
   begin
     insert into public.questions (lesson_id, type, prompt, answer) values ('g5-math-u1-l1', 'true_false', 'x', 'true');
     assert false, 'anon must not insert questions';
@@ -157,6 +167,10 @@ do $$ begin
   assert (select count(*) from public.questions) = 1440, 'admin sees unreviewed questions';
   update public.questions set reviewed = true where id = 'g5-math-u1-l1-q2';
   assert (select reviewed from public.questions where id = 'g5-math-u1-l1-q2'), 'admin can review questions';
+  assert (select count(*) from public.summaries) = 2, 'admin sees draft summaries';
+  update public.summaries set status = 'approved' where lesson_id = 'g5-math-u1-l2';
+  assert (select status from public.summaries where lesson_id = 'g5-math-u1-l2') = 'approved', 'admin approves summaries';
+  assert (public.child_report('00000000-0000-0000-0000-00000000000a') ? 'subjects'), 'admin can read reports';
   insert into public.channels (youtube_channel_id, name, url) values ('UC_test', 'قناة', 'https://youtube.com/@x');
 end $$;
 reset role;
@@ -166,13 +180,87 @@ set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000b', false);
 do $$ begin
   update public.questions set prompt = 'hacked' where id = 'g5-math-u1-l1-q1';
+  update public.summaries set content = '{"overview":"hacked"}';
   delete from public.subjects;
 end $$;
 reset role;
 do $$ begin
   assert (select prompt from public.questions where id = 'g5-math-u1-l1-q1') <> 'hacked', 'student cannot edit questions';
   assert (select count(*) from public.subjects) = 72, 'student cannot delete subjects';
+  assert not exists (select 1 from public.summaries where content ->> 'overview' = 'hacked'), 'student cannot edit summaries';
 end $$;
+
+-- ───────────── ربط ولي الأمر برمز (المرحلة 5) ─────────────
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000c', false);
+do $$ begin
+  assert (select count(*) from public.my_children()) = 1, 'parent sees linked child A';
+  assert (public.child_report('00000000-0000-0000-0000-00000000000a') ->> 'days')::int = 30, 'parent reads linked child report';
+  begin
+    perform public.child_report('00000000-0000-0000-0000-00000000000b');
+    assert false, 'parent must not read an unlinked child';
+  exception when insufficient_privilege then null; end;
+  begin
+    perform public.create_parent_link_code();
+    assert false, 'parents cannot create codes';
+  exception when insufficient_privilege then null; end;
+  begin
+    insert into public.parent_links (parent_id, student_id, status) values (auth.uid(), '00000000-0000-0000-0000-00000000000b', 'active');
+    assert false, 'parent cannot self-link';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000b', false);
+create temp table _code as select public.create_parent_link_code() ->> 'code' as code;
+do $$ begin
+  assert (select length(code) from _code) = 8, 'code has 8 characters';
+  assert (select count(*) from public.parent_links where code is not null) = 1, 'student sees own pending code';
+end $$;
+reset role;
+grant select on _code to authenticated;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000a', false);
+do $$ begin
+  begin
+    perform public.redeem_parent_link_code((select code from _code));
+    assert false, 'students cannot redeem codes';
+  exception when insufficient_privilege then null; end;
+  begin
+    perform public.child_report('00000000-0000-0000-0000-00000000000b');
+    assert false, 'student must not read another student report';
+  exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000c', false);
+do $$ begin
+  begin
+    perform public.redeem_parent_link_code('WRONG123');
+    assert false, 'wrong code fails';
+  exception when no_data_found then null; end;
+  assert (public.redeem_parent_link_code(lower((select code from _code))) ->> 'grade_id')::int = 7, 'redeem returns the child (case-insensitive)';
+  assert (select count(*) from public.my_children()) = 2, 'parent now has two children';
+  assert (public.child_report('00000000-0000-0000-0000-00000000000b', 7) ->> 'days')::int = 7, 'parent reads new child report';
+  begin
+    perform public.redeem_parent_link_code((select code from _code));
+    assert false, 'a code works only once';
+  exception when no_data_found then null; end;
+end $$;
+reset role;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000b', false);
+do $$ begin
+  assert (select count(*) from public.my_parents()) = 1, 'student sees linked parent';
+  perform public.remove_parent_link('00000000-0000-0000-0000-00000000000c');
+  assert (select count(*) from public.my_parents()) = 0, 'student can unlink';
+end $$;
+reset role;
+drop table _code;
 
 -- ───────────── قيود البيانات ─────────────
 do $$ begin

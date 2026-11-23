@@ -9,6 +9,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { SUBJECTS, type GradeNumber, type SubjectKey, type TermNumber } from '@/config/curriculum';
 import { supabase } from '@/lib/supabase';
 import type { Question, SubjectContent } from '@/lib/types';
+import type { SummaryContent } from '@/supabase/functions/_shared/summary';
 
 export interface RemoteVideo {
   /** معرّف الصف في قاعدة البيانات (لتقييمات الطلاب) */
@@ -31,10 +32,17 @@ export interface RemoteTextbook {
   licenseStatus: 'link_only' | 'permission_granted';
 }
 
+export interface RemoteSummary {
+  lessonId: string;
+  status: 'draft' | 'approved';
+  content: SummaryContent;
+}
+
 interface GradeContent {
   subjects: SubjectContent[];
   questions: Question[];
   videos?: RemoteVideo[];
+  summaries?: RemoteSummary[];
   textbooks?: RemoteTextbook[];
   fetchedAt: number;
 }
@@ -131,14 +139,17 @@ export async function refreshGradeContent(grade: GradeNumber): Promise<void> {
     const questions = (qrows ?? []).map(mapQuestion).filter((q): q is Question => !!q);
 
     // الفيديوهات المعتمدة فقط (RLS) وروابط الكتب
-    const [{ data: vrows }, { data: trows }] = await Promise.all([
+    const [{ data: vrows }, { data: trows }, { data: srows }] = await Promise.all([
       supabase
         .from('videos')
         .select('id, youtube_id, title, lesson_id, subject_id, duration_sec, thumbnail_url, channels(name, url)')
         .eq('status', 'approved')
         .in('subject_id', subjects.map((s) => s.id)),
       supabase.from('textbooks').select('subject_id, term, title, official_url, license_status').eq('grade_id', grade).order('sort'),
+      // الملخصات المعتمدة فقط (RLS)
+      supabase.from('summaries').select('lesson_id, status, content').in('lesson_id', lessonIds),
     ]);
+    const summaries: RemoteSummary[] = (srows ?? []).map((r: Row) => ({ lessonId: r.lesson_id, status: r.status, content: r.content }));
     const videos: RemoteVideo[] = (vrows ?? []).map((v: Row) => ({
       dbId: v.id,
       youtubeId: v.youtube_id,
@@ -159,7 +170,7 @@ export async function refreshGradeContent(grade: GradeNumber): Promise<void> {
     }));
 
     useContent.setState((s) => ({
-      grades: { ...s.grades, [grade]: { subjects, questions, videos, textbooks, fetchedAt: Date.now() } },
+      grades: { ...s.grades, [grade]: { subjects, questions, videos, textbooks, summaries, fetchedAt: Date.now() } },
       version: s.version + 1,
       status: 'idle',
     }));

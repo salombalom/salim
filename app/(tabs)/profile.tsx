@@ -6,6 +6,7 @@ import { AppText, Button, Card, IconCircle, ListRow, Row, Screen, Segmented, Sec
 import { gradeName } from '@/config/curriculum';
 import { currentStreak, dayKey } from '@/lib/gamification';
 import { deleteAccount, signOut, useAuth } from '@/lib/auth';
+import { confirmAction } from '@/lib/confirm';
 import { useProgress, useSettings, type ThemeMode } from '@/lib/store';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { LOCAL_ONLY } from '@/config/app';
@@ -42,16 +43,7 @@ export default function ProfileScreen() {
   const signedIn = auth.status === 'signedIn';
   const account = auth.session?.user.email ?? auth.session?.user.phone ?? '';
 
-  const confirm = (title: string, msg: string, action: string, onOk: () => void) => {
-    if (Platform.OS === 'web') {
-      if (window.confirm(msg)) onOk();
-      return;
-    }
-    Alert.alert(title, msg, [
-      { text: 'إلغاء', style: 'cancel' },
-      { text: action, style: 'destructive', onPress: onOk },
-    ]);
-  };
+  const confirm = confirmAction;
 
   const signOutPressed = () => {
     if (signedIn) {
@@ -142,6 +134,20 @@ export default function ProfileScreen() {
         </View>
         <ListRow icon="GraduationCap" title="الصف الدراسي" subtitle={settings.grade ? gradeName(settings.grade) : undefined} onPress={() => router.push('/grade-picker')} />
         <ListRow icon="UserCog" title="الصفة" subtitle={settings.role === 'parent' ? 'ولي أمر' : 'طالب'} onPress={() => router.push('/role')} last />
+      </Card>
+
+      <SectionTitle>ولي الأمر</SectionTitle>
+      <Card style={{ paddingVertical: spacing.xs }}>
+        <ListRow
+          icon="ChartColumn"
+          title={settings.role === 'parent' ? 'لوحة ولي الأمر' : 'تقرير لولي أمري'}
+          subtitle={settings.role === 'parent' ? undefined : 'وقت الدراسة والدرجات، مع تصدير PDF'}
+          onPress={() => router.push('/parent')}
+          last={!(signedIn && settings.role !== 'parent')}
+        />
+        {signedIn && settings.role !== 'parent' && (
+          <ListRow icon="Link2" title="ربط ولي الأمر" subtitle="رمز يتيح لولي أمرك متابعة تقدّمك من جهازه" onPress={() => router.push('/link-parent')} last />
+        )}
       </Card>
 
       <SectionTitle>المظهر</SectionTitle>

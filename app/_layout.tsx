@@ -114,6 +114,7 @@ export default function RootLayout() {
             <Stack.Screen name="review" options={{ title: 'راجع أخطائي' }} />
             <Stack.Screen name="grade-picker" options={{ title: 'تغيير الصف', presentation: 'modal' }} />
             <Stack.Screen name="parent" options={{ title: 'لوحة ولي الأمر' }} />
+            <Stack.Screen name="link-parent" options={{ title: 'ربط ولي الأمر' }} />
             <Stack.Screen name="about" options={{ title: 'عن التطبيق' }} />
             <Stack.Screen name="privacy" options={{ title: 'سياسة الخصوصية' }} />
           </Stack>
