@@ -11,7 +11,20 @@ import { useProgress } from '@/lib/store';
 import { syncFavorite, syncVideoRating } from '@/lib/sync';
 import { borderWidth, radius, spacing, useAppTheme } from '@/lib/theme';
 
-export function VideosTab({ videos, lessonId, lessonTitle }: { videos: LessonVideo[]; lessonId: string; lessonTitle: string }) {
+export function VideosTab({
+  lessonVideos,
+  subjectVideos,
+  subjectName,
+  lessonId,
+  lessonTitle,
+}: {
+  lessonVideos: LessonVideo[];
+  subjectVideos: LessonVideo[];
+  subjectName: string;
+  lessonId: string;
+  lessonTitle: string;
+}) {
+  const videos = [...lessonVideos, ...subjectVideos];
   const { colors } = useAppTheme();
   const [current, setCurrent] = useState(0);
   const gate = useParentalGate();
@@ -79,13 +92,18 @@ export function VideosTab({ videos, lessonId, lessonTitle }: { videos: LessonVid
         )}
       </View>
 
-      {videos.length > 1 && (
-        <View style={{ gap: spacing.sm }}>
+      {[
+        { title: 'مقاطع أخرى لهذا الدرس', from: 0, to: lessonVideos.length },
+        { title: `من مقاطع ${subjectName}`, from: lessonVideos.length, to: videos.length },
+      ].map((group) => {
+        const items = videos.map((x, i) => ({ x, i })).filter(({ i }) => i >= group.from && i < group.to && i !== current);
+        if (items.length === 0) return null;
+        return (
+        <View key={group.title} style={{ gap: spacing.sm }}>
           <AppText variant="overline" color="textMuted">
-            مقاطع أخرى لهذا الدرس
+            {group.title}
           </AppText>
-          {videos.map((x, i) =>
-            i === current ? null : (
+          {items.map(({ x, i }) => (
               <Card key={x.youtubeId} onPress={() => setCurrent(i)} style={styles.item}>
                 <View style={[styles.thumb, { borderColor: colors.border }]}>
                   <Image source={{ uri: x.thumbnailUrl }} style={StyleSheet.absoluteFill} contentFit="cover" />
@@ -106,10 +124,10 @@ export function VideosTab({ videos, lessonId, lessonTitle }: { videos: LessonVid
                   </AppText>
                 </View>
               </Card>
-            ),
-          )}
+          ))}
         </View>
-      )}
+        );
+      })}
     </View>
   );
 }

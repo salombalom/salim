@@ -59,3 +59,24 @@ describe('youtube client', () => {
     expect(yt.quota).toBe(2 + 2);
   });
 });
+
+describe('channel feed (no API key)', () => {
+  it('parses entries, decodes entities and thumbnails', () => {
+    const { parseChannelFeed } = jest.requireActual('@/supabase/functions/_shared/youtube');
+    const xml = `<feed><title>مورد</title>
+      <entry><yt:videoId>abc123XYZ00</yt:videoId><title>الأحياء 12 - (9-4) إدارة &amp; حماية</title>
+        <published>2024-05-01T10:00:00+00:00</published>
+        <media:group><media:thumbnail url="https://i2.ytimg.com/vi/abc123XYZ00/hqdefault.jpg" width="480" height="360"/>
+        <media:description>درس للصف الثاني عشر</media:description></media:group></entry>
+      <entry><title>بدون معرّف</title></entry></feed>`;
+    const v = parseChannelFeed(xml);
+    expect(v).toHaveLength(1);
+    expect(v[0]).toMatchObject({
+      youtubeId: 'abc123XYZ00',
+      title: 'الأحياء 12 - (9-4) إدارة & حماية',
+      thumbnailUrl: 'https://i2.ytimg.com/vi/abc123XYZ00/hqdefault.jpg',
+      description: 'درس للصف الثاني عشر',
+      durationSec: null,
+    });
+  });
+});

@@ -96,6 +96,7 @@ Deno.serve(async (req) => {
           duration_sec: v.durationSec,
           raw: v.raw,
           suggested_lesson_id: m.lessonId,
+          subject_id: m.subjectId,
           match_score: m.score,
           status: 'pending',
         };

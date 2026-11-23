@@ -15,7 +15,8 @@ export interface RemoteVideo {
   dbId: string;
   youtubeId: string;
   title: string;
-  lessonId: string;
+  lessonId: string | null;
+  subjectId: string | null;
   durationSec: number | null;
   thumbnailUrl: string | null;
   channelName: string;
@@ -133,9 +134,9 @@ export async function refreshGradeContent(grade: GradeNumber): Promise<void> {
     const [{ data: vrows }, { data: trows }] = await Promise.all([
       supabase
         .from('videos')
-        .select('id, youtube_id, title, lesson_id, duration_sec, thumbnail_url, channels(name, url)')
+        .select('id, youtube_id, title, lesson_id, subject_id, duration_sec, thumbnail_url, channels(name, url)')
         .eq('status', 'approved')
-        .in('lesson_id', lessonIds),
+        .in('subject_id', subjects.map((s) => s.id)),
       supabase.from('textbooks').select('subject_id, term, title, official_url, license_status').eq('grade_id', grade).order('sort'),
     ]);
     const videos: RemoteVideo[] = (vrows ?? []).map((v: Row) => ({
@@ -143,6 +144,7 @@ export async function refreshGradeContent(grade: GradeNumber): Promise<void> {
       youtubeId: v.youtube_id,
       title: v.title,
       lessonId: v.lesson_id,
+      subjectId: v.subject_id,
       durationSec: v.duration_sec,
       thumbnailUrl: v.thumbnail_url,
       channelName: v.channels?.name ?? '',

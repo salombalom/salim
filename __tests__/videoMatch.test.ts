@@ -66,6 +66,16 @@ describe('matchVideo', () => {
     expect(r.score).toBeGreaterThanOrEqual(0.55);
   });
 
+  it.each([
+    ['الأحياء 12 - (9-4) إدارة أعداد الأنواع - المواد الإثرائية 2024', 'g12-biology'],
+    ['الرياضيات المتقدمة 11 - (11-1) النظام الإحداثي ثلاثي الأبعاد - المواد الإثرائية 2024', 'g11-math'],
+    ['اللغة الإنجليزيية 10 - Grammar - المواد الإثرائية 2024', 'g10-english'],
+    ['اللغة الإنجليزية 10 - Present and Past Simple - المواد الإثرائية 2024', 'g10-english'],
+  ])('Mawred title "%s" → subject %s', (title, subjectId) => {
+    const r = matchVideo({ title }, lessons);
+    expect(r.subjectId).toBe(subjectId);
+  });
+
   it('does not suggest when grade and subject are unknown', () => {
     const r = matchVideo({ title: 'حلقة نقاش تربوية مع المعلمين' }, lessons);
     expect(r.lessonId).toBeNull();

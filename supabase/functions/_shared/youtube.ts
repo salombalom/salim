@@ -109,3 +109,31 @@ export async function collectNewVideos(
     .filter((v) => v.title !== 'Private video' && v.title !== 'Deleted video')
     .filter((v) => (v.durationSec ?? MIN_DURATION_SEC) >= MIN_DURATION_SEC);
 }
+
+/**
+ * قراءة الخلاصة العامة للقناة (بدون مفتاح API): https://www.youtube.com/feeds/videos.xml?channel_id=…
+ * تعطي آخر 15 فيديو فقط، وبلا مدة. مفيدة للبدء قبل توفر المفتاح.
+ */
+export const channelFeedUrl = (channelId: string) => `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+
+const xmlDecode = (s: string) =>
+  s.replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n))).replace(/&amp;/g, '&');
+
+export function parseChannelFeed(xml: string): FetchedVideo[] {
+  const out: FetchedVideo[] = [];
+  for (const entry of xml.split('<entry>').slice(1)) {
+    const tag = (name: string) => entry.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`))?.[1];
+    const id = tag('yt:videoId');
+    if (!id) continue;
+    out.push({
+      youtubeId: id,
+      title: xmlDecode(tag('title') ?? '').trim(),
+      description: xmlDecode(tag('media:description') ?? '').slice(0, 2000),
+      thumbnailUrl: entry.match(/<media:thumbnail url="([^"]+)"/)?.[1] ?? null,
+      publishedAt: tag('published') ?? null,
+      durationSec: null,
+      raw: { source: 'feed' },
+    });
+  }
+  return out;
+}

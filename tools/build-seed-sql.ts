@@ -88,10 +88,10 @@ const channelRef = (key: string) => {
 };
 const videos = VIDEOS.filter((v) => channels.some((c) => c.key === v.channelKey));
 if (videos.length) {
-  out.push('insert into public.videos (youtube_id, channel_id, title, thumbnail_url, published_at, duration_sec, suggested_lesson_id, lesson_id, match_score, status) values');
+  out.push('insert into public.videos (youtube_id, channel_id, title, thumbnail_url, published_at, duration_sec, suggested_lesson_id, subject_id, lesson_id, match_score, status) values');
   out.push(
     videos
-      .map((v) => `  (${q(v.youtubeId)}, ${channelRef(v.channelKey)}, ${q(v.title)}, ${q(v.thumbnailUrl)}, ${q(v.publishedAt)}, ${v.durationSec ?? 'null'}, ${q(v.suggestedLessonId)}, ${q(v.lessonId)}, ${v.matchScore}, ${q(v.status)})`)
+      .map((v) => `  (${q(v.youtubeId)}, ${channelRef(v.channelKey)}, ${q(v.title)}, ${q(v.thumbnailUrl)}, ${q(v.publishedAt)}, ${v.durationSec ?? 'null'}, ${q(v.suggestedLessonId)}, ${q(v.subjectId)}, ${q(v.lessonId)}, ${v.matchScore}, ${q(v.status)})`)
       .join(',\n') + '\non conflict (youtube_id) do nothing;\n',
   );
 }

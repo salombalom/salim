@@ -37,8 +37,10 @@ export interface VideoEntry {
   thumbnailUrl: string | null;
   /** اقتراح المطابقة الآلية */
   suggestedLessonId: string | null;
+  /** المادة في صفها (مثل g12-biology): يُعرض الفيديو في كل دروس المادة إن لم يُربط بدرس */
+  subjectId: string | null;
   matchScore: number;
-  /** الدرس المعتمد (يُضبط عند الموافقة) */
+  /** الدرس المعتمد (يُضبط عند الموافقة) — اختياري إذا وُجد subjectId */
   lessonId: string | null;
   /** لا يظهر للطلاب إلا approved */
   status: VideoStatus;

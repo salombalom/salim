@@ -35,6 +35,8 @@ export interface VideoInfo {
 
 export interface MatchResult {
   lessonId: string | null;
+  /** المادة في صفها (مثل g12-biology) عند معرفة الصف والمادة — تُستخدم إذا لم يُعرف الدرس */
+  subjectId: string | null;
   score: number;
   detected: { grade: number | null; subject: SubjectKey | null; term: number | null; unit: number | null };
 }
@@ -85,6 +87,13 @@ export function detectGrade(text: string): number | null {
   for (const [w, n] of GRADE_WORDS) {
     if (new RegExp(`(?:الصف|صف|للصف|لصف)\\s+${normalizeAr(w)}(?:\\s|$)`).test(t)) return n;
   }
+  // صيغة قناة مورد: «الأحياء 12 - …» أو «الرياضيات المتقدمة 11 - …»: رقم بعد اسم المادة وقبل أول شَرطة
+  const head = text.split(/\s[-–—|]\s?/)[0];
+  const bare = normalizeAr(head).match(/(?:^|\s)(\d{1,2})$/);
+  if (bare && detectSubject(head)) {
+    const n = Number(bare[1]);
+    if (n >= 1 && n <= 12) return n;
+  }
   return null;
 }
 
@@ -98,7 +107,7 @@ const SUBJECT_KEYWORDS: [SubjectKey, string[]][] = [
   ['biology', ['احياء', 'الاحياء', 'علم الاحياء']],
   ['social', ['دراسات اجتماعيه', 'الدراسات الاجتماعيه', 'اجتماعيات', 'جغرافيا', 'تاريخ']],
   ['islamic', ['تربيه اسلاميه', 'التربيه الاسلاميه', 'اسلاميه', 'قران', 'القران الكريم', 'تجويد', 'فقه', 'حديث', 'سيره']],
-  ['english', ['english', 'انجليزي', 'الانجليزيه', 'لغه انجليزيه']],
+  ['english', ['english', 'انجليزي', 'الانجليزي', 'الانجليزيه', 'لغه انجليزيه']],
   ['arabic', ['لغه عربيه', 'اللغه العربيه', 'لغتي', 'نحو', 'املاء', 'بلاغه', 'قواعد اللغه']],
   ['math', ['رياضيات', 'الرياضيات', 'math', 'mathematics']],
   ['science', ['علوم', 'العلوم', 'science']],
@@ -208,9 +217,12 @@ export function matchVideo(video: VideoInfo, lessons: LessonRef[]): MatchResult 
       0.1 * unitSim;
     if (!best || score > best.score) best = { id: l.id, score };
   }
-  if (!best) return { lessonId: null, score: 0, detected };
+  // المادة معروفة إذا وُجد لها درس واحد على الأقل في هذا الصف
+  const subjectId =
+    grade !== null && subject !== null && lessons.some((l) => l.grade === grade && l.subject === subject) ? `g${grade}-${subject}` : null;
+  if (!best) return { lessonId: null, subjectId, score: 0, detected };
   const score = Math.round(Math.max(0, Math.min(1, best.score)) * 100) / 100;
-  return { lessonId: score >= SUGGEST_THRESHOLD ? best.id : null, score, detected };
+  return { lessonId: score >= SUGGEST_THRESHOLD ? best.id : null, subjectId, score, detected };
 }
 
 /* ───────────── أدوات يوتيوب ───────────── */

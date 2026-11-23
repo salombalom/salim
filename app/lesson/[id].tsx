@@ -7,7 +7,7 @@ import { AppText, Button, Card, Chip, EmptyState, IconCircle, Mastery, Row, Scre
 import { BookTab } from '@/components/lesson/BookTab';
 import { VideosTab } from '@/components/lesson/VideosTab';
 import { gradeName, TERMS } from '@/config/curriculum';
-import { getLessonVideos, getTextbooks } from '@/lib/data/media';
+import { getLessonVideos, getSubjectVideos, getTextbooks } from '@/lib/data/media';
 import { useContent } from '@/lib/data/contentStore';
 import { GENERATED_MATH_COUNT, getLesson, getLessonQuestions } from '@/lib/data/repository';
 import { useProgress, useSettings } from '@/lib/store';
@@ -82,7 +82,7 @@ export default function LessonScreen() {
         </>
       )}
 
-      {tab === 'videos' && <VideosTab videos={getLessonVideos(lesson.id)} lessonId={lesson.id} lessonTitle={lesson.title} />}
+      {tab === 'videos' && <VideosTab lessonVideos={getLessonVideos(lesson.id)} subjectVideos={getSubjectVideos(subject.id)} subjectName={meta.nameAr} lessonId={lesson.id} lessonTitle={lesson.title} />}
 
       {tab === 'quiz' && (
         <Card style={{ alignItems: 'center', gap: spacing.lg, paddingVertical: spacing.xxl }}>

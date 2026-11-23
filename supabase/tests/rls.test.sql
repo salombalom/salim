@@ -263,6 +263,10 @@ do $$ begin
     perform public.review_video((select id from public.videos where youtube_id = 'vid_nolesson'), 'approved');
     assert false, 'cannot approve a video without a lesson';
   exception when raise_exception then null; end;
+  assert (select subject_id from public.videos where youtube_id = 'vid_pending') = 'g5-math', 'subject filled from lesson';
+  update public.videos set subject_id = 'g12-biology' where youtube_id = 'vid_rejected';
+  perform public.review_video((select id from public.videos where youtube_id = 'vid_rejected'), 'approved');
+  assert (select status from public.videos where youtube_id = 'vid_rejected') = 'approved' and (select lesson_id from public.videos where youtube_id = 'vid_rejected') is null, 'subject-level approval';
   perform public.review_video((select id from public.videos where youtube_id = 'vid_nolesson'), 'approved', 'g5-math-u1-l1');
   assert (select status from public.videos where youtube_id = 'vid_nolesson') = 'approved', 'admin links manually';
   assert (select helpful from public.video_rating_stats where video_id = (select id from public.videos where youtube_id = 'vid_ok')) = 1, 'admin sees rating stats';
@@ -273,7 +277,7 @@ reset role;
 set role anon;
 select set_config('request.jwt.claim.sub', '', false);
 do $$ begin
-  assert (select count(*) from public.videos) = 3, 'newly approved videos become visible';
+  assert (select count(*) from public.videos) = 4, 'newly approved videos become visible';
   assert (select count(*) from public.textbooks where subject_id = 'g5-math') > 1, 'textbook links are public';
   assert (select count(*) from public.textbooks) >= 266, 'all official textbook links seeded';
 end $$;

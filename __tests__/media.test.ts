@@ -1,6 +1,6 @@
 import { GRADE_SUBJECTS, GRADES } from '@/config/curriculum';
 import { useContent } from '@/lib/data/contentStore';
-import { formatDuration, getLessonVideos, getTextbooks } from '@/lib/data/media';
+import { formatDuration, getLessonVideos, getSubjectVideos, getTextbooks } from '@/lib/data/media';
 import { makeGateQuestion } from '@/lib/parentalGate';
 import { CHANNELS, TEXTBOOKS, VIDEOS } from '@/seed/media';
 
@@ -31,8 +31,8 @@ describe('lesson videos', () => {
           questions: [],
           fetchedAt: 1,
           videos: [
-            { dbId: 'u1', youtubeId: 'aaa', title: 'مفهوم الكسر', lessonId: 'g5-math-u1-l1', durationSec: 600, thumbnailUrl: null, channelName: 'مورد', channelUrl: 'https://www.youtube.com/@x' },
-            { dbId: 'u2', youtubeId: 'bbb', title: 'درس آخر', lessonId: 'g5-math-u1-l2', durationSec: 300, thumbnailUrl: null, channelName: 'مورد', channelUrl: '' },
+            { dbId: 'u1', youtubeId: 'aaa', title: 'مفهوم الكسر', lessonId: 'g5-math-u1-l1', subjectId: 'g5-math', durationSec: 600, thumbnailUrl: null, channelName: 'مورد', channelUrl: 'https://www.youtube.com/@x' },
+            { dbId: 'u2', youtubeId: 'bbb', title: 'درس آخر', lessonId: 'g5-math-u1-l2', subjectId: 'g5-math', durationSec: 300, thumbnailUrl: null, channelName: 'مورد', channelUrl: '' },
           ],
         },
       },
@@ -41,6 +41,26 @@ describe('lesson videos', () => {
     const v = getLessonVideos('g5-math-u1-l1');
     expect(v).toHaveLength(1);
     expect(v[0]).toMatchObject({ youtubeId: 'aaa', dbId: 'u1', thumbnailUrl: 'https://i.ytimg.com/vi/aaa/mqdefault.jpg' });
+  });
+
+  it('lists subject-level videos (no lesson) separately', () => {
+    useContent.setState({
+      grades: {
+        12: {
+          subjects: [],
+          questions: [],
+          fetchedAt: 1,
+          videos: [
+            { dbId: 'u3', youtubeId: 'ccc', title: 'الأحياء 12 - التنوع', lessonId: null, subjectId: 'g12-biology', durationSec: null, thumbnailUrl: null, channelName: 'مورد', channelUrl: '' },
+            { dbId: 'u4', youtubeId: 'ddd', title: 'درس مربوط', lessonId: 'g12-biology-u1-l1', subjectId: 'g12-biology', durationSec: null, thumbnailUrl: null, channelName: 'مورد', channelUrl: '' },
+          ],
+        },
+      },
+      version: 502,
+    });
+    expect(getSubjectVideos('g12-biology').map((v) => v.youtubeId)).toEqual(['ccc']);
+    expect(getLessonVideos('g12-biology-u1-l1').map((v) => v.youtubeId)).toEqual(['ddd']);
+    expect(getSubjectVideos('g11-biology')).toHaveLength(0);
   });
 
   it('returns no videos when nothing is approved', () => {
