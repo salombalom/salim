@@ -18,8 +18,21 @@ import grade9 from './content/grade09';
 import grade10 from './content/grade10';
 import grade11 from './content/grade11';
 import grade12 from './content/grade12';
+import grade1t2 from './content/term2/grade01';
+import grade2t2 from './content/term2/grade02';
+import grade3t2 from './content/term2/grade03';
+import grade4t2 from './content/term2/grade04';
+import grade5t2 from './content/term2/grade05';
+import grade6t2 from './content/term2/grade06';
+import grade7t2 from './content/term2/grade07';
+import grade8t2 from './content/term2/grade08';
+import grade9t2 from './content/term2/grade09';
+import grade10t2 from './content/term2/grade10';
+import grade11t2 from './content/term2/grade11';
+import grade12t2 from './content/term2/grade12';
+import reviewedIds from './reviewed.json';
 
-const SEEDS: Record<GradeNumber, GradeSeed> = {
+const TERM1: Record<GradeNumber, GradeSeed> = {
   1: grade1,
   2: grade2,
   3: grade3,
@@ -34,6 +47,24 @@ const SEEDS: Record<GradeNumber, GradeSeed> = {
   12: grade12,
 };
 
+const TERM2: Record<GradeNumber, GradeSeed> = {
+  1: grade1t2,
+  2: grade2t2,
+  3: grade3t2,
+  4: grade4t2,
+  5: grade5t2,
+  6: grade6t2,
+  7: grade7t2,
+  8: grade8t2,
+  9: grade9t2,
+  10: grade10t2,
+  11: grade11t2,
+  12: grade12t2,
+};
+
+/** معرّفات الأسئلة التي راجعها المعلم (تُحدَّث عبر `npm run questions -- import`). */
+const REVIEWED = new Set<string>(reviewedIds as string[]);
+
 export interface SeedDatabase {
   subjects: SubjectContent[];
   questions: Question[];
@@ -46,7 +77,7 @@ function build(): SeedDatabase {
   for (const grade of GRADES) {
     for (const key of GRADE_SUBJECTS[grade]) {
       const sid = subjectId(grade, key);
-      const units = (SEEDS[grade][key] ?? []).map((u, ui) => {
+      const units = [...(TERM1[grade][key] ?? []), ...(TERM2[grade][key] ?? [])].map((u, ui) => {
         const unitId = `${sid}-u${ui + 1}`;
         return {
           id: unitId,
@@ -57,7 +88,8 @@ function build(): SeedDatabase {
           lessons: u.lessons.map((l, li) => {
             const lessonId = `${unitId}-l${li + 1}`;
             l.questions.forEach((q, qi) => {
-              questions.push({ ...q, id: `${lessonId}-q${qi + 1}`, lessonId } as Question);
+              const id = `${lessonId}-q${qi + 1}`;
+              questions.push({ ...q, id, lessonId, reviewed: q.reviewed || REVIEWED.has(id) } as Question);
             });
             return { id: lessonId, unitId, title: l.title, order: li + 1, objectives: l.objectives };
           }),

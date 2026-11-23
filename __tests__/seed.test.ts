@@ -2,6 +2,7 @@ import { GRADE_SUBJECTS, GRADES, subjectId } from '@/config/curriculum';
 import { isCorrect } from '@/lib/quiz/grading';
 import { buildLessonQuiz, getLessonQuestions } from '@/lib/data/repository';
 import { seedDatabase } from '@/seed';
+import reviewedIds from '@/seed/reviewed.json';
 
 const { subjects, questions } = seedDatabase;
 
@@ -25,8 +26,29 @@ describe('seed content', () => {
     expect(new Set(questions.map((q) => q.id)).size).toBe(questions.length);
   });
 
-  it('marks every seed question as unreviewed', () => {
-    expect(questions.every((q) => q.reviewed === false && q.source === 'seed')).toBe(true);
+  it('has a unit with ≥10 questions in both terms for every subject', () => {
+    for (const s of subjects) {
+      for (const term of [1, 2] as const) {
+        const units = s.units.filter((u) => u.term === term);
+        expect(units.length).toBeGreaterThanOrEqual(1);
+        const lessonIds = new Set(units.flatMap((u) => u.lessons.map((l) => l.id)));
+        expect(questions.filter((q) => lessonIds.has(q.lessonId)).length).toBeGreaterThanOrEqual(10);
+      }
+    }
+    expect(questions.length).toBe(1440);
+  });
+
+  it('marks seed questions reviewed only when listed in reviewed.json', () => {
+    const reviewed = new Set(reviewedIds as string[]);
+    for (const q of questions) {
+      expect(q.source).toBe('seed');
+      expect(q.reviewed).toBe(reviewed.has(q.id));
+    }
+  });
+
+  it('reviewed.json only names existing questions', () => {
+    const ids = new Set(questions.map((q) => q.id));
+    for (const id of reviewedIds as string[]) expect(ids.has(id)).toBe(true);
   });
 
   it('has well-formed questions whose stored answer grades as correct', () => {

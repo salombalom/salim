@@ -6,7 +6,7 @@ UI is Arabic and RTL throughout, except English-subject content, which renders L
 ## Stack
 - Expo SDK 58 (React Native 0.88, React 19), TypeScript strict, Expo Router (file-based routes in `app/`).
 - State: zustand + AsyncStorage (`lib/store.ts`). Settings and progress persist locally first (offline-first).
-- **`config/app.ts` → `LOCAL_ONLY = true` (current mode):** the app runs fully on bundled data. There is no sign-in and no Supabase calls, even when `.env` has keys. All 720 seed questions are shown (unreviewed badges hidden), and progress stays on the device. Set it to `false` to enable the Supabase features below.
+- **`config/app.ts` → `LOCAL_ONLY = true` (current mode):** the app runs fully on bundled data. There is no sign-in and no Supabase calls, even when `.env` has keys. All 1440 seed questions are shown (unreviewed badges hidden), and progress stays on the device. Set it to `false` to enable the Supabase features below.
 - Backend: Supabase (`lib/supabase.ts`, configured from `.env`; when unconfigured the app runs in guest mode only).
   - Auth (`lib/auth.ts`): email/phone OTP with a 6-digit code, plus guest mode. `app/(onboarding)/verify.tsx` handles code entry.
   - Sync (`lib/sync.ts`): quiz attempts are queued and sent through the `record_attempt` RPC, which computes points and streak **server-side**. Study time goes through `add_study_time`. Guest progress is imported once via `import_guest_progress`. `pullFromServer` mirrors the server state locally.
@@ -37,6 +37,7 @@ npm run lint              # eslint
 EXPO_OFFLINE=1 npx expo export --platform web   # verify the bundle builds
 node tools/generate-sounds.js                    # regenerate quiz sound effects
 npm run db:test       # spin up a temporary local Postgres, apply migrations + seed.sql, run supabase/tests/rls.test.sql
+npm run questions -- export [file] [--grade N] | import <csv> | stats   # Excel review sheet → seed/reviewed.json
 npm run db:seed-sql   # regenerate supabase/seed.sql from seed/ (never edit seed.sql by hand)
 npm run db:login && npm run db:link -- <ref> && npm run db:push   # deploy to a hosted project
 npm run publish:preview -- --message "…"   # EAS Update for Expo Go (project @salombalom/darsi, runtimeVersion policy sdkVersion = exposdk:58.0.0)
@@ -55,7 +56,7 @@ npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supab
 - `lib/gamification.ts` – points (easy 10 / medium 15 / hard 20, +20 for a perfect score), stars (90/70/50%), and a daily streak in Asia/Muscat time.
 - `lib/data/repository.ts` – content access layer. Today it reads `seed/`; Phase 2 swaps it to Supabase behind the same functions.
 - `lib/bidi.ts` – wraps math expressions in Arabic text with LRI/PDI, so `36 ÷ 4` isn't shown reversed. `AppText` applies it automatically unless `ltr` is set.
-- `seed/content/gradeNN.ts` – original practice content written with the `mcq/tf/fill/order/lesson/unit` helpers. IDs are derived as `g5-math-u1-l2-q3`.
+- `seed/content/gradeNN.ts` (term 1) and `seed/content/term2/gradeNN.ts` (term 2, `unit(…, 2)`; becomes `u2`) – original practice content, one unit per subject per term, 10 questions each (1440 total) written with the `mcq/tf/fill/order/lesson/unit` helpers. IDs are derived as `g5-math-u1-l2-q3`.
 - `components/ui.tsx` – design primitives (AppText, Num, Card with `accent`, Button primary/secondary/ghost, Icon, IconCircle, ProgressBar 4px, Mastery, Segmented, Toast, FadeIn…). Always use `AppText`, never a raw `Text`.
 - `supabase/migrations/` – `…01_schema.sql` (all tables; content uses text ids that match the seed), `…02_functions.sql` (is_admin, record_attempt, add_study_time, import_guest_progress, delete_my_account, plus the views my_lesson_best and my_open_mistakes), `…03_rls.sql` (policies and column grants).
   - `supabase/tests/` – the local Postgres harness, with a stub of Supabase's auth schema and roles.
@@ -65,7 +66,7 @@ npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supab
 - `legacy/runner-game/` – an older, unrelated Vite game kept for reference.
 
 ## Rules
-- Seed questions are `reviewed: false`. Students only see reviewed questions. The settings toggle `showUnreviewed` (default `__DEV__`) is for development only. Generated math questions are `reviewed: true`.
+- Seed questions are `reviewed: false` unless their id is in `seed/reviewed.json` (teacher review: `npm run questions -- export|import <csv>|stats`; never edit the json by hand). Students only see reviewed questions. The settings toggle `showUnreviewed` (default `__DEV__`) is for development only. Generated math questions are `reviewed: true`.
 - Never copy textbook text. Textbooks are links only (`license_status` = `link_only` | `permission_granted`).
 - No ads, no analytics or ad SDKs, minimal personal data (Families / Kids-category compliance).
 - Secrets live only in `.env` / Supabase secrets. The Claude and YouTube keys are never shipped in the app. Only the public anon/publishable key goes in the app.

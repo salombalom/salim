@@ -14,7 +14,7 @@ const j = (v: unknown) => (v === undefined || v === null ? 'null' : `${q(JSON.st
 
 const out: string[] = [
   '-- ⚠️ ملف مولَّد تلقائياً من seed/ — لا تعدّله يدوياً. أعد توليده بـ: npm run db:seed-sql',
-  '-- كل الأسئلة هنا أصلية وغير مراجَعة (reviewed = false)، ولا تظهر للطلاب قبل مراجعتها.',
+  '-- كل الأسئلة هنا أصلية. لا يظهر للطلاب إلا ما راجعه المعلم (seed/reviewed.json → reviewed = true).',
   'begin;',
   '',
 ];
@@ -61,11 +61,11 @@ out.push(objectiveRows.join(',\n') + ';\n');
 const questionRows = seedDatabase.questions.map((x) => {
   const options = x.type === 'mcq' || x.type === 'fill_blank' ? (x.options ?? null) : null;
   const accepted = x.type === 'fill_blank' ? (x.accepted ?? null) : null;
-  return `  (${q(x.id)}, ${q(x.lessonId)}, ${q(x.type)}, ${q(x.prompt)}, ${j(options)}, ${j(x.answer)}, ${j(accepted)}, ${q(x.explanation)}, ${q(x.difficulty)}, false, 'seed')`;
+  return `  (${q(x.id)}, ${q(x.lessonId)}, ${q(x.type)}, ${q(x.prompt)}, ${j(options)}, ${j(x.answer)}, ${j(accepted)}, ${q(x.explanation)}, ${q(x.difficulty)}, ${x.reviewed ? 'true' : 'false'}, 'seed')`;
 });
-out.push('-- لا نغيّر حالة المراجعة لأسئلة موجودة مسبقاً');
+out.push('-- المراجعة لا تُلغى من هنا: سؤال راجعه المشرف يبقى مراجَعاً، وما في reviewed.json يصبح مراجَعاً');
 out.push('insert into public.questions (id, lesson_id, type, prompt, options, answer, accepted, explanation, difficulty, reviewed, source) values');
-out.push(questionRows.join(',\n') + '\non conflict (id) do nothing;\n');
+out.push(questionRows.join(',\n') + '\non conflict (id) do update set reviewed = public.questions.reviewed or excluded.reviewed;\n');
 // ───── الوسائط: الكتب (روابط) والقنوات والفيديوهات ─────
 if (TEXTBOOKS.length) {
   out.push('insert into public.textbooks (grade_id, subject_id, term, part, sort, title, official_url, license_status) values');

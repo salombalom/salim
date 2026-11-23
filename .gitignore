@@ -46,3 +46,6 @@ example
 .env.local
 !.env.example
 coverage/
+
+# أوراق مراجعة الأسئلة
+questions-*.csv

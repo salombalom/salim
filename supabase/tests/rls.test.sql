@@ -9,7 +9,8 @@ insert into auth.users (id, email, raw_user_meta_data) values
   ('00000000-0000-0000-0000-00000000000c', 'p@test', '{"role":"parent"}'),
   ('00000000-0000-0000-0000-00000000000d', 'admin@test', '{}');
 insert into public.admins (user_id) values ('00000000-0000-0000-0000-00000000000d');
--- سؤال واحد مراجَع
+-- سؤال واحد مراجَع (نصفّر أولاً ما راجعه المعلم في seed/reviewed.json ليبقى العدّ ثابتاً)
+update public.questions set reviewed = false;
 update public.questions set reviewed = true where id = 'g5-math-u1-l1-q1';
 -- ولي الأمر مرتبط بالطالب A فقط
 insert into public.parent_links (parent_id, student_id, status)
@@ -26,7 +27,7 @@ set role anon;
 select set_config('request.jwt.claim.sub', '', false);
 do $$ begin
   assert (select count(*) from public.subjects) = 72, 'anon reads all subjects';
-  assert (select count(*) from public.lessons) = 144, 'anon reads published lessons';
+  assert (select count(*) from public.lessons) = 288, 'anon reads published lessons';
   assert (select count(*) from public.questions) = 1, 'anon sees reviewed questions only';
   assert (select count(*) from public.profiles) = 0, 'anon sees no profiles';
   begin
@@ -153,7 +154,7 @@ set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000d', false);
 do $$ begin
   assert public.is_admin(), 'admin detected';
-  assert (select count(*) from public.questions) = 720, 'admin sees unreviewed questions';
+  assert (select count(*) from public.questions) = 1440, 'admin sees unreviewed questions';
   update public.questions set reviewed = true where id = 'g5-math-u1-l1-q2';
   assert (select reviewed from public.questions where id = 'g5-math-u1-l1-q2'), 'admin can review questions';
   insert into public.channels (youtube_channel_id, name, url) values ('UC_test', 'قناة', 'https://youtube.com/@x');
