@@ -33,6 +33,7 @@ node tools/generate-sounds.js                    # regenerate quiz sound effects
 npm run db:test       # spin up a temporary local Postgres, apply migrations + seed.sql, run supabase/tests/rls.test.sql
 npm run db:seed-sql   # regenerate supabase/seed.sql from seed/ (never edit seed.sql by hand)
 npm run db:login && npm run db:link -- <ref> && npm run db:push   # deploy to a hosted project
+npm run publish:preview -- --message "…"   # EAS Update for Expo Go (project @salombalom/darsi, runtimeVersion policy sdkVersion = exposdk:58.0.0)
 ```
 `npx expo install <pkg>` needs network access to api.expo.dev. If that host is blocked, use `EXPO_OFFLINE=1 npx expo install <pkg>`.
 

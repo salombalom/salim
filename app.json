@@ -35,7 +35,14 @@
           "imageWidth": 120
         }
       ],
-      "expo-audio",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
+      ],
       [
         "expo-localization",
         {
@@ -50,7 +57,17 @@
     "description": "تطبيق تعليمي مجاني لطلاب المدارس في سلطنة عُمان",
     "extra": {
       "supportsRTL": true,
-      "forcesRTL": true
+      "forcesRTL": true,
+      "eas": {
+        "projectId": "b8fbeeb7-4095-44fd-bca9-91d74b07f338"
+      }
+    },
+    "owner": "salombalom",
+    "updates": {
+      "url": "https://u.expo.dev/b8fbeeb7-4095-44fd-bca9-91d74b07f338"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
