@@ -1,3 +1,4 @@
+import { GRADE_SUBJECTS, GRADES } from '@/config/curriculum';
 import { useContent } from '@/lib/data/contentStore';
 import { formatDuration, getLessonVideos, getTextbooks } from '@/lib/data/media';
 import { makeGateQuestion } from '@/lib/parentalGate';
@@ -48,7 +49,8 @@ describe('lesson videos', () => {
 });
 
 describe('textbooks', () => {
-  it('has official https links for every grade/subject the app teaches (Arabic 11–12 pending)', () => {
+  it('has official https links for every grade/subject the app teaches', () => {
+    for (const g of GRADES) for (const k of GRADE_SUBJECTS[g]) expect(TEXTBOOKS.some((t) => t.subjectId === `g${g}-${k}`)).toBe(true);
     expect(TEXTBOOKS.length).toBeGreaterThan(200);
     expect(new Set(TEXTBOOKS.map((t) => t.officialUrl)).size).toBe(TEXTBOOKS.length);
     for (const t of TEXTBOOKS) expect(t.officialUrl).toMatch(/^https:\/\/home\.moe\.gov\.om\/ar\/manaheg\/\d+\/show\/\d+$/);

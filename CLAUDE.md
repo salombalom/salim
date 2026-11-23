@@ -75,7 +75,7 @@ npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supab
 ## Phases
 1. ✅ Structure, navigation, design, quizzes from local data (no login)
 2. ✅ Supabase, auth (email/phone + guest), progress sync, points/streak server-side
-3. ✅ Textbook links and YouTube videos (daily Edge Function, admin approval). 266 official textbook links from home.moe.gov.om (Arabic for grades 11–12 is pending the owner's confirmation of «المؤنس» / «المفيد»). Mawred channel: @EduMawred / UCL4a6BHJlgItAV_jjUAw4JA.
+3. ✅ Textbook links and YouTube videos (daily Edge Function, admin approval). 272 official textbook links from home.moe.gov.om. For grades 11–12, Arabic = «المؤنس» (per term) + «المفيد» (full year), as confirmed by the owner. Mawred channel: @EduMawred / UCL4a6BHJlgItAV_jjUAw4JA.
 4. Claude-generated summaries (draft → approved) and PDF export
 5. Parent dashboard
 6. Admin (Next.js in `admin/`)
