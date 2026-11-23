@@ -4,6 +4,7 @@
  *
  * الشكل: نجمة ثمانية (خاتم) بخط ذهبي رفيع، وفي وسطها حرف «د».
  */
+/* global __dirname */
 const { chromium } = require('playwright');
 const fs = require('node:fs');
 const path = require('node:path');

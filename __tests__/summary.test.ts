@@ -63,6 +63,10 @@ describe('summary validation', () => {
 
 describe('bundled summaries (seed/summaries.json)', () => {
   const lessonIds = new Set(seedDatabase.subjects.flatMap((s) => s.units.flatMap((u) => u.lessons.map((l) => l.id))));
+  it('cover every lesson', () => {
+    for (const id of lessonIds) expect(localSummaries[id]).toBeDefined();
+  });
+
   it('belong to existing lessons and pass validation', () => {
     for (const [id, rec] of Object.entries(localSummaries)) {
       expect(lessonIds.has(id)).toBe(true);

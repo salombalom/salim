@@ -3,6 +3,7 @@
  * التشغيل: EXPO_OFFLINE=1 npx expo export --platform web && node tools/store-screenshots.js
  * يملأ تقدّماً تجريبياً على المتصفح فقط (لا يمس أي بيانات حقيقية).
  */
+/* global __dirname */
 const { chromium } = require('playwright');
 const http = require('node:http');
 const fs = require('node:fs');
@@ -58,7 +59,7 @@ const SHOTS = [
   ['02-subject', '/subject/g5-math'],
   ['03-lesson', '/lesson/g5-science-u1-l1'],
   ['04-quiz', '/quiz?lessonId=g5-math-u1-l1'],
-  ['05-videos', '/lesson/g11-math-u1-l1?tab=videos'],
+  ['05-summary', '/lesson/g8-math-u2-l1'],
   ['06-parent', '/parent'],
 ];
 

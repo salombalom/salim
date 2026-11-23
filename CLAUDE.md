@@ -24,7 +24,12 @@ UI is Arabic and RTL throughout, except English-subject content, which renders L
   - `lib/data/media.ts` merges the two.
   - External links (textbook, channel) go through `components/ParentalGate.tsx` (Kids-category requirement).
   - Video matching and the YouTube client live in `supabase/functions/_shared/` (dependency-free; used by the Edge Function `fetch-videos`, by `tools/videos.ts` and by Jest). Never use `search.list`; read the uploads playlist and stop at the first known video.
-- Planned: Claude API (from Edge Functions only), plus a Next.js admin in `admin/`.
+- Summaries (phase 4): `supabase/functions/_shared/summary.ts` holds the prompt, JSON schema (structured outputs) and `validateSummary` (dependency-free; used by the Edge Function `generate-summary`, `tools/summaries.ts` and Jest). Model `claude-opus-5-5`, key only in Supabase secrets / local `.env` (`ANTHROPIC_API_KEY`).
+  - Local source: `seed/summaries.json` (all 288 lessons, `draft` until approved). Server: `summaries` table (approved only via RLS), cached by contentStore. `lib/data/summaries.ts` merges them; drafts show only when `showUnreviewed`.
+  - `components/lesson/SummaryTab.tsx` renders it; PDF export via `lib/summaryPdf.ts` + `lib/pdfExport.ts` (expo-print + expo-sharing). `lib/pdf.ts` is the pure HTML template (testable).
+- Parent dashboard (phase 5): `app/parent.tsx` shows an on-device report (`lib/report.ts` → `localReport`) in local mode, or linked children via RPCs (`lib/parent.ts`). Students link with one-time 8-char codes in `app/link-parent.tsx`. Migration `…07_parent.sql`: create/redeem/remove link, `my_children`, `my_parents`, `child_report` (aggregates only, never answers). PDF report: `lib/reportPdf.ts`.
+- Admin (phase 6): `admin/` – a separate Next.js app (static export, own package.json, excluded from root tsc/eslint/jest). Public key only; every write is enforced by RLS `is_admin()`. Pages: questions, summaries (calls `generate-summary`), videos, textbooks, channels. See `admin/README.md`.
+- Store (phase 7): `store/README.md` (listing text, privacy/kids questionnaires, checklist), `store/privacy-policy.html` (from `config/privacy.ts`), `store/screenshots/`, `eas.json`. iOS privacy manifest and Android blocked permissions live in `app.json`.
 
 ## Commands
 ```bash
@@ -38,6 +43,11 @@ EXPO_OFFLINE=1 npx expo export --platform web   # verify the bundle builds
 node tools/generate-sounds.js                    # regenerate quiz sound effects
 npm run db:test       # spin up a temporary local Postgres, apply migrations + seed.sql, run supabase/tests/rls.test.sql
 npm run questions -- export [file] [--grade N] | import <csv> | stats   # Excel review sheet → seed/reviewed.json
+npm run summaries -- generate [--grade N] | approve ID…|--grade N|--all | draft ID… | show ID | stats   # needs ANTHROPIC_API_KEY for generate
+npm run store:privacy  # rebuild store/privacy-policy.html from config/privacy.ts
+npm run icons          # regenerate icon/splash from the brand (tools/generate-icons.js)
+EXPO_OFFLINE=1 npx expo export --platform web && node tools/store-screenshots.js   # store screenshots
+cd admin && npm install && npm run dev   # admin panel on :3001 (needs admin/.env.local)
 npm run db:seed-sql   # regenerate supabase/seed.sql from seed/ (never edit seed.sql by hand)
 npm run db:login && npm run db:link -- <ref> && npm run db:push   # deploy to a hosted project
 npm run publish:preview -- --message "…"   # EAS Update for Expo Go (project @salombalom/darsi, runtimeVersion policy sdkVersion = exposdk:58.0.0)
@@ -50,7 +60,7 @@ npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supab
 `npx expo install <pkg>` needs network access to api.expo.dev. If that host is blocked, use `EXPO_OFFLINE=1 npx expo install <pkg>`.
 
 ## Layout
-- `app/` – routes. `(onboarding)/` covers welcome, login, role and grade. `(tabs)/` covers home, mistakes, favorites and profile. Also `subject/[id]`, `lesson/[id]`, `quiz` (params `lessonId`, or `mode=mistakes` with optional `subjectId` / `ids`), `result`, `review`, `grade-picker`, `parent`, `about`, `privacy`.
+- `app/` – routes. `(onboarding)/` covers welcome, login, role and grade. `(tabs)/` covers home, mistakes, favorites and profile. Also `subject/[id]`, `lesson/[id]`, `quiz` (params `lessonId`, or `mode=mistakes` with optional `subjectId` / `ids`), `result`, `review`, `grade-picker`, `parent`, `link-parent`, `about`, `privacy`.
 - `config/curriculum.ts` – the **single source** for grades, subjects, colours, icons and text direction. `config/privacy.ts` holds the policy text (AR/EN).
 - `lib/quiz/` – `grading.ts` (answer checking), `normalize.ts` (Arabic normalisation), `mathGenerator.ts` (seeded per-grade math questions), `prepare.ts` (shuffle options and words).
 - `lib/gamification.ts` – points (easy 10 / medium 15 / hard 20, +20 for a perfect score), stars (90/70/50%), and a daily streak in Asia/Muscat time.
@@ -77,7 +87,7 @@ npx -y deno@2.9.6 check --config supabase/functions/fetch-videos/deno.json supab
 1. ✅ Structure, navigation, design, quizzes from local data (no login)
 2. ✅ Supabase, auth (email/phone + guest), progress sync, points/streak server-side
 3. ✅ Textbook links and YouTube videos (daily Edge Function, admin approval). 272 official textbook links from home.moe.gov.om. For grades 11–12, Arabic = «المؤنس» (per term) + «المفيد» (full year), as confirmed by the owner. Mawred channel: @EduMawred / UCL4a6BHJlgItAV_jjUAw4JA.
-4. Claude-generated summaries (draft → approved) and PDF export
-5. Parent dashboard
-6. Admin (Next.js in `admin/`)
-7. Privacy policy, icon/splash, store readiness
+4. ✅ Claude-generated summaries (draft → approved) and PDF export. All 288 lessons have draft summaries in `seed/summaries.json`.
+5. ✅ Parent dashboard (on-device report + link codes and server reports)
+6. ✅ Admin (Next.js in `admin/`)
+7. ✅ Privacy policy, icon/splash, store readiness (`store/`). Remaining steps need the owner: developer accounts, support email, hosting the policy, device testing.
