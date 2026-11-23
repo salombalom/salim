@@ -1,9 +1,9 @@
-import * as WebBrowser from 'expo-web-browser';
 import { View } from 'react-native';
 
 import { useParentalGate } from '@/components/ParentalGate';
 import { AppText, Card, Chip, EmptyState, Icon, IconCircle, Row } from '@/components/ui';
 import type { Textbook } from '@/lib/data/media';
+import { openExternal } from '@/lib/openLink';
 import { spacing, useAppTheme } from '@/lib/theme';
 
 function domainOf(url: string) {
@@ -33,11 +33,7 @@ export function BookTab({ books, termName }: { books: Textbook[]; termName: stri
 
   const open = (url: string) =>
     gate.request(() => {
-      WebBrowser.openBrowserAsync(url, {
-        controlsColor: colors.gold,
-        toolbarColor: colors.background,
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
-      }).catch(() => {});
+      openExternal(url, { controls: colors.gold, toolbar: colors.background });
     });
 
   return (

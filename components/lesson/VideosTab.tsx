@@ -1,5 +1,4 @@
 import { Image } from 'expo-image';
-import * as WebBrowser from 'expo-web-browser';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -7,6 +6,7 @@ import { useParentalGate } from '@/components/ParentalGate';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { AppText, Card, EmptyState, Icon, Row } from '@/components/ui';
 import { formatDuration, type LessonVideo } from '@/lib/data/media';
+import { openExternal } from '@/lib/openLink';
 import { useProgress } from '@/lib/store';
 import { syncFavorite, syncVideoRating } from '@/lib/sync';
 import { borderWidth, radius, spacing, useAppTheme } from '@/lib/theme';
@@ -40,7 +40,7 @@ export function VideosTab({ videos, lessonId, lessonTitle }: { videos: LessonVid
 
   const openChannel = () =>
     gate.request(() => {
-      WebBrowser.openBrowserAsync(v.channelUrl, { controlsColor: colors.gold, toolbarColor: colors.background }).catch(() => {});
+      openExternal(v.channelUrl, { controls: colors.gold, toolbar: colors.background });
     });
 
   return (

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText, Button, IconCircle, Row } from '@/components/ui';
 import { makeGateQuestion } from '@/lib/parentalGate';
@@ -11,11 +11,24 @@ import { borderWidth, fonts, radius, spacing, useAppTheme } from '@/lib/theme';
  */
 export function useParentalGate() {
   const [pending, setPending] = useState<null | (() => void)>(null);
-  const element = <ParentalGateModal visible={!!pending} onPass={() => { const fn = pending; setPending(null); fn?.(); }} onCancel={() => setPending(null)} />;
+  // الإجراء ينتظر حتى تُغلق النافذة تماماً: iOS يرفض فتح متصفح أثناء إغلاق نافذة أخرى
+  const afterClose = useRef<null | (() => void)>(null);
+  const runAfterClose = () => {
+    const fn = afterClose.current;
+    afterClose.current = null;
+    fn?.();
+  };
+  const onPass = () => {
+    afterClose.current = pending;
+    setPending(null);
+    // onDismiss يعمل على iOS فقط؛ في غيره ننتظر انتهاء حركة الإغلاق
+    if (Platform.OS !== 'ios') setTimeout(runAfterClose, 300);
+  };
+  const element = <ParentalGateModal visible={!!pending} onPass={onPass} onCancel={() => setPending(null)} onDismiss={runAfterClose} />;
   return { request: (fn: () => void) => setPending(() => fn), element };
 }
 
-function ParentalGateModal({ visible, onPass, onCancel }: { visible: boolean; onPass: () => void; onCancel: () => void }) {
+function ParentalGateModal({ visible, onPass, onCancel, onDismiss }: { visible: boolean; onPass: () => void; onCancel: () => void; onDismiss: () => void }) {
   const { colors, fontScale } = useAppTheme();
   const [q, setQ] = useState(makeGateQuestion);
   const [wrong, setWrong] = useState(false);
@@ -27,7 +40,7 @@ function ParentalGateModal({ visible, onPass, onCancel }: { visible: boolean; on
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={close}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={close} onDismiss={onDismiss}>
       <View style={[styles.backdrop, { backgroundColor: colors.overlay }]}>
         <View style={[styles.sheet, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={{ alignItems: 'center', gap: spacing.md }}>
