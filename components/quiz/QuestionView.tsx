@@ -1,3 +1,4 @@
+import { LOCAL_ONLY } from '@/config/app';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText, Button, Chip, Icon } from '@/components/ui';
@@ -101,7 +102,7 @@ export function QuestionView({ item, ltr, response, result, onChange, onSubmit }
           <AppText variant="overline" color="goldText" ltr={ltr}>
             {TYPE_LABEL[q.type][ltr ? 'en' : 'ar']}
           </AppText>
-          {!q.reviewed && <Chip label="غير مراجَع" />}
+          {!q.reviewed && !LOCAL_ONLY && <Chip label="غير مراجَع" />}
         </View>
         <AppText variant="title" ltr={ltr}>
           {q.prompt}

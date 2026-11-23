@@ -1,3 +1,4 @@
+import { LOCAL_ONLY } from '@/config/app';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -104,7 +105,7 @@ export default function LessonScreen() {
               </View>
               <Row gap={spacing.sm} style={{ flexWrap: 'wrap', justifyContent: 'center' }}>
                 {isMath && <Chip label="أسئلة متجددة في كل مرة" icon="Repeat" tone="gold" />}
-                {unreviewedCount > 0 && <Chip label={`يشمل ${unreviewedCount} أسئلة غير مراجَعة`} icon="Info" />}
+                {unreviewedCount > 0 && !LOCAL_ONLY && <Chip label={`يشمل ${unreviewedCount} أسئلة غير مراجَعة`} icon="Info" />}
               </Row>
               <Button
                 title={best ? 'إعادة الاختبار' : 'ابدأ الاختبار'}

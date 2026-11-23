@@ -8,6 +8,7 @@ import { currentStreak, dayKey } from '@/lib/gamification';
 import { deleteAccount, signOut, useAuth } from '@/lib/auth';
 import { useProgress, useSettings, type ThemeMode } from '@/lib/store';
 import { isSupabaseConfigured } from '@/lib/supabase';
+import { LOCAL_ONLY } from '@/config/app';
 import { clearLocalAccountData, syncProfile } from '@/lib/sync';
 import { borderWidth, fonts, radius, spacing, useAppTheme } from '@/lib/theme';
 
@@ -60,7 +61,7 @@ export default function ProfileScreen() {
       });
       return;
     }
-    confirm('مسح بيانات التجربة', 'أنت في وضع التجربة؛ سيُحذف تقدّمك المحفوظ على هذا الجهاز.', 'مسح', () => {
+    confirm('مسح البيانات', 'سيُحذف تقدّمك المحفوظ على هذا الجهاز (النقاط، والسلسلة، والأخطاء).', 'مسح', () => {
       clearLocalAccountData();
       router.replace('/welcome');
     });
@@ -85,7 +86,8 @@ export default function ProfileScreen() {
           <View style={{ flex: 1 }}>
             <AppText variant="title">{settings.displayName.trim() || (settings.role === 'parent' ? 'ولي أمر' : 'طالب')}</AppText>
             <AppText variant="caption" color="textMuted">
-              {settings.grade ? gradeName(settings.grade) : '—'} · {signedIn ? 'حساب مسجّل' : 'وضع التجربة'}
+              {settings.grade ? gradeName(settings.grade) : '—'}
+              {LOCAL_ONLY ? '' : signedIn ? ' · حساب مسجّل' : ' · وضع التجربة'}
             </AppText>
           </View>
         </Row>
@@ -99,7 +101,7 @@ export default function ProfileScreen() {
       </Card>
 
       <SectionTitle>الحساب</SectionTitle>
-      {signedIn ? (
+      {LOCAL_ONLY ? null : signedIn ? (
         <Card style={{ paddingVertical: spacing.xs }}>
           <ListRow icon={auth.session?.user.email ? 'Mail' : 'Phone'} title={account} subtitle="تقدّمك محفوظ ومتزامن مع حسابك" last />
         </Card>
@@ -191,7 +193,7 @@ export default function ProfileScreen() {
       <Card style={{ paddingVertical: spacing.xs }}>
         <ListRow icon="Info" title="عن التطبيق" onPress={() => router.push('/about')} />
         <ListRow icon="ShieldCheck" title="سياسة الخصوصية" onPress={() => router.push('/privacy')} />
-        <ListRow icon="LogOut" title={signedIn ? 'تسجيل الخروج' : 'مسح بيانات التجربة'} onPress={signOutPressed} last={!signedIn} />
+        <ListRow icon="LogOut" title={signedIn ? 'تسجيل الخروج' : LOCAL_ONLY ? 'مسح بياناتي من هذا الجهاز' : 'مسح بيانات التجربة'} onPress={signOutPressed} last={!signedIn} />
         {signedIn && <ListRow icon="CircleX" title="حذف الحساب نهائياً" subtitle="يحذف حسابك وكل بياناتك" onPress={deletePressed} last />}
       </Card>
     </Screen>

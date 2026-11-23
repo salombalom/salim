@@ -2,6 +2,8 @@ import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LOCAL_ONLY } from '@/config/app';
+import { useSettings } from '@/lib/store';
 import { GeometricPattern } from '@/components/GeometricPattern';
 import { Logo } from '@/components/Logo';
 import { AppText, Button, FadeIn } from '@/components/ui';
@@ -17,7 +19,16 @@ export default function Welcome() {
           <Logo size={72} tagline="رفيقك الهادئ في رحلة التعلّم" />
         </FadeIn>
         <FadeIn delay={200} style={{ gap: spacing.lg }}>
-          <Button title="ابدأ" onPress={() => router.push('/login')} />
+          <Button
+            title="ابدأ"
+            onPress={() => {
+              if (LOCAL_ONLY) {
+                // الوضع المحلي: بلا تسجيل دخول
+                useSettings.getState().set({ onboarded: true });
+                router.push('/role');
+              } else router.push('/login');
+            }}
+          />
           <AppText variant="caption" color="textMuted" center>
             من الصف الأول إلى الثاني عشر · مجاني بالكامل · بلا إعلانات
           </AppText>

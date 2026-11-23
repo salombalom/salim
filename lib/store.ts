@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import { LOCAL_ONLY } from '@/config/app';
 import type { GradeNumber } from '@/config/curriculum';
 import { dayKey, EMPTY_STREAK, registerActivity, type QuizScore, type StreakState } from '@/lib/gamification';
 import type { Question, QuestionResponse } from '@/lib/types';
@@ -42,7 +43,8 @@ const defaultSettings = {
   soundOn: true,
   hapticsOn: true,
   // في نسخة التطوير (Expo Go) نُظهر غير المراجَع حتى تتمكن من التجربة، وفي نسخة المتجر لا.
-  showUnreviewed: typeof __DEV__ !== 'undefined' ? __DEV__ : false,
+  // في الوضع المحلي تظهر كل الأسئلة المبدئية؛ وإلا تظهر غير المراجَعة في نسخة التطوير فقط
+  showUnreviewed: LOCAL_ONLY || (typeof __DEV__ !== 'undefined' ? __DEV__ : false),
 };
 
 export const useSettings = create<SettingsState>()(
@@ -55,12 +57,15 @@ export const useSettings = create<SettingsState>()(
     {
       name: 'darsi.settings.v1',
       storage: createJSONStorage(() => AsyncStorage),
-      version: 2,
+      version: 3,
       // الإصدار 2: الوضع الليلي افتراضي + الاسم المستعار
       migrate: (persisted, version) => {
         const s = (persisted ?? {}) as Partial<SettingsState>;
-        if (version < 2) return { ...s, themeMode: s.themeMode === 'system' ? 'dark' : s.themeMode, displayName: s.displayName ?? '' } as SettingsState;
-        return s as SettingsState;
+        let out = s;
+        if (version < 2) out = { ...out, themeMode: out.themeMode === 'system' ? 'dark' : out.themeMode, displayName: out.displayName ?? '' };
+        // الإصدار 3: في الوضع المحلي تظهر كل الأسئلة
+        if (version < 3 && LOCAL_ONLY) out = { ...out, showUnreviewed: true };
+        return out as SettingsState;
       },
     },
   ),

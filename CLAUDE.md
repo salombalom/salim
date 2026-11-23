@@ -6,6 +6,7 @@ UI is Arabic and RTL throughout, except English-subject content, which renders L
 ## Stack
 - Expo SDK 58 (React Native 0.88, React 19), TypeScript strict, Expo Router (file-based routes in `app/`).
 - State: zustand + AsyncStorage (`lib/store.ts`). Settings and progress persist locally first (offline-first).
+- **`config/app.ts` → `LOCAL_ONLY = true` (current mode):** the app runs fully on bundled data. There is no sign-in and no Supabase calls, even when `.env` has keys. All 720 seed questions are shown (unreviewed badges hidden), and progress stays on the device. Set it to `false` to enable the Supabase features below.
 - Backend: Supabase (`lib/supabase.ts`, configured from `.env`; when unconfigured the app runs in guest mode only).
   - Auth (`lib/auth.ts`): email/phone OTP with a 6-digit code, plus guest mode. `app/(onboarding)/verify.tsx` handles code entry.
   - Sync (`lib/sync.ts`): quiz attempts are queued and sent through the `record_attempt` RPC, which computes points and streak **server-side**. Study time goes through `add_study_time`. Guest progress is imported once via `import_guest_progress`. `pullFromServer` mirrors the server state locally.
