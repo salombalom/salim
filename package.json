@@ -71,7 +71,9 @@
     "videos": "tsx --env-file-if-exists=.env tools/videos.ts",
     "textbooks:fetch": "tsx tools/fetch-textbooks.ts",
     "questions": "tsx tools/questions.ts",
-    "summaries": "tsx --env-file-if-exists=.env tools/summaries.ts"
+    "summaries": "tsx --env-file-if-exists=.env tools/summaries.ts",
+    "store:privacy": "tsx tools/build-privacy-html.ts",
+    "icons": "node tools/generate-icons.js"
   },
   "private": true
 }

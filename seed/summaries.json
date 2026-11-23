@@ -1,1 +1,1628 @@
-{}
+{
+ "g1-arabic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الحروف الهجائية ثمانية وعشرون حرفاً، نكتب منها كل الكلمات العربية.",
+   "concepts": [
+    "أول الحروف الهجائية: أ، ثم ب، ثم ت، ثم ث.",
+    "بعض الحروف تتشابه في الشكل وتختلف في عدد النقاط ومكانها، مثل: ب ت ث.",
+    "الباء لها نقطة من تحت، والتاء نقطتان من فوق، والثاء ثلاث نقاط من فوق."
+   ],
+   "definitions": [],
+   "review": [
+    "ما الحرف الذي يأتي بعد الباء؟",
+    "ما الفرق بين ب و ت في الكتابة؟"
+   ],
+   "example": "ج ح خ: شكلها واحد، والجيم نقطتها في الداخل، والحاء بلا نقطة، والخاء نقطتها فوق."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-arabic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "نقرأ كلمات قصيرة من حولنا ونعرف معناها.",
+   "concepts": [
+    "كل كلمة تتكون من حروف متصلة أو منفصلة.",
+    "بعض الكلمات تدل على حيوان مثل: قطة، وبعضها على شيء مثل: قلم.",
+    "نعرف أول حرف في الكلمة بالاستماع إلى صوتها، مثل: شمس تبدأ بالشين."
+   ],
+   "definitions": [],
+   "review": [
+    "اذكر كلمة تدل على حيوان.",
+    "بأي حرف تبدأ كلمة «قمر»؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-arabic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الحركات القصيرة ثلاث: الفتحة والضمة والكسرة، وهي تغيّر صوت الحرف.",
+   "concepts": [
+    "الفتحة خط صغير فوق الحرف: بَ.",
+    "الضمة واو صغيرة فوق الحرف: بُ.",
+    "الكسرة خط صغير تحت الحرف: بِ."
+   ],
+   "definitions": [
+    {
+     "term": "الحركة",
+     "meaning": "علامة صغيرة نضعها على الحرف لنعرف كيف ننطقه."
+    }
+   ],
+   "review": [
+    "ما الحركة التي تحت الحرف؟",
+    "اقرأ: مَ مُ مِ."
+   ],
+   "example": "دَ دُ دِ — بَ بُ بِ — سَ سُ سِ"
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-arabic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "المد يجعل صوت الحرف أطول، ويكون بالألف أو الواو أو الياء.",
+   "concepts": [
+    "المد بالألف بعد الفتحة: بَا، مثل: باب.",
+    "المد بالواو بعد الضمة: بُو، مثل: نور.",
+    "المد بالياء بعد الكسرة: بِي، مثل: فيل."
+   ],
+   "definitions": [],
+   "review": [
+    "اذكر كلمة فيها مد بالألف.",
+    "ما نوع المد في كلمة «فيل»؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-english-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We say hello in different ways and we learn the names of colours.",
+   "concepts": [
+    "Say \"Good morning\" in the morning and \"Hello\" any time.",
+    "Answer \"How are you?\" with \"I am fine, thank you.\"",
+    "Colours: red, blue, green, yellow, black and white."
+   ],
+   "definitions": [],
+   "review": [
+    "What do you say in the morning?",
+    "What colour is the sky?"
+   ],
+   "example": "The sun is yellow. The grass is green."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-english-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We count from one to ten in English.",
+   "concepts": [
+    "one, two, three, four, five.",
+    "six, seven, eight, nine, ten.",
+    "We use numbers to count things: three cats, five pens."
+   ],
+   "definitions": [],
+   "review": [
+    "What number comes after four?",
+    "Count to ten."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-english-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We learn the names of body parts and what we do with them.",
+   "concepts": [
+    "We see with our eyes and hear with our ears.",
+    "We smell with our nose and eat with our mouth.",
+    "We walk with our feet and hold things with our hands."
+   ],
+   "definitions": [],
+   "review": [
+    "What do we see with?",
+    "What do we walk with?"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-english-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We name foods and say what we like.",
+   "concepts": [
+    "Fruits: apple, banana, dates, orange.",
+    "Drinks: water, milk, juice.",
+    "We say: \"I like dates.\" or \"I don't like onions.\""
+   ],
+   "definitions": [],
+   "review": [
+    "Name a drink.",
+    "Say one food you like."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-islamic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الإسلام دين عظيم يقوم على خمسة أركان، وكل مسلم يحفظها ويعمل بها.",
+   "concepts": [
+    "أركان الإسلام خمسة: الشهادتان، والصلاة، والزكاة، وصوم رمضان، وحج البيت لمن استطاع.",
+    "الشهادتان أول الأركان: أشهد أن لا إله إلا الله، وأشهد أن محمداً رسول الله.",
+    "الصلاة نصليها كل يوم خمس مرات."
+   ],
+   "definitions": [
+    {
+     "term": "الركن",
+     "meaning": "الجزء المهم الذي يقوم عليه الشيء."
+    }
+   ],
+   "review": [
+    "اذكر أركان الإسلام الخمسة بالترتيب.",
+    "ما أول ركن من أركان الإسلام؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-islamic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "علّمنا ديننا آداباً جميلة عند الأكل والشرب تجعلنا نشكر الله على نعمه.",
+   "concepts": [
+    "نقول «بسم الله» قبل أن نبدأ الأكل.",
+    "نأكل باليد اليمنى ومما يلينا.",
+    "نقول «الحمد لله» بعد أن ننتهي من الأكل.",
+    "نغسل أيدينا قبل الأكل وبعده."
+   ],
+   "definitions": [],
+   "review": [
+    "ماذا نقول قبل الأكل وبعده؟",
+    "بأي يد نأكل؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-islamic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "التحية في الإسلام هي «السلام عليكم»، وهي تنشر المحبة بين الناس.",
+   "concepts": [
+    "نبدأ من نلقاه بقولنا: السلام عليكم.",
+    "نرد التحية بقولنا: وعليكم السلام، ويمكن أن نزيد: ورحمة الله وبركاته.",
+    "نرد التحية بمثلها أو بأحسن منها."
+   ],
+   "definitions": [],
+   "review": [
+    "ما تحية المسلمين؟",
+    "كيف نرد على من قال: السلام عليكم؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-islamic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الصدق والأمانة من أجمل الأخلاق، ويحب الله الصادقين الأمناء.",
+   "concepts": [
+    "الصادق يقول الحقيقة دائماً حتى لو أخطأ.",
+    "الأمين يحافظ على أشياء غيره ويعيدها إلى أصحابها.",
+    "الكذب وأخذ أشياء الآخرين أخلاق سيئة."
+   ],
+   "definitions": [
+    {
+     "term": "الأمانة",
+     "meaning": "أن نحافظ على ما ليس لنا ونرده إلى صاحبه."
+    }
+   ],
+   "review": [
+    "ماذا تفعل إذا وجدت شيئاً ليس لك؟",
+    "لماذا نحب الطفل الصادق؟"
+   ],
+   "example": "وجدت قلماً ليس لك في الفصل، فأعطيته للمعلم ليعيده إلى صاحبه."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-math-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "نعدّ الأشياء من 1 إلى 20، ونقارن بين عددين لنعرف الأكبر والأصغر.",
+   "concepts": [
+    "نعدّ الأشياء واحداً واحداً دون أن نكرر شيئاً.",
+    "العدد الذي يأتي بعد عدد آخر يكون أكبر منه بواحد.",
+    "نقول: 6 أكبر من 4، و4 أصغر من 6."
+   ],
+   "definitions": [],
+   "review": [
+    "أيهما أكبر: 12 أم 17؟",
+    "ما العدد الذي يأتي بعد 19؟"
+   ],
+   "example": "العدد بعد 9 هو 10، والعدد قبل 15 هو 14."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-math-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الجمع يعني أن نضع الأشياء معاً، والطرح يعني أن نأخذ منها.",
+   "concepts": [
+    "علامة الجمع (+) وعلامة الطرح (−) وعلامة المساواة (=).",
+    "عند الجمع يكبر العدد، وعند الطرح يصغر.",
+    "يمكن أن نعدّ على أصابعنا أو بالرسم لنحل المسألة."
+   ],
+   "definitions": [],
+   "review": [
+    "2 + 3 = ؟",
+    "كان معك 8 أقلام وأعطيت صديقك 2، كم بقي معك؟"
+   ],
+   "example": "معي 6 تمرات وأخذت 4 أخرى: 6 + 4 = 10 تمرات."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-math-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "نتعرف على الأشكال الهندسية من حولنا ونعدّ أضلاعها.",
+   "concepts": [
+    "المثلث له 3 أضلاع.",
+    "المربع له 4 أضلاع متساوية.",
+    "المستطيل له 4 أضلاع، كل ضلعين متقابلين متساويان.",
+    "الدائرة ليس لها أضلاع."
+   ],
+   "definitions": [
+    {
+     "term": "الضلع",
+     "meaning": "الخط المستقيم الذي يحد الشكل."
+    }
+   ],
+   "review": [
+    "كم ضلعاً للمثلث؟",
+    "اذكر شكلاً ليس له أضلاع."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-math-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "نقارن بين أطوال الأشياء باستخدام كلمتي «أطول» و«أقصر».",
+   "concepts": [
+    "نضع الشيئين بجانب بعضهما من نقطة البداية نفسها لنقارن.",
+    "النخلة أطول من الشجيرة، والقلم أقصر من المسطرة.",
+    "يمكن أن نرتب الأشياء من الأقصر إلى الأطول."
+   ],
+   "definitions": [],
+   "review": [
+    "أيهما أطول: الباب أم الكرسي؟",
+    "كيف نقارن بين طول قلمين؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-science-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "لنا خمس حواس نتعرف بها على العالم من حولنا.",
+   "concepts": [
+    "البصر بالعين، والسمع بالأذن، والشم بالأنف.",
+    "التذوق باللسان، واللمس بالجلد.",
+    "نحافظ على حواسنا ونحميها من الأذى."
+   ],
+   "definitions": [
+    {
+     "term": "الحاسة",
+     "meaning": "قدرة نعرف بها الأشياء من حولنا."
+    }
+   ],
+   "review": [
+    "بأي عضو نسمع؟",
+    "ما الحاسة التي نعرف بها طعم الحلوى؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-science-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "النظافة تحمينا من الجراثيم والأمراض.",
+   "concepts": [
+    "نغسل أيدينا بالماء والصابون قبل الأكل وبعده وبعد اللعب.",
+    "ننظف أسناننا بالفرشاة صباحاً وقبل النوم.",
+    "نستحم ونلبس ملابس نظيفة ونقص أظافرنا."
+   ],
+   "definitions": [
+    {
+     "term": "الجراثيم",
+     "meaning": "كائنات صغيرة جداً لا نراها، وقد تسبب المرض."
+    }
+   ],
+   "review": [
+    "متى نغسل أيدينا؟",
+    "لماذا ننظف أسناننا كل يوم؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-science-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "تعيش الحيوانات في أماكن مختلفة تناسبها.",
+   "concepts": [
+    "بعض الحيوانات تعيش في الماء مثل السمكة.",
+    "بعضها يعيش على اليابسة مثل الجمل في الصحراء.",
+    "الطيور تبني أعشاشها على الأشجار."
+   ],
+   "definitions": [],
+   "review": [
+    "أين تعيش السمكة؟",
+    "اذكر حيواناً يعيش في الصحراء."
+   ],
+   "example": "الجمل يتحمل العطش والحر، لذلك يعيش في الصحراء."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g1-science-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "لكل حيوان صغار لها أسماء، والأمهات تعتني بصغارها.",
+   "concepts": [
+    "صغير القطة هريرة، وصغير الدجاجة كتكوت.",
+    "صغير الناقة حُوار، وصغير البقرة عجل.",
+    "الأم تطعم صغارها وتحميها حتى تكبر."
+   ],
+   "definitions": [],
+   "review": [
+    "ما اسم صغير الدجاجة؟",
+    "كيف تعتني الحيوانات بصغارها؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-arabic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الكلمة المفرد تدل على واحد، والجمع يدل على أكثر من اثنين.",
+   "concepts": [
+    "كتاب مفرد، وكتب جمع.",
+    "قلم مفرد، وأقلام جمع.",
+    "ولد مفرد، وأولاد جمع."
+   ],
+   "definitions": [
+    {
+     "term": "المفرد",
+     "meaning": "ما يدل على شيء واحد."
+    },
+    {
+     "term": "الجمع",
+     "meaning": "ما يدل على ثلاثة أو أكثر."
+    }
+   ],
+   "review": [
+    "ما جمع كلمة «بيت»؟",
+    "ما مفرد كلمة «أقلام»؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-arabic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الجملة المفيدة كلمات مرتبة تعطي معنى كاملاً.",
+   "concepts": [
+    "نرتب الكلمات حتى يفهم القارئ المعنى.",
+    "نضع النقطة (.) في نهاية الجملة الخبرية.",
+    "نضع علامة الاستفهام (؟) في نهاية السؤال."
+   ],
+   "definitions": [],
+   "review": [
+    "ماذا نضع في نهاية الجملة الخبرية؟",
+    "كوّن جملة من: المدرسة، إلى، ذهبت."
+   ],
+   "example": "الولد يقرأ الكتاب. — أين الكتاب؟"
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-arabic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "اللام الشمسية تُكتب ولا تُنطق، ويُشدَّد الحرف الذي بعدها.",
+   "concepts": [
+    "في «الشمس» نكتب اللام ولا ننطقها.",
+    "الحرف بعد اللام الشمسية عليه شدة: الشَّمس، النَّهر.",
+    "من أمثلتها: السماء، الدرس، النور."
+   ],
+   "definitions": [],
+   "review": [
+    "اذكر كلمة فيها لام شمسية.",
+    "لماذا سُميت شمسية؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-arabic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "اللام القمرية تُكتب وتُنطق، ولا يأتي بعدها حرف مشدد.",
+   "concepts": [
+    "في «القمر» نكتب اللام وننطقها.",
+    "من أمثلتها: الكتاب، البحر، الولد.",
+    "نصنف الكلمات حسب نطق اللام: إن نُطقت فهي قمرية."
+   ],
+   "definitions": [],
+   "review": [
+    "اذكر كلمة فيها لام قمرية.",
+    "صنّف: الدرس، الكتاب."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-english-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We name the people in our family.",
+   "concepts": [
+    "mother, father, brother, sister.",
+    "grandmother and grandfather.",
+    "We say: \"This is my brother.\""
+   ],
+   "definitions": [],
+   "review": [
+    "Who is your mother's husband?",
+    "Say a sentence with \"This is my ...\"."
+   ],
+   "example": "This is my father. This is my sister."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-english-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We name animals and say what they can do.",
+   "concepts": [
+    "A bird can fly. A fish can swim.",
+    "A camel has a hump and lives in the desert.",
+    "A cat can jump. A horse can run."
+   ],
+   "definitions": [],
+   "review": [
+    "Which animal can fly?",
+    "What can a fish do?"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-english-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We talk about the weather.",
+   "concepts": [
+    "sunny, rainy, windy, cloudy, hot, cold.",
+    "Ask: \"What's the weather like?\"",
+    "Answer: \"It is sunny.\""
+   ],
+   "definitions": [],
+   "review": [
+    "What is the weather like when the sun shines?",
+    "Is it hot or cold in summer in Oman?"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-english-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We name clothes and say what people wear.",
+   "concepts": [
+    "shoes, socks, shirt, dress, jacket, cap.",
+    "We wear shoes on our feet and a cap on our head.",
+    "\"He is wearing a blue shirt.\""
+   ],
+   "definitions": [],
+   "review": [
+    "What do we wear on our feet?",
+    "What keeps us warm?"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-islamic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الوضوء طهارة نستعد بها للصلاة، وله أعضاء نغسلها بترتيب.",
+   "concepts": [
+    "نبدأ بالنية ونقول «بسم الله» ثم نغسل الكفين.",
+    "نتمضمض ونستنشق ونغسل الوجه، ثم اليدين إلى المرفقين.",
+    "نمسح الرأس والأذنين، ثم نغسل الرجلين إلى الكعبين، وهما آخر الأعضاء."
+   ],
+   "definitions": [
+    {
+     "term": "الوضوء",
+     "meaning": "غسل أعضاء معينة بالماء بنية الطهارة للصلاة."
+    }
+   ],
+   "review": [
+    "بماذا نبدأ الوضوء؟",
+    "ما آخر عضو نغسله في الوضوء؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-islamic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "فرض الله علينا خمس صلوات في اليوم والليلة، لكل صلاة وقتها.",
+   "concepts": [
+    "الفجر قبل طلوع الشمس، والظهر بعد منتصف النهار.",
+    "العصر بعد الظهر، والمغرب بعد غروب الشمس مباشرة.",
+    "العشاء بعد ذهاب ضوء النهار ودخول الليل."
+   ],
+   "definitions": [],
+   "review": [
+    "كم عدد الصلوات المفروضة؟",
+    "ما الصلاة التي نصليها بعد غروب الشمس؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-islamic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "نوح عليه السلام نبي كريم دعا قومه إلى عبادة الله وحده، وصبر عليهم سنين طويلة.",
+   "concepts": [
+    "دعا نوح قومه إلى عبادة الله وترك الأصنام.",
+    "لم يؤمن معه إلا قليل، فأمره الله أن يصنع السفينة.",
+    "نجّى الله نوحاً والمؤمنين في السفينة."
+   ],
+   "definitions": [],
+   "review": [
+    "ماذا صنع نوح عليه السلام بأمر الله؟",
+    "ما القيمة التي نتعلمها من قصته؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-islamic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "المسجد بيت الله، وله آداب نحافظ عليها.",
+   "concepts": [
+    "ندخل المسجد بالقدم اليمنى ونقول دعاء الدخول.",
+    "نجلس بهدوء ولا نرفع أصواتنا ولا نلعب.",
+    "نحافظ على نظافة المسجد ونخرج بالقدم اليسرى."
+   ],
+   "definitions": [],
+   "review": [
+    "بأي قدم ندخل المسجد؟",
+    "اذكر أدبين من آداب المسجد."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-math-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "كل عدد من رقمين يتكون من عشرات وآحاد.",
+   "concepts": [
+    "في العدد 47: الرقم 4 في منزلة العشرات، والرقم 7 في منزلة الآحاد.",
+    "العدد المكون من 6 عشرات و3 آحاد هو 63.",
+    "نقارن العددين بالعشرات أولاً ثم بالآحاد."
+   ],
+   "definitions": [
+    {
+     "term": "العشرة",
+     "meaning": "عشرة آحاد مجموعة معاً."
+    }
+   ],
+   "review": [
+    "كم عشرة في العدد 58؟",
+    "اكتب العدد: 3 عشرات و5 آحاد."
+   ],
+   "example": "90 أكبر من 89 لأن عشراته 9 وعشرات 89 هي 8."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-math-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "نجمع ونطرح الأعداد حتى 100 بجمع العشرات مع العشرات والآحاد مع الآحاد.",
+   "concepts": [
+    "20 + 30 = 50: نجمع العشرات.",
+    "45 + 4 = 49: نجمع الآحاد.",
+    "نقرأ المسألة اللفظية جيداً لنعرف هل نجمع أم نطرح."
+   ],
+   "definitions": [],
+   "review": [
+    "70 − 20 = ؟",
+    "معك 35 بيسة وصرفت 10، كم بقي؟"
+   ],
+   "example": "في الصف 24 طالباً وانضم 5 طلاب: 24 + 5 = 29 طالباً."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-math-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "نقرأ الوقت في الساعة بالساعات الكاملة.",
+   "concepts": [
+    "العقرب القصير يشير إلى الساعات.",
+    "العقرب الطويل يشير إلى الدقائق.",
+    "إذا كان العقرب الطويل على 12 فالوقت ساعة كاملة."
+   ],
+   "definitions": [],
+   "review": [
+    "إلى ماذا يشير العقرب القصير؟",
+    "كم ساعة في اليوم؟"
+   ],
+   "example": "العقرب القصير على 3 والطويل على 12: الساعة الثالثة."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-math-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "عملة سلطنة عُمان الريال العماني، وجزؤه البيسة.",
+   "concepts": [
+    "الريال العماني = 1000 بيسة.",
+    "500 بيسة نصف ريال، و500 + 500 = ريال واحد.",
+    "نجمع المبالغ الصغيرة لنعرف كم ندفع."
+   ],
+   "definitions": [],
+   "review": [
+    "كم بيسة في الريال؟",
+    "كم يساوي نصف ريال بالبيسة؟"
+   ],
+   "example": "اشتريت عصيراً بـ 200 بيسة وكعكة بـ 300 بيسة: المجموع 500 بيسة."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-science-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الكائنات الحية تنمو وتتنفس وتتغذى وتتكاثر، أما غير الحية فلا تفعل ذلك.",
+   "concepts": [
+    "الإنسان والحيوان والنبات كائنات حية.",
+    "الكائنات الحية تحتاج إلى الغذاء والماء والهواء.",
+    "الحجر والسيارة أشياء غير حية حتى لو تحركت السيارة."
+   ],
+   "definitions": [],
+   "review": [
+    "اذكر صفتين من صفات الكائن الحي.",
+    "هل السيارة كائن حي؟ ولماذا؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-science-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "للنبات أجزاء، ولكل جزء وظيفة.",
+   "concepts": [
+    "الجذر يثبت النبات ويمتص الماء من التربة.",
+    "الساق تحمل الأوراق وتنقل الماء.",
+    "الأوراق تصنع غذاء النبات بمساعدة ضوء الشمس، والزهرة تكوّن البذور."
+   ],
+   "definitions": [],
+   "review": [
+    "ما وظيفة الجذر؟",
+    "أي جزء يصنع غذاء النبات؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-science-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الماء ضروري لحياة الإنسان والحيوان والنبات، وعلينا أن نحافظ عليه.",
+   "concepts": [
+    "نستخدم الماء في الشرب والطبخ والنظافة والزراعة.",
+    "نغلق الصنبور أثناء تنظيف الأسنان.",
+    "الماء في عُمان ثمين لقلة الأمطار، فلا نسرف فيه."
+   ],
+   "definitions": [
+    {
+     "term": "الترشيد",
+     "meaning": "استخدام الماء بقدر الحاجة دون إسراف."
+    }
+   ],
+   "review": [
+    "اذكر طريقتين لترشيد الماء.",
+    "لماذا نحتاج إلى الماء؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g2-science-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الطقس حالة الجو، ويتغير مع فصول السنة الأربعة.",
+   "concepts": [
+    "فصول السنة: الصيف، والخريف، والشتاء، والربيع.",
+    "الصيف في عُمان حار، والشتاء معتدل وأبرد.",
+    "نختار ملابسنا حسب الطقس."
+   ],
+   "definitions": [],
+   "review": [
+    "كم عدد فصول السنة؟",
+    "ماذا نلبس في الشتاء؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-arabic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الكلمة في اللغة العربية ثلاثة أنواع: اسم وفعل وحرف.",
+   "concepts": [
+    "الاسم يدل على إنسان أو حيوان أو شيء أو مكان: سعيد، قطة، باب.",
+    "الفعل يدل على حدث مرتبط بزمن: كتب، يقرأ، اذهب.",
+    "الحرف لا يتم معناه إلا مع غيره: في، من، على."
+   ],
+   "definitions": [],
+   "review": [
+    "ما نوع كلمة «يلعب»؟",
+    "استخرج الحرف من: جلست على الكرسي."
+   ],
+   "example": "كتبَ (فعل) سعيدٌ (اسم) في (حرف) الدفترِ (اسم)."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-arabic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الضمائر كلمات نستخدمها بدلاً من الأسماء حتى لا نكررها.",
+   "concepts": [
+    "للمتكلم: أنا، نحن.",
+    "للمخاطب: أنتَ، أنتِ، أنتم.",
+    "للغائب: هو، هي، هم."
+   ],
+   "definitions": [
+    {
+     "term": "الضمير",
+     "meaning": "اسم يقوم مقام اسم آخر."
+    }
+   ],
+   "review": [
+    "ما الضمير المناسب: ____ تلميذة مجتهدة؟",
+    "بأي ضمير نشير إلى الولد الغائب؟"
+   ],
+   "example": "سارة مجتهدة ← هي مجتهدة."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-arabic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "أسماء الإشارة نشير بها إلى القريب.",
+   "concepts": [
+    "«هذا» للمفرد المذكر: هذا كتاب.",
+    "«هذه» للمفردة المؤنثة: هذه شجرة.",
+    "«هؤلاء» للجمع من الناس: هؤلاء طلاب."
+   ],
+   "definitions": [],
+   "review": [
+    "أشر إلى البنت القريبة.",
+    "أكمل: ____ طلاب مجتهدون."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-arabic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "أدوات الاستفهام نسأل بها عن أشياء مختلفة.",
+   "concepts": [
+    "«أين» للسؤال عن المكان، و«متى» عن الزمان.",
+    "«مَن» للسؤال عن الشخص، و«ما» عن الشيء.",
+    "«كيف» عن الحال، و«كم» عن العدد."
+   ],
+   "definitions": [],
+   "review": [
+    "بماذا نسأل عن المكان؟",
+    "ضع أداة مناسبة: ____ اسمك؟"
+   ],
+   "example": "متى تبدأ الإجازة؟ — أين المكتبة؟ — كم عمرك؟"
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-english-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We name things in our classroom and use \"There is / There are\".",
+   "concepts": [
+    "Classroom things: pen, pencil, book, ruler, desk, board.",
+    "Use \"There is\" for one thing: There is a pen.",
+    "Use \"There are\" for more than one: There are two books."
+   ],
+   "definitions": [],
+   "review": [
+    "What do we write with?",
+    "Complete: There ____ two books on the desk."
+   ],
+   "example": "There is a ruler on the desk. There are three pencils in the bag."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-english-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We name the rooms in a house and say what we do there.",
+   "concepts": [
+    "We cook in the kitchen and sleep in the bedroom.",
+    "We wash in the bathroom.",
+    "We sit with our family in the living room."
+   ],
+   "definitions": [],
+   "review": [
+    "Where do we cook?",
+    "Where do we sleep?"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-english-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We talk about what we like to do in our free time.",
+   "concepts": [
+    "Hobbies: reading, drawing, swimming, playing football.",
+    "Use \"I like + verb-ing\": I like reading books.",
+    "Ask: \"What do you like doing?\""
+   ],
+   "definitions": [],
+   "review": [
+    "Say one hobby you like.",
+    "Complete: I like ____ (swim)."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-english-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We use \"can\" and \"can't\" to talk about abilities.",
+   "concepts": [
+    "\"can\" means you are able to do something: A bird can fly.",
+    "\"can't\" means you are not able: A fish can't walk.",
+    "After can / can't we use the verb without -s."
+   ],
+   "definitions": [],
+   "review": [
+    "What can a fish do?",
+    "Say one thing you can do."
+   ],
+   "example": "I can ride a bike. I can't fly."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-islamic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الصدق أن نقول الحقيقة ونطابق كلامنا مع أفعالنا، وهو من صفات المسلم.",
+   "concepts": [
+    "الصادق يقول الحق ولو كان على نفسه.",
+    "الصدق يجعل الناس يثقون بنا ويحبوننا.",
+    "إذا أخطأنا نعترف بالخطأ ونعتذر ولا نكذب."
+   ],
+   "definitions": [
+    {
+     "term": "الصدق",
+     "meaning": "قول الحقيقة كما هي."
+    }
+   ],
+   "review": [
+    "ما معنى الصدق؟",
+    "اذكر موقفاً كنت فيه صادقاً."
+   ],
+   "example": "كسر أحمد زجاج النافذة دون قصد، فأخبر المعلم بالحقيقة واعتذر."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-islamic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "للوالدين مكانة عظيمة، وبرّهما من أحب الأعمال إلى الله.",
+   "concepts": [
+    "البر هو الإحسان إلى الوالدين وطاعتهما في المعروف.",
+    "من البر: مساعدة الأم في البيت، والكلام بأدب، وعدم رفع الصوت عليهما.",
+    "ندعو لوالدينا: ربّ ارحمهما كما ربياني صغيراً."
+   ],
+   "definitions": [
+    {
+     "term": "البر",
+     "meaning": "الإحسان وفعل الخير."
+    }
+   ],
+   "review": [
+    "اذكر صورتين من بر الوالدين.",
+    "بماذا ندعو لوالدينا؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-islamic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "أوصى الإسلام بالجار، وجعل الإحسان إليه من الإيمان.",
+   "concepts": [
+    "من حق الجار ألا نؤذيه بالكلام أو الإزعاج.",
+    "نزوره إذا مرض، ونهنئه في فرحه، ونهديه من طعامنا.",
+    "نحافظ على نظافة المكان أمام بيته."
+   ],
+   "definitions": [
+    {
+     "term": "الجار",
+     "meaning": "من يسكن قريباً من بيتنا."
+    }
+   ],
+   "review": [
+    "اذكر حقين من حقوق الجار.",
+    "كيف نحسن إلى جارنا؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-islamic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الإسلام دين النظافة، والله يحب المتطهرين.",
+   "concepts": [
+    "نظافة الجسم: الوضوء والاغتسال وتقليم الأظافر.",
+    "نظافة الثياب والمكان من أدب المسلم.",
+    "نرمي النفايات في مكانها ونحافظ على نظافة المدرسة والشارع."
+   ],
+   "definitions": [],
+   "review": [
+    "ماذا يحب الله؟",
+    "اذكر عادتين تدلان على النظافة."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-math-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الضرب طريقة سريعة لجمع عدد مع نفسه عدة مرات.",
+   "concepts": [
+    "3 + 3 + 3 + 3 = 4 × 3 = 12.",
+    "جدول الضرب في 2: 2، 4، 6، 8، 10…",
+    "جدول الضرب في 5 ينتهي دائماً بـ 0 أو 5."
+   ],
+   "definitions": [
+    {
+     "term": "الضرب",
+     "meaning": "جمع متكرر لعدد واحد."
+    }
+   ],
+   "review": [
+    "اكتب 2 + 2 + 2 في صورة ضرب.",
+    "5 × 6 = ؟"
+   ],
+   "example": "5 أكياس في كل كيس 4 تمرات: 5 × 4 = 20 تمرة."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-math-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "نقرأ الأعداد حتى 1000 ونعرف قيمة كل رقم حسب منزلته.",
+   "concepts": [
+    "في العدد 735: 7 مئات، و3 عشرات، و5 آحاد.",
+    "«أربعمئة وستة» يُكتب 406، والصفر يحفظ منزلة العشرات.",
+    "599 أصغر من 600 لأن مئاته أقل."
+   ],
+   "definitions": [
+    {
+     "term": "المنزلة",
+     "meaning": "مكان الرقم في العدد: آحاد، عشرات، مئات."
+    }
+   ],
+   "review": [
+    "كم مئة في العدد 862؟",
+    "اكتب بالأرقام: ثلاثمئة وعشرون."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-math-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الكسر جزء من شيء مقسوم إلى أجزاء متساوية.",
+   "concepts": [
+    "النصف (1/2): جزء من جزأين متساويين.",
+    "الربع (1/4): جزء من أربعة أجزاء متساوية.",
+    "نصف العدد 10 هو 5، وربع العدد 8 هو 2."
+   ],
+   "definitions": [],
+   "review": [
+    "ما نصف العدد 12؟",
+    "كم ربعاً في الشيء الكامل؟"
+   ],
+   "example": "قسمنا كعكة إلى 4 قطع متساوية، فكل قطعة ربع الكعكة."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-math-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "المحيط هو طول الحدود المحيطة بالشكل.",
+   "concepts": [
+    "محيط أي شكل = مجموع أطوال أضلاعه.",
+    "محيط المربع = طول الضلع × 4.",
+    "نكتب الوحدة مع الناتج: سم أو م."
+   ],
+   "definitions": [
+    {
+     "term": "المحيط",
+     "meaning": "مجموع أطوال أضلاع الشكل."
+    }
+   ],
+   "review": [
+    "ما محيط مربع طول ضلعه 5 سم؟",
+    "ما المحيط؟"
+   ],
+   "example": "مثلث أضلاعه 2 و3 و4 سم: المحيط = 2 + 3 + 4 = 9 سم."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-science-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "المادة كل شيء له كتلة ويشغل حيزاً، ولها ثلاث حالات.",
+   "concepts": [
+    "الصلب له شكل ثابت مثل الحجر والقلم.",
+    "السائل يأخذ شكل الإناء مثل الماء والعصير.",
+    "الغاز ينتشر ويملأ المكان مثل الهواء."
+   ],
+   "definitions": [],
+   "review": [
+    "ما حالة الماء في الكوب؟",
+    "اذكر مثالاً على مادة غازية."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-science-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "المغناطيس يجذب بعض المواد مثل الحديد.",
+   "concepts": [
+    "ينجذب الحديد إلى المغناطيس، ولا ينجذب الخشب والبلاستيك.",
+    "للمغناطيس قطبان: شمالي وجنوبي.",
+    "القطبان المتشابهان يتنافران، والمختلفان يتجاذبان."
+   ],
+   "definitions": [],
+   "review": [
+    "اذكر مادة ينجذب إليها المغناطيس.",
+    "ماذا يحدث إذا قربنا قطبين شماليين؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-science-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الضوء يساعدنا على رؤية الأشياء، وله مصادر طبيعية وصناعية.",
+   "concepts": [
+    "الشمس أهم مصدر طبيعي للضوء.",
+    "المصباح الكهربائي مصدر صناعي للضوء.",
+    "الظل يتكون عندما يحجب جسم معتم الضوء."
+   ],
+   "definitions": [
+    {
+     "term": "الجسم المضيء",
+     "meaning": "جسم يصدر الضوء بنفسه."
+    }
+   ],
+   "review": [
+    "اذكر مصدراً صناعياً للضوء.",
+    "كيف يتكون الظل؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g3-science-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الصوت ينتج عن اهتزاز الأجسام وننقله إلى الأذن.",
+   "concepts": [
+    "عندما نضرب الطبل يهتز فيصدر صوتاً.",
+    "نسمع الأصوات بالأذن.",
+    "الأصوات العالية جداً قد تؤذي الأذن، فنحميها."
+   ],
+   "definitions": [
+    {
+     "term": "الاهتزاز",
+     "meaning": "حركة سريعة ذهاباً وإياباً."
+    }
+   ],
+   "review": [
+    "كيف ينتج الصوت؟",
+    "لماذا نبتعد عن الأصوات العالية جداً؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-arabic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الجملة العربية نوعان: اسمية تبدأ باسم، وفعلية تبدأ بفعل.",
+   "concepts": [
+    "الجملة الاسمية: مبتدأ وخبر، مثل: الطالبُ مجتهدٌ.",
+    "الجملة الفعلية: فعل وفاعل، مثل: يلعبُ الأطفالُ.",
+    "يمكن تحويل الجملة: الأطفالُ يلعبون (اسمية)."
+   ],
+   "definitions": [
+    {
+     "term": "المبتدأ",
+     "meaning": "الاسم الذي نبدأ به الجملة الاسمية."
+    },
+    {
+     "term": "الخبر",
+     "meaning": "ما نخبر به عن المبتدأ."
+    }
+   ],
+   "review": [
+    "ما نوع جملة «الشمسُ مشرقةٌ»؟",
+    "حوّل إلى جملة فعلية: الطالبُ يكتبُ."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-arabic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الأسماء مذكرة ومؤنثة، ونحوّل المذكر إلى مؤنث غالباً بإضافة التاء المربوطة.",
+   "concepts": [
+    "معلّم ← معلّمة، طبيب ← طبيبة.",
+    "بعض الكلمات مؤنثة دون تاء مثل: شمس، أم.",
+    "نطابق بين الاسم والصفة: الولدُ نشيطٌ، البنتُ نشيطةٌ."
+   ],
+   "definitions": [],
+   "review": [
+    "ما مؤنث «مهندس»؟",
+    "اذكر كلمة مؤنثة بلا تاء."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-arabic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "المثنى اسم يدل على اثنين بزيادة ألف ونون أو ياء ونون.",
+   "concepts": [
+    "قلم ← قلمان أو قلمين.",
+    "شجرة ← شجرتان (تتحول التاء المربوطة إلى تاء مفتوحة).",
+    "نستخدم المثنى عندما يكون العدد اثنين فقط."
+   ],
+   "definitions": [
+    {
+     "term": "المثنى",
+     "meaning": "ما يدل على اثنين."
+    }
+   ],
+   "review": [
+    "ما مثنى «باب»؟",
+    "ما مثنى «وردة»؟"
+   ],
+   "example": "في الحديقة شجرتان، وعلى المكتب كتابان."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-arabic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "حروف الجر تربط الكلمات وتغير آخر الاسم بعدها إلى الكسر.",
+   "concepts": [
+    "من حروف الجر: من، إلى، عن، على، في، الباء، اللام.",
+    "الاسم بعد حرف الجر مجرور: ذهبتُ إلى المدرسةِ.",
+    "لكل حرف معنى: «في» للمكان، و«إلى» لانتهاء الغاية."
+   ],
+   "definitions": [],
+   "review": [
+    "استخرج حرف الجر: جلست على الكرسي.",
+    "أكمل: خرجتُ ____ البيت."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-english-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We read the time and ask \"What time is it?\"",
+   "concepts": [
+    "There are 24 hours in a day and 60 minutes in an hour.",
+    "Ask: \"What time is it?\" — Answer: \"It's three o'clock.\"",
+    "\"half past\" means 30 minutes after the hour."
+   ],
+   "definitions": [],
+   "review": [
+    "How many minutes are in an hour?",
+    "How do you ask about the time?"
+   ],
+   "example": "It's half past seven = 7:30."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-english-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We talk about our day using the present simple.",
+   "concepts": [
+    "I get up at six. I go to school at seven.",
+    "With he / she / it, add -s: She goes to school by bus.",
+    "Words like \"every day\" and \"always\" show routines."
+   ],
+   "definitions": [],
+   "review": [
+    "Complete: I ____ up at six o'clock.",
+    "Complete: She ____ (go) to school by bus."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-english-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "We ask for prices and buy things in a shop.",
+   "concepts": [
+    "Ask: \"How much is this bag?\"",
+    "Answer: \"It's two rials.\"",
+    "Use \"a\" before a consonant sound and \"an\" before a vowel sound: an apple."
+   ],
+   "definitions": [],
+   "review": [
+    "How do you ask about a price?",
+    "Complete: I want ____ apple, please."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-english-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "We use \"some\" and \"any\" to talk about food.",
+   "concepts": [
+    "Use \"some\" in positive sentences: There is some milk.",
+    "Use \"any\" in questions and negatives: Are there any eggs? There aren't any oranges.",
+    "Both are used with uncountable nouns and plural nouns."
+   ],
+   "definitions": [],
+   "review": [
+    "Complete: There is ____ milk in the fridge.",
+    "Complete: Are there ____ eggs?"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-islamic-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "وُلد النبي محمد ﷺ في مكة المكرمة، وعُرف بأخلاقه العظيمة قبل البعثة.",
+   "concepts": [
+    "وُلد النبي ﷺ في مكة في عام الفيل.",
+    "أبوه عبد الله وأمه آمنة بنت وهب.",
+    "لُقِّب قبل البعثة بالصادق الأمين لصدقه وأمانته."
+   ],
+   "definitions": [
+    {
+     "term": "البعثة",
+     "meaning": "نزول الوحي على النبي ﷺ وبدء رسالته."
+    }
+   ],
+   "review": [
+    "أين وُلد النبي ﷺ؟",
+    "بماذا لُقِّب قبل البعثة؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-islamic-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الصوم عبادة فرضها الله في شهر رمضان، وفيه تربية للنفس على الصبر.",
+   "concepts": [
+    "الصوم: الامتناع عن الطعام والشراب وسائر المفطرات من طلوع الفجر إلى غروب الشمس بنية.",
+    "صوم رمضان ركن من أركان الإسلام.",
+    "من آداب الصائم: السحور، وتعجيل الفطور، وحفظ اللسان."
+   ],
+   "definitions": [
+    {
+     "term": "السحور",
+     "meaning": "طعام نأكله قبل الفجر استعداداً للصوم."
+    }
+   ],
+   "review": [
+    "من متى إلى متى يصوم المسلم؟",
+    "اذكر أدبين من آداب الصائم."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-islamic-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "التعاون أن نعمل معاً على الخير، وقد أمرنا الله به.",
+   "concepts": [
+    "قال تعالى: ﴿وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ﴾.",
+    "نتعاون في البيت بمساعدة الأسرة، وفي المدرسة بتنظيف الفصل مع الزملاء.",
+    "التعاون يجعل العمل أسهل وأسرع."
+   ],
+   "definitions": [
+    {
+     "term": "التعاون",
+     "meaning": "أن يساعد الناس بعضهم بعضاً على عمل الخير."
+    }
+   ],
+   "review": [
+    "ما معنى التعاون؟",
+    "اذكر مثالاً للتعاون في المدرسة."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-islamic-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "للطريق آداب تحفظ سلامتنا وسلامة الآخرين.",
+   "concepts": [
+    "نمشي على الرصيف ونعبر الشارع من ممر المشاة.",
+    "ننتظر عندما تكون إشارة المشاة حمراء.",
+    "لا نرمي النفايات في الطريق ونزيل الأذى عنه."
+   ],
+   "definitions": [],
+   "review": [
+    "من أين نعبر الشارع؟",
+    "ماذا نفعل عندما تكون إشارة المشاة حمراء؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-math-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "حفظ جداول الضرب حتى 10 يساعدنا على الحساب السريع.",
+   "concepts": [
+    "7 × 8 = 56، و6 × 9 = 54.",
+    "خاصية الإبدال: 4 × 6 = 6 × 4 = 24.",
+    "أي عدد × 1 = العدد نفسه، وأي عدد × 0 = 0."
+   ],
+   "definitions": [
+    {
+     "term": "خاصية الإبدال",
+     "meaning": "تغيير ترتيب العددين في الضرب لا يغير الناتج."
+    }
+   ],
+   "review": [
+    "7 × 9 = ؟",
+    "إذا كان 8 × 3 = 24، فكم 3 × 8؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-math-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "القسمة توزيع بالتساوي، وهي عكس الضرب.",
+   "concepts": [
+    "24 ÷ 6 = 4 لأن 6 × 4 = 24.",
+    "نستخدم القسمة عندما نوزع أشياء على مجموعات متساوية.",
+    "نتحقق من الناتج بالضرب."
+   ],
+   "definitions": [],
+   "review": [
+    "36 ÷ 9 = ؟",
+    "وزّع 20 حلوى على 4 أطفال بالتساوي."
+   ],
+   "example": "30 قلماً على 5 طلاب بالتساوي: 30 ÷ 5 = 6 أقلام لكل طالب."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-math-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الكسور المتكافئة كسور مختلفة في الشكل لكنها تمثل الجزء نفسه.",
+   "concepts": [
+    "1/2 = 2/4 = 4/8.",
+    "نكوّن كسراً مكافئاً بضرب البسط والمقام في العدد نفسه.",
+    "2/6 يكافئ 1/3 بقسمة البسط والمقام على 2."
+   ],
+   "definitions": [
+    {
+     "term": "البسط",
+     "meaning": "العدد فوق خط الكسر."
+    },
+    {
+     "term": "المقام",
+     "meaning": "العدد تحت خط الكسر."
+    }
+   ],
+   "review": [
+    "اكتب كسراً يكافئ 1/2.",
+    "أكمل: 1/3 = ؟/6."
+   ],
+   "example": "1/4 = ؟/8: ضربنا المقام في 2، فنضرب البسط في 2: 2/8."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-math-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "المساحة مقدار السطح الذي يغطيه الشكل، ونقيسها بالمربعات.",
+   "concepts": [
+    "نعدّ المربعات التي تغطي الشكل لنعرف مساحته.",
+    "مساحة المستطيل = الطول × العرض.",
+    "نكتب وحدة المساحة: سم² أو وحدة مربعة."
+   ],
+   "definitions": [
+    {
+     "term": "المساحة",
+     "meaning": "عدد الوحدات المربعة التي تغطي الشكل."
+    }
+   ],
+   "review": [
+    "ما مساحة مستطيل طوله 5 وعرضه 2؟",
+    "ما الفرق بين المساحة والمحيط؟"
+   ],
+   "example": "مستطيل فيه 3 صفوف في كل صف 4 مربعات: 3 × 4 = 12 وحدة مربعة."
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-science-u1-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الأرض تدور حول نفسها وحول الشمس، والقمر يدور حول الأرض.",
+   "concepts": [
+    "دوران الأرض حول نفسها يسبب تعاقب الليل والنهار.",
+    "دوران الأرض حول الشمس يستغرق سنة تقريباً.",
+    "الشمس نجم يضيء بنفسه، والقمر يعكس ضوء الشمس."
+   ],
+   "definitions": [],
+   "review": [
+    "ما سبب تعاقب الليل والنهار؟",
+    "هل يضيء القمر بنفسه؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-science-u1-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "التربة تتكون من فتات الصخور وبقايا الكائنات الحية والماء والهواء.",
+   "concepts": [
+    "الصخور تتفتت بفعل الماء والرياح والحرارة فتكوّن التربة.",
+    "التربة الطينية تحتفظ بالماء أكثر من الرملية.",
+    "التربة مهمة لنمو النبات لأنها تثبته وتمده بالماء والأملاح."
+   ],
+   "definitions": [],
+   "review": [
+    "مم تتكون التربة؟",
+    "أي تربة تحتفظ بالماء أكثر؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-science-u2-l1": {
+  "status": "draft",
+  "content": {
+   "overview": "الحرارة صورة من صور الطاقة، ونقيس درجتها بميزان الحرارة.",
+   "concepts": [
+    "نقيس درجة الحرارة بالترمومتر (ميزان الحرارة) بوحدة الدرجة السيليزية.",
+    "الحرارة تحوّل الماء إلى بخار عند الغليان.",
+    "الحرارة تصهر بعض المواد مثل الثلج والشمع."
+   ],
+   "definitions": [
+    {
+     "term": "الانصهار",
+     "meaning": "تحول المادة من صلبة إلى سائلة بالحرارة."
+    }
+   ],
+   "review": [
+    "بماذا نقيس درجة الحرارة؟",
+    "اذكر مادة تنصهر بالحرارة."
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ },
+ "g4-science-u2-l2": {
+  "status": "draft",
+  "content": {
+   "overview": "الغذاء الصحي متنوع ومتوازن ويمدنا بما نحتاجه للنمو والنشاط.",
+   "concepts": [
+    "البروتينات للبناء: اللحم والسمك والبيض والبقول.",
+    "الفواكه والخضراوات غنية بالفيتامينات والألياف.",
+    "نقلل من السكريات والمشروبات الغازية ونشرب الماء."
+   ],
+   "definitions": [
+    {
+     "term": "الوجبة المتوازنة",
+     "meaning": "وجبة فيها أنواع مختلفة من الغذاء بكميات مناسبة."
+    }
+   ],
+   "review": [
+    "اذكر غذاء غنياً بالبروتين.",
+    "لماذا نقلل المشروبات الغازية؟"
+   ]
+  },
+  "model": "claude",
+  "updatedAt": "2026-11-23T00:00:00.000Z"
+ }
+}

@@ -49,3 +49,6 @@ coverage/
 
 # أوراق مراجعة الأسئلة
 questions-*.csv
+
+# أدوات كتابة الملخصات المؤقتة
+tools/_sum/__pycache__/
