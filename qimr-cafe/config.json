@@ -1,0 +1,151 @@
+{
+  "demo": true,
+
+  "business": {
+    "slug": "bunn-alfalaj",
+    "name": "بُنّ الفلج",
+    "nameLatin": "Bunn Al Falaj",
+    "tagline": "قهوة مختصة بروح نزوى",
+    "description": "كافيه قهوة مختصة في نزوى، نحمّص حبوبنا أسبوعياً ونقدّم مشروبات وحلويات وفطور طازج. اطلب من المنيو وأرسل طلبك على واتساب.",
+    "logo": "assets/logo.svg",
+    "siteUrl": "https://bunn-alfalaj.vercel.app"
+  },
+
+  "contact": {
+    "whatsapp": "96890000000",
+    "phone": "+96890000000",
+    "instagram": "",
+    "tiktok": "",
+    "snapchat": ""
+  },
+
+  "location": {
+    "address": "حارة العقر، بجانب سوق نزوى وقلعة نزوى",
+    "city": "نزوى، سلطنة عُمان",
+    "lat": 22.9330,
+    "lng": 57.5305,
+    "mapZoom": 16
+  },
+
+  "timezone": "Asia/Muscat",
+  "hours": [
+    { "label": "السبت – الأربعاء", "days": [6, 0, 1, 2, 3], "open": "06:30", "close": "23:30" },
+    { "label": "الخميس", "days": [4], "open": "06:30", "close": "01:00" },
+    { "label": "الجمعة", "days": [5], "open": "14:00", "close": "01:00" }
+  ],
+
+  "order": {
+    "currency": "ر.ع.",
+    "decimals": 3,
+    "types": ["pickup", "delivery", "dinein"],
+    "deliveryFee": 0.500,
+    "deliveryMinimum": 3.000,
+    "deliveryNote": "التوصيل داخل نزوى فقط"
+  },
+
+  "theme": {
+    "light": {
+      "bg": "#F4EEE4",
+      "surface": "#FFFCF7",
+      "text": "#21160E",
+      "muted": "#76665A",
+      "primary": "#3A2417",
+      "accent": "#A8742C",
+      "line": "#E4D8C6"
+    },
+    "dark": {
+      "bg": "#110C08",
+      "surface": "#1B140F",
+      "text": "#F2E9DC",
+      "muted": "#A6978A",
+      "primary": "#EBDAC2",
+      "accent": "#D6A75C",
+      "line": "#2F251D"
+    },
+    "fonts": {
+      "display": { "family": "Reem Kufi", "weights": [500, 600, 700] },
+      "body": { "family": "IBM Plex Sans Arabic", "weights": [400, 500, 600, 700] }
+    }
+  },
+
+  "hero": {
+    "eyebrow": "نزوى · قهوة مختصة",
+    "title": "فنجانك يُحمَّص\nعلى مهل",
+    "subtitle": "نحمّص حبوبنا كل أسبوع على بُعد خطوات من قلعة نزوى، ونقدّمها لك بكل تفاصيلها، من الإسبريسو إلى الحلويات البيتية.",
+    "cta": "اطلب الحين",
+    "secondaryCta": "شوف المنيو",
+    "image": "https://images.unsplash.com/photo-1442512595331-e89e73853f31"
+  },
+
+  "marquee": ["تحميص أسبوعي", "حبوب من ٨ دول", "حلويات تنخبز يومياً", "قهوة عُمانية بالهيل", "استلام وتوصيل"],
+
+  "about": {
+    "eyebrow": "قصتنا",
+    "title": "من حارة العقر،\nإلى فنجانك",
+    "text": "بدأنا بمحمصة صغيرة وفكرة بسيطة: قهوة نظيفة الطعم، تُحضَّر بعناية، في مكان يشبه نزوى. نختار حبوبنا من مزارع صغيرة، ونحمّصها على دفعات قليلة، ونخبز حلوياتنا كل صباح.",
+    "images": [
+      "https://images.unsplash.com/photo-1521017432531-fbd92d768814",
+      "https://images.unsplash.com/photo-1447933601403-0c6688de566e"
+    ],
+    "stats": [
+      { "value": "12", "label": "أصل قهوة" },
+      { "value": "48", "label": "ساعة من التحميص للفنجان" },
+      { "value": "100%", "label": "حلويات بيتية" }
+    ]
+  },
+
+  "menu": [
+    {
+      "id": "coffee",
+      "name": "قهوة",
+      "icon": "☕",
+      "items": [
+        { "id": "espresso", "name": "إسبريسو", "desc": "شوت مزدوج من محصول إثيوبيا، نكهة توت وشوكولاتة داكنة.", "price": 1.200, "image": "https://images.unsplash.com/photo-1610889556528-9a770e32642f" },
+        { "id": "cortado", "name": "كورتادو", "desc": "إسبريسو مع كمية مساوية من الحليب المبخّر، متوازن وقوي.", "price": 1.500, "image": "https://images.unsplash.com/photo-1559496417-e7f25cb247f3" },
+        { "id": "flat-white", "name": "فلات وايت", "desc": "حليب ناعم بطبقة رقيقة فوق شوتين إسبريسو.", "price": 1.700, "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d", "tag": "الأكثر طلباً" },
+        { "id": "saffron-latte", "name": "لاتيه الزعفران والهيل", "desc": "توقيعنا الخاص: لاتيه بشراب الزعفران والهيل المحضّر عندنا.", "price": 2.100, "image": "https://images.unsplash.com/photo-1541167760496-1628856ab772", "tag": "توقيع المحل" },
+        { "id": "cappuccino", "name": "كابتشينو", "desc": "إسبريسو وحليب ورغوة كثيفة، كلاسيكي كما يجب.", "price": 1.700, "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93" },
+        { "id": "v60", "name": "V60 مقطّرة", "desc": "تقطير يدوي لحبوب اليوم، اسأل الباريستا عن المحصول.", "price": 2.200, "image": "https://images.unsplash.com/photo-1545665225-b23b99e4d45e" },
+        { "id": "omani-coffee", "name": "قهوة عُمانية", "desc": "دلة قهوة بالهيل وماء الورد، تُقدَّم مع تمر نزوى.", "price": 1.000, "image": "https://images.unsplash.com/photo-1497515114629-f71d768fd07c" }
+      ]
+    },
+    {
+      "id": "cold",
+      "name": "مشروبات باردة",
+      "icon": "🧊",
+      "items": [
+        { "id": "iced-latte", "name": "آيس لاتيه", "desc": "إسبريسو على حليب بارد وثلج، خفيف ومنعش.", "price": 1.900, "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735", "tag": "الأكثر طلباً" },
+        { "id": "cold-brew", "name": "كولد برو", "desc": "قهوة منقوعة ١٨ ساعة بالماء البارد، ناعمة وقليلة الحموضة.", "price": 2.200, "image": "https://images.unsplash.com/photo-1517701604599-bb29b565090c" },
+        { "id": "iced-tea", "name": "شاي مثلّج بالليمون", "desc": "شاي أسود مخمّر يومياً مع ليمون أخضر ونعناع.", "price": 1.400, "image": "https://images.unsplash.com/photo-1556679343-c7306c1976bc" },
+        { "id": "berry-mojito", "name": "موهيتو التوت", "desc": "فراولة طازجة ولايم ونعناع وصودا.", "price": 1.800, "image": "https://images.unsplash.com/photo-1497534446932-c925b458314e", "tag": "جديد" },
+        { "id": "orange-juice", "name": "برتقال طازج", "desc": "عصير برتقال يُعصر عند الطلب.", "price": 1.500, "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba" },
+        { "id": "choco-shake", "name": "ميلك شيك شوكولاتة", "desc": "آيس كريم فانيلا وشوكولاتة بلجيكية وكريمة.", "price": 2.400, "image": "https://images.unsplash.com/photo-1577805947697-89e18249d767" }
+      ]
+    },
+    {
+      "id": "desserts",
+      "name": "حلويات",
+      "icon": "🍰",
+      "items": [
+        { "id": "choco-cake", "name": "كيكة الشوكولاتة", "desc": "طبقات شوكولاتة داكنة مع غاناش لامع.", "price": 2.500, "image": "https://images.unsplash.com/photo-1578985545062-69928b1d9587", "tag": "الأكثر طلباً" },
+        { "id": "berry-cake", "name": "كيكة التوت والكريمة", "desc": "إسفنج فانيلا خفيف مع كريمة طازجة وتوت.", "price": 2.700, "image": "https://images.unsplash.com/photo-1565958011703-44f9829ba187" },
+        { "id": "brownie", "name": "براوني", "desc": "براوني كثيف بقطع الشوكولاتة، يُقدَّم دافئاً.", "price": 1.500, "image": "https://images.unsplash.com/photo-1606313564200-e75d5e30476c" },
+        { "id": "cookies", "name": "كوكيز (٣ حبات)", "desc": "كوكيز بالزبدة البنية وقطع الشوكولاتة.", "price": 1.200, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35" },
+        { "id": "oreo-cup", "name": "كوب الأوريو", "desc": "طبقات كريمة وبسكويت أوريو وصوص شوكولاتة.", "price": 2.000, "image": "https://images.unsplash.com/photo-1563805042-7684c019e1cb" },
+        { "id": "donuts", "name": "دونات", "desc": "دونات طازجة بالشوكولاتة والسبرينكلز.", "price": 0.800, "image": "https://images.unsplash.com/photo-1551024601-bec78aea704b" }
+      ]
+    },
+    {
+      "id": "breakfast",
+      "name": "فطور",
+      "icon": "🍳",
+      "items": [
+        { "id": "avo-toast", "name": "توست الأفوكادو والبيض", "desc": "خبز ساوردو محمّص، أفوكادو، بيضة عيون وفلفل أحمر.", "price": 2.900, "image": "https://images.unsplash.com/photo-1525351484163-7529414344d8" },
+        { "id": "nizwa-plate", "name": "صحن فطور نزوى", "desc": "بيض، توست، جبن، زيتون، وعسل عُماني مع شاي كرك.", "price": 3.500, "image": "https://images.unsplash.com/photo-1533089860892-a7c6f0a88666", "tag": "توقيع المحل" },
+        { "id": "pancakes", "name": "بانكيك بالعسل", "desc": "ثلاث طبقات بانكيك، موز، وعسل سدر.", "price": 2.800, "image": "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445" },
+        { "id": "french-toast", "name": "فرنش توست بريوش", "desc": "بريوش محمّر مع توت أزرق وموز وصوص كراميل.", "price": 3.200, "image": "https://images.unsplash.com/photo-1484723091739-30a097e8f929" },
+        { "id": "fruit-bowl", "name": "صحن فواكه وزبادي", "desc": "زبادي يوناني، فواكه موسمية، وجرانولا بيتية.", "price": 2.400, "image": "https://images.unsplash.com/photo-1490474418585-ba9bad8fd0ea" }
+      ]
+    }
+  ]
+}
