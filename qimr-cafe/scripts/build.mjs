@@ -84,7 +84,8 @@ function themeCss(theme) {
   const f = theme.fonts;
   const fonts = `--font-display:'${f.display.family}','${f.body.family}',system-ui,sans-serif;--font-body:'${f.body.family}',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif`;
   const bright = `--accent-bright:${theme.dark.accent};--on-accent-bright:${inkOn(theme.dark.accent)}`;
-  return `:root{${vars(theme.light)};${fonts};${bright};color-scheme:light}` +
+  const radius = `--radius:${Number(theme.radius ?? 6)}px`;
+  return `:root{${vars(theme.light)};${fonts};${bright};${radius};color-scheme:light}` +
     `@media (prefers-color-scheme:dark){:root:not([data-theme=light]){${vars(theme.dark)};color-scheme:dark}}` +
     `:root[data-theme=dark]{${vars(theme.dark)};color-scheme:dark}`;
 }
@@ -144,6 +145,7 @@ export async function build() {
     logoSvg,
     fontsHref: fontsHref(cfg.theme.fonts),
     themeCss: themeCss(cfg.theme),
+    defaultTheme: ['light', 'dark'].includes(cfg.theme.default) ? cfg.theme.default : '',
     css: minifyCss(readFileSync(join(ROOT, 'src/assets/style.css'), 'utf8')),
     clientJson: JSON.stringify(client).replace(/</g, '\\u003c'),
   };

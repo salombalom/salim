@@ -44,27 +44,29 @@
   },
 
   "theme": {
+    "default": "dark",
+    "radius": 6,
     "light": {
-      "bg": "#F4EEE4",
-      "surface": "#FFFCF7",
-      "text": "#21160E",
-      "muted": "#76665A",
-      "primary": "#3A2417",
-      "accent": "#A8742C",
-      "line": "#E4D8C6"
+      "bg": "#F4EFE6",
+      "surface": "#FBF8F2",
+      "text": "#1B1612",
+      "muted": "#776B5E",
+      "primary": "#1B1612",
+      "accent": "#94733A",
+      "line": "#E2D8C8"
     },
     "dark": {
-      "bg": "#110C08",
-      "surface": "#1B140F",
-      "text": "#F2E9DC",
-      "muted": "#A6978A",
-      "primary": "#EBDAC2",
-      "accent": "#D6A75C",
-      "line": "#2F251D"
+      "bg": "#0E0C0A",
+      "surface": "#161310",
+      "text": "#EEE6D8",
+      "muted": "#A09483",
+      "primary": "#EEE6D8",
+      "accent": "#C9A76B",
+      "line": "#2A241E"
     },
     "fonts": {
-      "display": { "family": "Reem Kufi", "weights": [500, 600, 700] },
-      "body": { "family": "IBM Plex Sans Arabic", "weights": [400, 500, 600, 700] }
+      "display": { "family": "Amiri", "weights": [400, 700] },
+      "body": { "family": "Alexandria", "weights": [300, 400, 500, 600] }
     }
   },
 

@@ -88,7 +88,7 @@ ${og ? `<meta property="og:image" content="${esc(og)}">\n<meta name="twitter:car
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
 <link rel="stylesheet" href="${esc(ctx.fontsHref)}">
-<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.qimr)document.documentElement.classList.remove('js')},3000);try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+<script>document.documentElement.classList.add('js');setTimeout(function(){if(!window.qimr)document.documentElement.classList.remove('js')},3000);var t='${ctx.defaultTheme}';try{t=localStorage.getItem('theme')||t}catch(e){}if(t)document.documentElement.dataset.theme=t;</script>
 <style>${ctx.themeCss}${ctx.css}</style>
 <script type="application/json" id="cfg">${ctx.clientJson}</script>
 <script src="${ctx.base}assets/app.js?v=${ctx.version}" defer></script>`;
@@ -286,6 +286,7 @@ ${jsonLd(cfg)}
   <section class="hero">
     <div class="hero-media">${heroImg ? img(heroImg, { alt: '', widths: [640, 960, 1400, 2000], sizes: '100vw', w: 1400, h: 933, eager: true, priority: true }) : ''}</div>
     <div class="container hero-content">
+      ${b.nameLatin ? `<p class="hero-latin hero-in" style="--d:0" dir="ltr">${esc(b.nameLatin)}</p>` : ''}
       <p class="eyebrow hero-in" style="--d:0">${esc(h.eyebrow)}</p>
       <h1 class="hero-in" style="--d:1">${nl2br(h.title)}</h1>
       <p class="hero-sub hero-in" style="--d:2">${esc(h.subtitle)}</p>
