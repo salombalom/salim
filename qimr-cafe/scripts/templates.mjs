@@ -213,7 +213,7 @@ function cartDrawer(cfg) {
         <div class="grand"><dt>الإجمالي</dt><dd data-grand></dd></div>
       </dl>
       <p class="form-error" data-error role="alert"></p>
-      <button type="button" class="btn btn-wa" data-act="send">${icon('chat', 22)}<span>أرسل الطلب على واتساب</span></button>
+      <a class="btn btn-wa" data-act="send" href="https://wa.me/${cfg.contact.whatsapp}" target="_blank" rel="noopener">${icon('chat', 22)}<span>أرسل الطلب على واتساب</span></a>
       <button type="button" class="link-btn clear" data-act="clear">تفريغ السلة</button>
     </footer>
   </div>

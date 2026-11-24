@@ -129,6 +129,7 @@
     return false;
   }
 
+  /* يرجّع رابط واتساب جاهز، أو false لو فيه نقص في الطلب */
   function sendOrder() {
     const E = form.elements;
     const name = E.name.value.trim();
@@ -163,10 +164,8 @@
     L.push(`*الإجمالي: ${moneyText(sub + f)}*`);
     if (notes) L.push('', `📝 ملاحظات: ${notes}`);
 
-    const url = `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(L.join('\n'))}`;
-    const w = window.open(url, '_blank', 'noopener');
-    if (!w) location.href = url;
     toast('تم تجهيز طلبك في واتساب، اضغط إرسال هناك ✓');
+    return `https://wa.me/${CFG.whatsapp}?text=${encodeURIComponent(L.join('\n'))}`;
   }
 
   function locate(btn) {
@@ -214,11 +213,23 @@
       case 'dec': setQty(id, (cart[id] || 0) - 1); break;
       case 'open-cart': openCart(); break;
       case 'close-cart': closeCart(); break;
-      case 'send': sendOrder(); break;
+      case 'send': {
+        // الزر رابط حقيقي: نحط فيه رسالة الطلب لحظة الضغط، فيفتح واتساب حتى في المتصفحات اللي تمنع النوافذ المنبثقة
+        const url = sendOrder();
+        if (url) el.href = url; else e.preventDefault();
+        break;
+      }
       case 'locate': locate(el); break;
       case 'theme': toggleTheme(); break;
       case 'clear':
-        if (confirm('تبي تفرّغ السلة؟')) { const ids = Object.keys(cart); cart = {}; store.set(KEY, cart); ids.forEach(syncControls); renderCart(); }
+        // تأكيد بضغطة ثانية بدل نافذة confirm
+        if (el.dataset.armed) {
+          const ids = Object.keys(cart); cart = {}; store.set(KEY, cart); ids.forEach(syncControls); renderCart();
+          delete el.dataset.armed; el.textContent = 'تفريغ السلة';
+        } else {
+          el.dataset.armed = '1'; el.textContent = 'اضغط مرة ثانية لتفريغ السلة';
+          setTimeout(() => { delete el.dataset.armed; el.textContent = 'تفريغ السلة'; }, 3000);
+        }
         break;
     }
   });
